@@ -3,7 +3,7 @@ const fs = require('fs')
 
 const express = require('express')
 const bodyParser = require('body-parser')
-
+const path = require('path')
 const app = express();
 
 /***********************************************\\\\\\\\\
@@ -15,10 +15,15 @@ const loginRoutes = require('./routes/login')
 const registerRoutes = require('./routes/register')
 const uploadRoutes = require('./routes/upload')
 
+app.use(bodyParser.urlencoded({extended: false}));
+
 app.use("/admin", adminRoutes)
 app.use("/login", loginRoutes)
 app.use("/register", registerRoutes)
 app.use("/upload", uploadRoutes)
 
+app.use("/", (req, res, next)=>{
+    res.sendFile(path.join(__dirname, '/', 'views', 'home.html'));
+})
 
 app.listen(3000);

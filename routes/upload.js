@@ -8,8 +8,8 @@ const router = express.Router();
  * stuff
  /*******************/////////
 
-router.get('/', (req, res, next)=>{
-
+ router.get("/", (req, res, next)=>{
+    res.sendFile(path.join(__dirname, '../', 'views', 'login.html'));
 })
 
 /********************\\\\\\\\\

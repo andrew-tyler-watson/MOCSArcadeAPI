@@ -4,7 +4,11 @@ const fs = require('fs')
 const express = require('express')
 const bodyParser = require('body-parser')
 const path = require('path')
+const mongoose = require('mongoose')
+
 const app = express();
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
 /***********************************************\\\\\\\\\
  *  import (essentially) our routing scripts
@@ -12,18 +16,22 @@ const app = express();
 /***********************************************/////////
 const adminRoutes = require('./routes/admin')
 const loginRoutes = require('./routes/login')
-const registerRoutes = require('./routes/register')
-const uploadRoutes = require('./routes/upload')
+const userRoutes = require('./routes/user')
 
 app.use(bodyParser.urlencoded({extended: false}));
 
-app.use("/admin", adminRoutes)
-app.use("/login", loginRoutes)
-app.use("/register", registerRoutes)
-app.use("/upload", uploadRoutes)
+app.use("/admin", adminRoutes);
+app.use("/login", loginRoutes);
+app.use("/user", userRoutes);
 
 app.use("/", (req, res, next)=>{
-    res.sendFile(path.join(__dirname, '/', 'views', 'home.html'));
+    res.redirect('/login')
 })
 
-app.listen(3000);
+mongoose.connect('mongodb+srv://MOCSArcade2:Hamburger69@cluster0-xczcq.gcp.mongodb.net/MOCSArcade?retryWrites=true&w=majority')
+    .then(result => {
+        app.listen(3000)
+    })
+    .catch(err =>{
+        console.log(err)
+    })

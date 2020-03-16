@@ -1,0 +1,63 @@
+<%- include('../includes/header.ejs')%>
+
+<body>
+
+
+  <div class="ui container">
+    <form class="ui form" action="/login/register" method="POST">
+      <h4 class="ui dividing header">Registration: </h4>
+      <div class="field">
+        <label>Email</label>
+        <div class="two fields">
+          <div class="field">
+            <input type="text" name="username" placeholder="Username">
+          </div>
+          <div class="field">
+            <div class="ui fluid search selection dropdown">
+              <input type="hidden" name="domain">
+              <i class="dropdown icon"></i>
+              <div class="default text">Select Domain</div>
+              <div class="menu">
+                <div class="item" data-value="@mocs.utc.edu">@mocs.utc.edu</div>
+                <div class="item" data-value="@utc.edu">@utc.edu</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="field">
+        <label>Name</label>
+        <div class="two fields">
+          <div class="field">
+            <input type="text" name="firstName" placeholder="First Name">
+          </div>
+          <div class="field">
+            <input type="text" name="lastName" placeholder="Last Name">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="two fields">
+          <div class="field">
+            <input type="password" name="password" placeholder="Enter Password">
+          </div>
+          <div class="field">
+            <input type="password" name="password2" placeholder="Confirm Password">
+          </div>
+        </div>
+
+      </div>
+
+      <button class="ui button submit" type="submit">
+        Register
+      </button>
+    </form>
+  </div>
+
+ 
+
+  <%- include('../includes/footer.ejs')%>

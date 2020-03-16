@@ -1,0 +1,56 @@
+<%- include('../includes/header.ejs') %>
+<%- include('../includes/nav.ejs') %>
+
+    <div class="ui container">
+        <h3 class="ui dividing header">New Game</h3>
+        <form class="ui form" action="/user/upload" method="POST">
+            <div class="field">
+                <label>Game Name</label>
+                <input type="text" name="name">
+            </div>
+            <div class="field">
+                <label>Description</label>
+                <input type="text" name="description">
+            </div>
+            <div class="field">
+                <label>Google Drive File Id</label>
+                <input type="text" name="fileId">
+            </div>
+        </form>
+
+        <h3 class="ui dividing header">Your Games</h3>
+
+        <div class="ui cards">
+            <% if(userGames != null){
+            for(let game of userGames){ %>
+            <div class="fluid card">
+                <div class="content">
+                    <div class="header">
+                        <%= game.name %>
+                    </div>
+                    <div class="meta">
+                        Created <%= new Date(game.creationDate).getMonth() + 1 + "/" + 
+                                    new Date(game.creationDate).getDate() + "/" + 
+                                    new Date(game.creationDate).getYear()%>
+                    </div>
+                    <div class="description">
+                        <%= game.description%>
+                    </div>
+
+
+                </div>
+                <div class="extra content">
+                    <button class="positive ui button" onclick="showUpdateModal(this)">Update</button>
+                    <button class="negative ui button" onclick="showDeleteModal(this)">Delete</button>
+                        
+                </div>
+               
+            </div>
+            <% }} %>
+
+    </div>
+    <%- include('../includes/footer.ejs') %>
+
+
+
+

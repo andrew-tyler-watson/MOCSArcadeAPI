@@ -2,17 +2,18 @@ const express = require('express');
 const path = require('path')
 
 const router = express.Router();
+const loginController = require('../controllers/login')
 
-router.get("/", (req, res, next)=>{
-    res.sendFile(path.join(__dirname, '../', 'views', 'login.html'));
-})
+//Here our gets are returning stuff
 
-router.get("/DoLogin", (req, res, next)=>{
-    console.log("Login did")
-})
+router.get('/', loginController.login);
 
-router.get("/ForgotPassword", (req, res, next)=>{
+router.get('/register', loginController.register)
 
-})
+//Here our posts are doing stuff
+
+router.post('/', loginController.doLogin)
+
+router.post('/register', loginController.doRegistration)
 
 module.exports = router;

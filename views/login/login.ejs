@@ -1,8 +1,24 @@
 <%- include('../includes/header.ejs') %>
 <body>
-  <div>
-    <form action="/login/register" method="GET">
-        <button type="submit">Create an account</button>
+  <div class="ui top attached segment">
+    <h2>Welcome to the MOCS Arcade Website!!</h2>
+  </div>
+  <div class="ui container">
+
+    <form class="ui form" action="/login" method="POST">
+      <div class="field">
+          <label>Username</label>
+          <input type="text" name="username">
+      </div>
+      <div class="field">
+          <label>Password</label>
+          <input type="password" name="passowrd">
+      </div>
+      <button type="submit" class="ui fluid positive button">Login</button>
+    </form>
+
+    <form class="ui form" action="/login/register" method="GET">
+        <button type="submit" class="ui yellow fluid button">Create an account</button>
     </form>
   </div>
 

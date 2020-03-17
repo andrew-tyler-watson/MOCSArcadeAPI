@@ -7,6 +7,12 @@ exports.games = (req, res, next) => {
 
     Game.find()
         .then(games => {
+
+            let count = 0;
+            for(var game in games){
+                count++;
+                game.key = count;
+            }
             console.log(games);
             res.render('user/games', { user: {isAdmin: true}, userGames: games, pageTitle: 'Games' })
         })

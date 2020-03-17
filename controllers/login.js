@@ -9,9 +9,8 @@ exports.login = (req, res, next) =>{
 exports.doLogin = (req, res, next) => {
     const user = req.body.username;
     const pass = req.body.password;
+    
 
-
-    const success = User.authenticate(user, pass);
 
     if(success){
         //save user details in cookie

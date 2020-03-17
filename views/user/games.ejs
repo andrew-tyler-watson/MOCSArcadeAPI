@@ -1,5 +1,6 @@
 <%- include('../includes/header.ejs') %>
 <%- include('../includes/nav.ejs') %>
+<%- include('./gameDeleteModal.ejs') %>
 
     <div class="ui container">
         <h3 class="ui dividing header">New Game</h3>
@@ -16,6 +17,7 @@
                 <label>Google Drive File Id</label>
                 <input type="text" name="fileId">
             </div>
+            <button type="submit" class="ui positive button">Submit</button>
         </form>
 
         <h3 class="ui dividing header">Your Games</h3>
@@ -39,9 +41,9 @@
 
 
                 </div>
-                <div class="extra content">
-                    <button class="positive ui button" onclick="showUpdateModal(this)">Update</button>
-                    <button class="negative ui button" onclick="showDeleteModal(this)">Delete</button>
+                <div class="extra content" >
+                    <button class="positive ui button" id="<%= game.key %>" onclick="showUpdateModal()">Update</button>
+                    <button class="negative ui button" id="<%= game.key %>" onclick="showDeleteModal(this.id)">Delete</button>
                         
                 </div>
                
@@ -49,6 +51,17 @@
             <% }} %>
 
     </div>
+    <script>
+        function showDeleteModal(object){
+            $('#demoModal').modal({onApprove: function(object) {
+                console.log(object)
+                $('#demoModal').modal({
+                    transition: 'fade',
+                    duration: 10000
+                }).modal('hide');
+            }}).modal('show');
+        }
+    </script>
     <%- include('../includes/footer.ejs') %>
 
 

@@ -1,6 +1,7 @@
 <%- include('../includes/header.ejs') %>
 <%- include('../includes/nav.ejs') %>
 <%- include('./gameDeleteModal.ejs') %>
+<%- include('./gameUpdateModal.ejs') %>
 
     <div class="ui container">
         <h3 class="ui dividing header">New Game</h3>
@@ -25,7 +26,7 @@
         <div class="ui cards">
             <% if(userGames != null){
             for(let game of userGames){ %>
-            <div class="fluid card">
+            <div class="fluid card" id="<%= game.name%>">
                 <div class="content">
                     <div class="header">
                         <%= game.name %>
@@ -38,28 +39,57 @@
                     <div class="description">
                         <%= game.description%>
                     </div>
-
-
                 </div>
-                <div class="extra content" >
-                    <button class="positive ui button" id="<%= game.key %>" onclick="showUpdateModal()">Update</button>
-                    <button class="negative ui button" id="<%= game.key %>" onclick="showDeleteModal(this.id)">Delete</button>
-                        
+                <div class="extra content">
+                    <form action="/user/delete" method="POST" id="<%= game.name%>IdDeleteForm">
+                        <input id="<%= game.name%>IdInput" type="hidden" value="<%= game._id %>" name="gameId">
+                    </form>
+                   
+                    
+                    <button class="positive ui button" onclick="showUpdateModal('<%=game.name%>Id', '<%=game.name%>','<%= game.description%>')">Update</button>
+                    <button class="negative ui button" onclick="showDeleteModal('<%=game.name%>Id')">Delete</button>
                 </div>
-               
             </div>
             <% }} %>
 
     </div>
     <script>
-        function showDeleteModal(object){
-            $('#demoModal').modal({onApprove: function(object) {
-                console.log(object)
-                $('#demoModal').modal({
+        function showDeleteModal(gameElementId){
+            //console.log(gameElementId);
+            $('#gameDeleteModal').modal({onApprove: function(event) {
+                $('#gameDeleteModal').modal({
                     transition: 'fade',
                     duration: 10000
                 }).modal('hide');
+                deleteGame(gameElementId);
             }}).modal('show');
+        }
+        function deleteGame(gameElementId)
+        {
+            //console.log('deleted')
+            document.getElementById(gameElementId+'DeleteForm').submit()
+        }
+        function showUpdateModal(gameElementId, gameName, gameDescr){
+            //console.log(gameElementId);
+            fillModal(gameName, gameDescr, );
+            $('#gameUpdateModal').modal({onApprove: function(event) {
+                $('#gameUpdateModal').modal({
+                    transition: 'fade',
+                    duration: 10000
+                }).modal('hide');
+                updateGame(gameElementId);
+            }}).modal('show');
+        }
+        function updateGame(gameElementId)
+        {
+            //console.log('deleted')
+            document.getElementById('gameUpdateForm').submit()
+        }
+        function fillModal(gameName, gameDescr, gameInputId){
+            console.log(gameName)
+            
+            document.getElementById('gameToUpdateId').value = document.getElementById(gameName+'IdInput').value;
+            
         }
     </script>
     <%- include('../includes/footer.ejs') %>

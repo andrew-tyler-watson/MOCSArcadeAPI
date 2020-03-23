@@ -1,5 +1,6 @@
 const http = require('http');
 const fs = require('fs')
+const port = process.env.port || 8080;
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -42,7 +43,7 @@ app.use("/", (req, res, next)=>{
 
 mongoose.connect(MONGODB_URI)
     .then(result => {
-        app.listen(3000)
+        app.listen(port)
     })
     .catch(err =>{
         console.log(err)

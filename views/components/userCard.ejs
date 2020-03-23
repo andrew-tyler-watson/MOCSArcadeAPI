@@ -1,0 +1,23 @@
+<div class="fluid card" id="<%= game.name%>">
+    <div class="content">
+        <div class="header">
+            <%=user.firstName + " " + user.lastName %>
+        </div>
+        <div class="meta">
+            <%= user.username%>
+        </div>
+        <div class="description">
+            
+        </div>
+    </div>
+    <div class="extra content">
+        <form action="/user/delete" method="POST" id="<%= game.name%>IdDeleteForm">
+            <input id="<%= game.name%>IdInput" type="hidden" value="<%= game._id %>" name="gameId">
+            <button class="positive ui button" type="submit">Elevate</button>
+        </form>
+        <form action="/admin/" method="POST" id="<%= game.name%>IdDeleteForm">
+            <button class="negative ui button" type="submit">Delete</button>
+            <input id="<%= game.name%>IdInput" type="hidden" value="<%= game._id %>" name="gameId">
+        </form>        
+    </div>
+</div>

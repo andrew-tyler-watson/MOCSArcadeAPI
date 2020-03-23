@@ -13,6 +13,7 @@ const gameSchema = new Schema({
     },
     userId: {
         type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     creationDate: {
@@ -21,7 +22,13 @@ const gameSchema = new Schema({
     },
     shouldUpdate: {
         type: Boolean,
-        default: false
+        default: false,
+        required: true
+    },
+    isApproved: {
+        type: Boolean,
+        default: false,
+        required: true
     },
     description: {
         type: String,

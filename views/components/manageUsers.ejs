@@ -1,0 +1,8 @@
+<div class="ui container">
+    <h3 class="ui dividing header">Users</h3>
+    <% if(users != null){
+        for(let user of users){ %>
+        <%- include('./components/userCard.ejs')%>
+        <% }} %>
+
+</div>

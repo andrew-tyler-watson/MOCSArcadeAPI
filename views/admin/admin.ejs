@@ -1,0 +1,15 @@
+<%- include('../includes/header.ejs') %>
+<%- include('../includes/nav.ejs') %>
+<%- include('../components/gameDeleteModal.ejs') %>
+<%- include('../components/gameUpdateModal.ejs') %>
+
+<div class="ui container">
+    <h1 class="ui dividing header">
+        Welcome <%= user.firstName + " " + user.lastName%>!!!
+    </h1>
+
+    <h3 class="ui header">All Games</h3>
+    <%- include('../components/editGameControl.ejs', {games: games, adminView: true})%>
+</div>
+
+<%- include('../includes/footer.ejs') %>

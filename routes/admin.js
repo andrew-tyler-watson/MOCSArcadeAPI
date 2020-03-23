@@ -1,21 +1,14 @@
 const express = require('express');
 
 const router = express.Router();
+const adminController = require('../controllers/admin')
 
-router.get("/", (req, res, next)=>{
-    res.sendFile(path.join(__dirname, '../', 'views', 'admin.html'));
-})
+router.get("/", adminController.getAdmin)
 
-router.post("/Approve", (req, res, next)=>{
+router.post("/approve", adminController.postAdminApprove)
 
-})
+// router.post("/Deny", )
 
-router.post("/Deny", (req, res, next)=>{
-
-})
-
-router.post("/Delete", (req, res, next)=>{
-
-})
+// router.post("/Delete", )
 
 module.exports = router;

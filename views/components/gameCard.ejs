@@ -1,0 +1,35 @@
+<div class="item" id="<%= game.name%>">
+    <div class="content">
+        <div class="header">
+            <%= game.name %>
+        </div>
+        <div class="meta">
+            Created <%= new Date(game.creationDate).getMonth() + 1 + "/" + 
+                        new Date(game.creationDate).getDate() + "/" + 
+                        new Date(game.creationDate).getYear()%>
+        </div>
+        <div class="description">
+            <%= game.description%>
+        </div>
+
+        <div class="extra">
+            <form action="/user/delete" method="POST" id="<%= game.name%>IdDeleteForm">
+                <input id="<%= game.name%>IdInput" type="hidden" value="<%= game._id %>" name="gameId">
+            </form>
+           
+            <% if(!adminView){ %>
+            <button class="positive ui right floated button" onclick="showUpdateModal('<%=game.name%>Id', '<%=game.name%>','<%= game.description%>')">Update</button>
+            <% } %>
+            <% if(adminView){ %>
+                <form class="ui form" id="<%= game.name%>IdApproveForm" action="/admin/approve" method="POST">
+                    <input type="hidden" value="<%= game._id %>" name="gameId">
+                </form>
+                <button class="positive ui right floated button" onclick="approveGame('<%=game.name%>')" type="submit">Approve</button>
+                
+            <% } %>
+            <button class="negative ui right floated button" onclick="showDeleteModal('<%=game.name%>Id')">Delete</button>
+            
+        </div>
+    </div>
+    
+</div>

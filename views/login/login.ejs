@@ -1,26 +1,32 @@
 <%- include('../includes/header.ejs') %>
-<body>
-  <div class="ui top attached segment">
-    <h2>Welcome to the MOCS Arcade Website!!</h2>
-  </div>
-  <div class="ui container">
 
-    <form class="ui form" action="/login" method="POST">
-      <div class="field">
+<body>
+
+  <div class="ui container">
+    <h1 class="ui centered header">
+      Welcome to the MOCS Arcade
+      <div class="sub header">A place to distribute your games</div>
+    </h1>
+
+    <div class="ui padded segment">
+      <form class="ui form" action="/login" method="POST">
+        <div class="field">
           <label>Username</label>
           <input type="text" name="username">
-      </div>
-      <div class="field">
+        </div>
+        <div class="field">
           <label>Password</label>
           <input type="password" name="passowrd">
-      </div>
-      <button type="submit" class="ui fluid positive button">Login</button>
-    </form>
+        </div>
+        <button type="submit" class="ui fluid blue button">Login</button>
+      </form>
+    </div>
 
+    <div class="ui padded segment">
     <form class="ui form" action="/login/register" method="GET">
-        <button type="submit" class="ui yellow fluid button">Create an account</button>
+      <button type="submit" class="ui yellow fluid button">Create an account</button>
     </form>
   </div>
+  </div>
 
-<%- include('../includes/footer.ejs') %>
-
+  <%- include('../includes/footer.ejs') %>

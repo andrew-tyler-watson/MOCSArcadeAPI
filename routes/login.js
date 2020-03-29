@@ -7,7 +7,7 @@ const isAuth = require('../middleware/is-auth')
 
 //Here our gets are returning stuff
 
-router.get('/', isAuth.isNotLoggedIn, loginController.login);
+router.get('/',  isAuth.isNotLoggedIn, loginController.login);
 
 router.get('/register', isAuth.isNotLoggedIn, loginController.register)
 
@@ -15,9 +15,9 @@ router.get('/register', isAuth.isNotLoggedIn, loginController.register)
 
 router.post('/', isAuth.isNotLoggedIn, loginController.postLogin)
 
-router.post('/register', isAuth.isNotLoggedIn, loginController.postRegister)
+router.post('/register',  isAuth.isNotLoggedIn, loginController.postRegister)
 
 
-router.get('/logout', isAuth.isNotLoggedIn, loginController.logout)
+router.get('/logout',  loginController.logout)
 
 module.exports = router;

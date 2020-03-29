@@ -13,11 +13,13 @@
     <div class="extra content">
         <form action="/user/delete" method="POST" id="<%= game.name%>IdDeleteForm">
             <input id="<%= game.name%>IdInput" type="hidden" value="<%= game._id %>" name="gameId">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <button class="positive ui button" type="submit">Elevate</button>
         </form>
         <form action="/admin/" method="POST" id="<%= game.name%>IdDeleteForm">
             <button class="negative ui button" type="submit">Delete</button>
             <input id="<%= game.name%>IdInput" type="hidden" value="<%= game._id %>" name="gameId">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         </form>        
     </div>
 </div>

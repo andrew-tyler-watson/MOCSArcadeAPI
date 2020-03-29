@@ -7,6 +7,14 @@
       Welcome to the MOCS Arcade
       <div class="sub header">A place to distribute your games</div>
     </h1>
+    <% if(errorMessage) {%>
+      <div class="ui warning message">
+        <div class="header">
+          Invalid Username or Password
+        </div>
+        Please check your credentials and try again
+      </div>
+  <% } %> 
 
     <div class="ui padded segment">
       <form class="ui form" action="/login" method="POST">
@@ -18,6 +26,8 @@
           <label>Password</label>
           <input type="password" name="password">
         </div>
+
+        <input type="hidden" name="_csrf" value="<%= csrfToken%>">
         <button type="submit" class="ui fluid blue button">Login</button>
       </form>
     </div>

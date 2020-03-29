@@ -15,7 +15,8 @@
                     <label>New File Id</label>
                     <input type="text" name="newFileId">
                 </div>
-                <input type="text" name="gameToUpdateId" type="hidden" id="gameToUpdateId">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" type="text" name="gameToUpdateId" id="gameToUpdateId">
                 
             </form>
         </div>

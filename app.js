@@ -1,5 +1,3 @@
-const http = require('http');
-const fs = require('fs')
 /** 
  * This sets our port constant to a 
  * port specified in the environment of
@@ -7,12 +5,6 @@ const fs = require('fs')
  * deployment on Heroku 
  ***/
 const port = process.env.PORT || 8080;
-/**
- * This is the package used to protect us
- * Cross site request forgery attacks
- * 
- */
-const csrf = require('csurf')
 
 /**
  * Express is like a framework
@@ -22,7 +14,6 @@ const csrf = require('csurf')
  * and configure middlewares
  */
 const express = require('express')
-
 
 const bodyParser = require('body-parser')
 
@@ -48,7 +39,18 @@ const mongoose = require('mongoose')
  * 
  */
 const session = require('express-session')
-
+/**
+ * This is the package used to protect us
+ * Cross site request forgery attacks
+ * 
+ */
+const csrf = require('csurf')
+/**
+ * we now initialize our middleware from this package.
+ * It will be added to the app after session and body-parser is.
+ * Very important as this middle ware uses that session
+ */
+const csrfProtection = csrf();
 /**
  * This is the package that handles storing session data 
  * in the database. It uses the session collection (one is created if none exists)
@@ -70,6 +72,8 @@ const MONGODB_URI = 'mongodb+srv://MOCSArcade2:Hamburger69@cluster0-xczcq.gcp.mo
  */
 const app = express();
 
+
+
 /**
  * This is the instance of our database session store
  */
@@ -77,15 +81,11 @@ const store = new mongoDBStore({
     uri: MONGODB_URI,
     collection: 'sessions'
 })
-/**
- * Now that we have a session and a store, we configure this
- * as a middle ware. Every request goes through this middle ware
- * so we have access to the session information. It is very important
- * That this middle ware be added before the routes.
- */
-app.use(session({secret: 'alkjasdlfk;lasdasdfiahusdfkljasdfbalksdhfjalkjsdnfljkasdnf',
-                    resave: false, saveUninitialized: false, store: store}))
 
+/**
+ * 
+ */
+const flash = require('connect-flash')
 /**
  * Here we set our view engine. Now our app knows which
  * engine we are using to create our web pages.
@@ -104,7 +104,33 @@ app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({extended: false}));
 
+/**
+ * Now that we have a session and a store, we configure this
+ * as a middle ware. Every request goes through this middle ware
+ * so we have access to the session information. It is very important
+ * That this middle ware be added before the routes. Below that we see
+ * the csrfProtection middleware being added. For more info, see above
+ * import statement. 
+ */
+app.use(session({secret: 'alkjasdlfk;lasdasdfiahusdfkljasdfbalksdhfjalkjsdnfljkasdnf',
+                    resave: false, saveUninitialized: false, store: store}))
 
+
+/**
+ * Next we register a middle ware to add a CSRF token to every request.
+ * Now we can put a hidden input on all of our forms that will guarantee
+ * all requests are coming from pages we render ourselves and not from
+ * some malicious site. It is very important that this middleware
+ * comes AFTER the body-parser. 
+ */
+
+app.use(csrfProtection)
+app.use((req, res, next) =>{
+    res.locals.csrfToken = req.csrfToken();
+    next();
+})
+
+app.use(flash())
 
 /***********************************************\\\\\\\\\
  *  import (essentially) our routing scripts

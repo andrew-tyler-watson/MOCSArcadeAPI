@@ -14,6 +14,8 @@
 
         <div class="extra">
             <form action="/user/delete" method="POST" id="<%= game.name%>IdDeleteForm">
+
+                <input type="hidden" name="_csrf" value="<%= csrfToken%>">
                 <input id="<%= game.name%>IdInput" type="hidden" value="<%= game._id %>" name="gameId">
             </form>
            
@@ -23,6 +25,7 @@
             <% if(adminView){ %>
                 <form class="ui form" id="<%= game.name%>IdApproveForm" action="/admin/approve" method="POST">
                     <input type="hidden" value="<%= game._id %>" name="gameId">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 </form>
                 <button class="positive ui right floated button" onclick="approveGame('<%=game.name%>')" type="submit">Approve</button>
                 

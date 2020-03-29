@@ -3,20 +3,21 @@ const path = require('path')
 
 const router = express.Router();
 const loginController = require('../controllers/login')
+const isAuth = require('../middleware/is-auth')
 
 //Here our gets are returning stuff
 
-router.get('/', loginController.login);
+router.get('/', isAuth.isNotLoggedIn, loginController.login);
 
-router.get('/register', loginController.register)
+router.get('/register', isAuth.isNotLoggedIn, loginController.register)
 
 //Here our posts are doing stuff
 
-router.post('/', loginController.postLogin)
+router.post('/', isAuth.isNotLoggedIn, loginController.postLogin)
 
-router.post('/register', loginController.doRegistration)
+router.post('/register', isAuth.isNotLoggedIn, loginController.postRegister)
 
 
-router.get('/logout', loginController.logout)
+router.get('/logout', isAuth.isNotLoggedIn, loginController.logout)
 
 module.exports = router;

@@ -2,10 +2,11 @@ const express = require('express');
 
 const router = express.Router();
 const adminController = require('../controllers/admin')
+const isAuth = require('../middleware/is-auth')
 
-router.get("/", adminController.getAdmin)
+router.get("/", isAuth.isLoggedIn, isAuth.isAdmin, adminController.getAdmin)
 
-router.post("/approve", adminController.postAdminApprove)
+router.post("/approve", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postAdminApprove)
 
 // router.post("/Deny", )
 

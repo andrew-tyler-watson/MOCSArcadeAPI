@@ -7,18 +7,22 @@ exports.games = (req, res, next) => {
     //load the current user
     User.findOne({ username: req.session.username }).then(
         user => {
-            console.log(user)
             Game.find()
                 .where('userId').equals(user._id)
                 .then(games => {
-
+                    let message = req.flash('error');
+                    if(message.length > 0){
+                        message = message[0]
+                    }
+                    else{
+                        message = null;
+                    }
                     let count = 0;
                     for (var game in games) {
                         count++;
                         game.key = count.toString();
                     }
-                    console.log(games);
-                    res.render('user/games', { user: user, games: games, pageTitle: 'Games' })
+                    res.render('user/games', { user: user, games: games, pageTitle: 'Games', message: message})
                 })
                 .catch(err => {
                     console.log(err)
@@ -34,36 +38,52 @@ exports.games = (req, res, next) => {
 exports.upload = (req, res, next) => {
     //load the current user
 
+    Game.findOne({ name: req.body.name }).then(game => {
+        if (game != null) {
+            req.flash('uploadError', 'This game name is taken, please choose another')
+            return res.redirect('/user');
+        }
+        else {
+            User.findOne({ username: req.session.username }).then(
+                user => {
+                    const gameName = req.body.name;
+                    const fileId = req.body.fileId;
+                    const description = req.body.description;
+                    const today = new Date();
+                    const creationDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
-    User.findOne({ username: req.session.username }).then(
-        user => {
-            const gameName = req.body.name;
-            const fileId = req.body.fileId;
-            const description = req.body.description;
-            const today = new Date();
-            const creationDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-
-            const newGame = new Game({
-                name: gameName,
-                fileId: fileId,
-                description: description,
-                creationDate: creationDate,
-                userId: user._id,
-                shouldUpdate: true
-            })
-            newGame
-                .save()
-                .then(result => {
-                    res.redirect('/user')
-                })
+                    const newGame = new Game({
+                        name: gameName,
+                        fileId: fileId,
+                        description: description,
+                        creationDate: creationDate,
+                        userId: user._id,
+                        shouldUpdate: true
+                    })
+                    newGame
+                        .save()
+                        .then(result => {
+                            res.
+                            res.redirect('/user')
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        });
+                }
+            )
                 .catch(err => {
                     console.log(err)
-                });
+                })
         }
+    }
+
     )
         .catch(err => {
             console.log(err)
-        });
+        })
+
+
+
 
 }
 

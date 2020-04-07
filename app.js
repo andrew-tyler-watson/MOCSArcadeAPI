@@ -71,8 +71,8 @@ const MONGODB_URI = 'mongodb+srv://MOCSArcade2:Hamburger69@cluster0-xczcq.gcp.mo
  * 
  */
 const app = express();
-
-
+//Make it so our app can find our own files
+app.use(express.static(__dirname + '/public'));
 
 /**
  * This is the instance of our database session store

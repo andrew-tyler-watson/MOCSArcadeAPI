@@ -13,24 +13,24 @@
         </div>
 
         <div class="extra">
-            <form action="/user/delete" method="POST" id="<%= game.name%>IdDeleteForm">
+            <form action="/user/delete" method="POST" id="<%= game.name%>DeleteForm">
 
                 <input type="hidden" name="_csrf" value="<%= csrfToken%>">
-                <input id="<%= game.name%>IdInput" type="hidden" value="<%= game._id %>" name="gameId">
+                <input id="<%= game.name%>Input" type="hidden" value="<%= game.name %>" name="gameId">
             </form>
            
             <% if(!adminView){ %>
-            <button class="positive ui right floated button" onclick="showUpdateModal('<%=game.name%>Id', '<%=game.name%>','<%= game.description%>')">Update</button>
+            <button class="positive ui right floated button" onclick="showUpdateModal('<%=game.name%>', '<%=game.description%>')">Update</button>
             <% } %>
             <% if(adminView){ %>
                 <form class="ui form" id="<%= game.name%>IdApproveForm" action="/admin/approve" method="POST">
-                    <input type="hidden" value="<%= game._id %>" name="gameId">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" name="gameName" value="<%= game.name %>">
                 </form>
                 <button class="positive ui right floated button" onclick="approveGame('<%=game.name%>')" type="submit">Approve</button>
                 
             <% } %>
-            <button class="negative ui right floated button" onclick="showDeleteModal('<%=game.name%>Id')">Delete</button>
+            <button class="negative ui right floated button" onclick="showDeleteModal('<%=game.name%>', '<%= game.description%>')">Delete</button>
             
         </div>
     </div>

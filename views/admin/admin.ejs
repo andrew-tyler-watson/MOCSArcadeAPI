@@ -1,15 +1,23 @@
 <%- include('../includes/header.ejs') %>
 <%- include('../includes/nav.ejs') %>
-<%- include('../components/gameDeleteModal.ejs') %>
-<%- include('../components/gameUpdateModal.ejs') %>
+<%- include('../includes/adminMenu.ejs') %>
+
 
 <div class="ui container">
     <h1 class="ui dividing header">
         Welcome <%= user.firstName + " " + user.lastName%>
     </h1>
-
+    <%if (editGames){%>
+    <%- include('../components/gameDeleteModal.ejs') %>
+    <%- include('../components/gameUpdateModal.ejs') %>
     <h3 class="ui header">All Games</h3>
     <%- include('../components/editGameControl.ejs', {games: games, adminView: true})%>
+    <% } else { %>
+    <h3 class="ui header">All Users</h3>
+    <%- include('../components/editUserControl.ejs', {users: users, adminView: true})%>
+    <% } %>
+
+
 </div>
 
 <%- include('../includes/footer.ejs') %>

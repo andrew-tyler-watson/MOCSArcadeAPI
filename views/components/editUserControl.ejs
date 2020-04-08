@@ -1,0 +1,6 @@
+<div class="ui divided items">
+    <% if(users != null){
+    for(let user of users){ %>
+    <%- include('./userCard.ejs',  {user: user}) %>
+    <% }} %>
+</div>

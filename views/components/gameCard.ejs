@@ -11,8 +11,10 @@
         <div class="description">
             <%= game.description%>
         </div>
+        
 
-        <div class="extra">
+
+        <div class="extra content">
             <form action="/user/delete" method="POST" id="<%= game.name%>DeleteForm">
 
                 <input type="hidden" name="_csrf" value="<%= csrfToken%>">
@@ -33,6 +35,6 @@
             <button class="negative ui right floated button" onclick="showDeleteModal('<%=game.name%>', '<%= game.description%>')">Delete</button>
             
         </div>
+
     </div>
-    
 </div>

@@ -1,7 +1,7 @@
 const User = require('../models/user')
 const Game = require('../models/game')
 
-exports.getAdmin = (req, res, next) =>{
+exports.getAdminEditGames = (req, res, next) =>{
     User.findOne({username: req.session.username})
     .select("username firstName lastName isAdmin")
     .then(user =>{
@@ -12,7 +12,8 @@ exports.getAdmin = (req, res, next) =>{
         .then(games =>{
             res.render('admin/admin', { user: user,
                                         games: games,
-                                        pageTitle: 'Administration'})
+                                        editGames: true,
+                                        pageTitle: 'Administration - Edit Games'})
         })
         
     })
@@ -21,26 +22,40 @@ exports.getAdmin = (req, res, next) =>{
     })
 
 }
-exports.postAdminApprove = (req, res, next) =>{
-    const gameId = req.body.gameId
-    Game.findById(gameId)
-    .then(game =>{
-        game.isApproved = true;
-        game.save()
-        .then(result => {
-            res.redirect('/admin')
+exports.getAdminEditUsers = (req, res, next) =>{
+    User.findOne({username: req.session.username})
+    .select("username firstName lastName isAdmin")
+    .then(user =>{
+        if(!user.isAdmin){
+            res.redirect('/user')
+        }
+        User.find({username: {$ne: req.session.username}})
+        .then(users =>{
+            res.render('admin/admin', { user: user,
+                                        users: users,
+                                        editGames: false,
+                                        pageTitle: 'Administration - Edit Users'})
         })
-        .catch(err => {
-            console.log(err)
-        });
+        
     })
-    .catch( err =>{
+    .catch(err =>{
         console.log(err)
     })
 }
-exports.postAdminDelete = (req, res, next) =>{
+
+exports.postPromote = (req, res, next) =>{
     
 }
-exports.postAdminElevate = (req, res, next) =>{
+exports.postDemote = (req, res, next) =>{
+    
+}
+exports.postAuthorize = (req, res, next) =>{
+
+}
+
+exports.postDeauthorize = (req, res, next) =>{
+
+}
+exports.postDelete = (req, res, next) =>{
 
 }

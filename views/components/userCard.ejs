@@ -1,4 +1,4 @@
-<div class="fluid card" id="<%= game.name%>">
+<div class="item" id="<%= user.username%>">
     <div class="content">
         <div class="header">
             <%=user.firstName + " " + user.lastName %>
@@ -6,20 +6,39 @@
         <div class="meta">
             <%= user.username%>
         </div>
-        <div class="description">
-            
+
+        <div class="extra content">
+            <% if(user.isAdmin) { %>
+            <form action="/admin/demote" method="POST" id="<%= user.username%>MakeAdminForm">
+                <input type="hidden" value="<%= user.username %>" name="username">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="negative ui right floated button" type="submit">Demote</button>
+            </form>
+            <% } else { %>
+            <form action="/admin/promote" method="POST" id="<%= user.username%>MakeAdminForm">
+                <input type="hidden" value="<%= user.username %>" name="username">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="positive ui right floated button" type="submit">Elevate</button>
+            </form>
+            <% } %>
+            <% if(!user.isAuthorized) { %>
+            <form action="/admin/authorize" method="POST" id="<%= user.username%>MakeAdminForm">
+                <input type="hidden" value="<%= user.username %>" name="username">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="positive ui right floated button" type="submit">Authorize</button>
+            </form>
+            <% } else { %>
+            <form action="/admin/deauthorize" method="POST">
+                <input type="hidden" value="<%= user.username %>" name="username">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="negative ui right floated button" type="submit">Deauthorize</button>
+            </form>
+            <% } %>
+            <form action="/admin/delete" method="POST">
+                <input type="hidden" value="<%= user.username %>" name="username">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="negative ui right floated button" type="submit">Delete</button>
+            </form>
         </div>
-    </div>
-    <div class="extra content">
-        <form action="/user/delete" method="POST" id="<%= game.name%>IdDeleteForm">
-            <input id="<%= game.name%>IdInput" type="hidden" value="<%= game._id %>" name="gameId">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <button class="positive ui button" type="submit">Elevate</button>
-        </form>
-        <form action="/admin/" method="POST" id="<%= game.name%>IdDeleteForm">
-            <button class="negative ui button" type="submit">Delete</button>
-            <input id="<%= game.name%>IdInput" type="hidden" value="<%= game._id %>" name="gameId">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        </form>        
     </div>
 </div>

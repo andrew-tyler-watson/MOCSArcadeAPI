@@ -74,7 +74,8 @@ exports.postRegister = (req, res, next) => {
                     firstName: firstName, 
                     lastName: lastName,
                     email: email,
-                    isAdmin: false
+                    isAdmin: false,
+                    isAuthorized: false
                 })
                 return newUser.save();
             });

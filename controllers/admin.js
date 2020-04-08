@@ -44,18 +44,69 @@ exports.getAdminEditUsers = (req, res, next) =>{
 }
 
 exports.postPromote = (req, res, next) =>{
-    
+    User.findOne({username: req.body.username})
+    .then(user => {
+        user.isAdmin = true;
+        return user.save()
+    })
+    .then(result =>{
+        res.redirect('/admin/editUsers')
+    })
+    .catch(err => {
+        console.log(err)
+    })
+
 }
 exports.postDemote = (req, res, next) =>{
-    
+    User.findOne({username: req.body.username})
+    .then(user => {
+        user.isAdmin = false;
+        return user.save()
+    })
+    .then(result =>{
+        res.redirect('/admin/editUsers')
+    })
+    .catch(err => {
+        console.log(err)
+    })
 }
 exports.postAuthorize = (req, res, next) =>{
-
+    User.findOne({username: req.body.username})
+    .then(user => {
+        user.isAuthorized = true;
+        return user.save()
+    })
+    .then(result =>{
+        res.redirect('/admin/editUsers')
+    })
+    .catch(err => {
+        console.log(err)
+    })
 }
 
 exports.postDeauthorize = (req, res, next) =>{
-
+    User.findOne({username: req.body.username})
+    .then(user => {
+        user.isAuthorized = false;
+        return user.save()
+    })
+    .then(result =>{
+        res.redirect('/admin/editUsers')
+    })
+    .catch(err => {
+        console.log(err)
+    })
 }
 exports.postDelete = (req, res, next) =>{
-
+    User.findOne({username: req.body.username})
+    .then(user => {
+        user.isAuthorized = false;
+        return user.remove()
+    })
+    .then(result =>{
+        res.redirect('/admin/editUsers')
+    })
+    .catch(err => {
+        console.log(err)
+    })
 }

@@ -10,13 +10,14 @@ exports.games = (req, res, next) => {
             Game.find()
                 .where('userId').equals(user._id)
                 .then(games => {
-                    let message = req.flash('error');
+                    let message = req.flash('uploadError');
                     if(message.length > 0){
                         message = message[0]
                     }
                     else{
                         message = null;
                     }
+                    console.log(message)
                     let count = 0;
                     for (var game in games) {
                         count++;

@@ -64,7 +64,6 @@ exports.upload = (req, res, next) => {
                     newGame
                         .save()
                         .then(result => {
-                            res.
                             res.redirect('/user')
                         })
                         .catch(err => {

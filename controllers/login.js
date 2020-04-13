@@ -9,6 +9,7 @@ exports.login = (req, res, next) =>{
     else{
         message = null;
     }
+
         res.render('login/login', {
             pageTitle: 'Welcome!!!',
             errorMessage: message
@@ -51,10 +52,34 @@ exports.postLogin = (req, res, next) => {
 }
 
 exports.register = (req, res, next) => {
-    res.render('login/register', {pageTitle: 'Register'})
+    let message = req.flash('error');
+    if(message.length > 0){
+        message = message[0]
+    }
+    else{
+        message = null;
+    }
+
+    res.render('login/register', {pageTitle: 'Register', message: message})
 }
 
 exports.postRegister = (req, res, next) => {
+
+    if(req.body.domain == "" || req.body.domain == null ||
+    req.body.firstName == "" || req.body.firstName == null ||
+    req.body.lastName == "" || req.body.lastName == null ||
+    req.body.password == "" || req.body.password == null ||
+    req.body.username == "" || req.body.username == null ||
+    req.body.password2 == "" || req.body.password2 == null){
+        req.flash('error', 'Please fill out all fields')
+        return res.redirect('/login/register')
+    }
+
+    if(req.body.password != req.body.password2){
+        req.flash('error', 'Password mismatch')
+        return res.redirect('/login/register')
+    }
+
     const username = req.body.username;
     const email = username + req.body.domain;
     const password = req.body.password;
@@ -64,7 +89,8 @@ exports.postRegister = (req, res, next) => {
     User.findOne({email: email})
         .then( userDoc =>{
             if(userDoc){
-                return res.redirect('/register');
+                req.flash('error', 'someone with that username already exists')
+                return res.redirect('/login/register');
             }
             return bcrypt.hash(password, 12)
             .then(hashedPassword =>{
@@ -77,7 +103,7 @@ exports.postRegister = (req, res, next) => {
                     isAdmin: false,
                     isAuthorized: false
                 })
-                return newUser.save();
+                return newUser.save().catch();
             });
                 
         })

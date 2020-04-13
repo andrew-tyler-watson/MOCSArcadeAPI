@@ -18,18 +18,42 @@
             <form action="/user/delete" method="POST" id="<%= game.name%>DeleteForm">
 
                 <input type="hidden" name="_csrf" value="<%= csrfToken%>">
-                <input id="<%= game.name%>Input" type="hidden" value="<%= game.name %>" name="gameId">
+                <input id="<%= game.name%>Input" type="hidden" value="<%= game.name %>" name="gameName">
             </form>
            
             <% if(!adminView){ %>
             <button class="positive ui right floated button" onclick="showUpdateModal('<%=game.name%>', '<%=game.description%>')">Update</button>
             <% } %>
             <% if(adminView){ %>
-                <form class="ui form" id="<%= game.name%>IdApproveForm" action="/admin/approve" method="POST">
+                
+                <form class="ui form" id="<%= game.name%>IdApproveForm" 
+                    <% if(game.isApproved){ %> 
+                    action="/admin/revoke"
+                    <% } else{ %>
+                    action="/admin/approve"
+                    <% } %> 
+                    method="POST">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <input type="hidden" name="gameName" value="<%= game.name %>">
                 </form>
-                <button class="positive ui right floated button" onclick="approveGame('<%=game.name%>')" type="submit">Approve</button>
+                <button 
+                onclick="approveGame('<%=game.name%>')" type="submit"
+                    <% if(!game.isApproved){ %> 
+                    class="positive ui right floated button"
+                    <% } else{ %>
+                        class="negative ui right floated button"
+                    <% } %> 
+                >
+                <% if(!game.isApproved){ %> 
+                    Approve
+                    <% } else{ %>
+                      Revoke
+                    <% } %> 
+
+
+                </button>
+                
+
                 
             <% } %>
             <button class="negative ui right floated button" onclick="showDeleteModal('<%=game.name%>', '<%= game.description%>')">Delete</button>

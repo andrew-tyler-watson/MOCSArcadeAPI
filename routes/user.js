@@ -34,4 +34,6 @@ router.post('/Update', isAuth.isLoggedIn, userController.update)
 
 router.post("/Delete", isAuth.isLoggedIn, userController.delete)
 
+router.get("/help", isAuth.isLoggedIn, userController.help)
+
 module.exports = router;

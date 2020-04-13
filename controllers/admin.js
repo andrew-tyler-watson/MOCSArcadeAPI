@@ -110,3 +110,32 @@ exports.postDelete = (req, res, next) =>{
         console.log(err)
     })
 }
+
+exports.postApprove = (req, res, next) =>{
+    console.log("approve received")
+    Game.findOne({name: gameName})
+    .then(game => {
+        game.isApproved = true;
+        return game.save()
+    })
+    .then(result =>{
+        res.redirect('/admin/editGames')
+    })
+    .catch(err => {
+        console.log(err)
+    })
+}
+exports.postRevoke = (req, res, next) =>{
+    console.log("revoke received")
+    Game.findOne({name: gameName})
+    .then(game => {
+        game.isApproved = false;
+        return game.save()
+    })
+    .then(result =>{
+        res.redirect('/admin/editGames')
+    })
+    .catch(err => {
+        console.log(err)
+    })
+}

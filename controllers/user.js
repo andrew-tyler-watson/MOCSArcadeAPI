@@ -2,13 +2,14 @@ const User = require('../models/user');
 const Game = require('../models/game')
 const mongoose = require('mongoose')
 
-
+//168k4wP0gE4OC2u2QkW42Tc6ust8T2ULh
 exports.games = (req, res, next) => {
     //load the current user
     User.findOne({ username: req.session.username }).then(
         user => {
             Game.find()
                 .where('userId').equals(user._id)
+                .where('isActive').equals(true)
                 .then(games => {
                     let message = req.flash('uploadError');
                     if(message.length > 0){
@@ -59,7 +60,8 @@ exports.upload = (req, res, next) => {
                         description: description,
                         creationDate: creationDate,
                         userId: user._id,
-                        shouldUpdate: true
+                        shouldUpdate: true,
+                        isActive: true
                     })
                     newGame
                         .save()
@@ -88,7 +90,7 @@ exports.upload = (req, res, next) => {
 }
 
 exports.update = (req, res, next) => {
-    Game.findById(req.body.gameToUpdateId)
+    Game.findOne({name: req.body.gameName})
         .then(game => {
             game.fileId = req.body.newFileId;
             game.shouldUpdate = true;
@@ -102,13 +104,30 @@ exports.update = (req, res, next) => {
 
 exports.delete = (req, res, next) => {
     //load the current user
-    console.log(req.body.gameId)
-    Game.findByIdAndRemove(req.body.gameId)
-        .then(() => {
+
+    Game.findOne({name: req.body.gameName})
+        .then(game => {
+            game.isActive = false;
+
+            return game.save();
+
+        })
+        .then(result =>{
             res.redirect('/user');
         })
         .catch((err) => {
             console.log(err)
         })
 
+}
+
+exports.help = (req, res, next) =>{
+    User.findOne({ username: req.session.username }).then(
+        user => {
+            res.render('user/help', {user: user, pageTitle: 'Help'})
+        }
+    )
+        .catch(err => {
+            console.log(err)
+        });
 }

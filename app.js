@@ -11,8 +11,8 @@ const username = process.env.DATABASE_USERNAME;
 const password = process.env.DATABASE_PASSWORD;
 
 if(URL){
-    URL.replace('<username>', username)
-    URL.replace('<password>', password)
+    URL.replace('username', username)
+    URL.replace('password', password)
 }
 
 

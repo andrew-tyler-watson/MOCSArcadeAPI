@@ -80,6 +80,8 @@ let MONGODB_URI = ''
     MONGODB_URI = 'mongodb+srv://MOCSArcade2:Hamburger69@cluster0-xczcq.gcp.mongodb.net/MOCSArcade?retryWrites=true&w=majority';
 
  }
+ MONGODB_URI = 'mongodb+srv://MOCSArcade2:Hamburger69@cluster0-xczcq.gcp.mongodb.net/MOCSArcade?retryWrites=true&w=majority';
+
 
 /**
  * This is literally our application. It is a node server,

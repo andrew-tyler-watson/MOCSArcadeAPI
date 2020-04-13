@@ -6,15 +6,6 @@
  ***/
 const port = process.env.PORT || 8080;
 
-let URL = process.env.DATABASE_URL;
-const username = process.env.DATABASE_USERNAME;
-const password = process.env.DATABASE_PASSWORD;
-
-if(URL){
-    URL.replace('username', username)
-    URL.replace('password', password)
-}
-
 
 /**
  * Express is like a framework
@@ -73,16 +64,13 @@ const mongoDBStore = require('connect-mongodb-session')(session)
  * Needed for heroku deployment
  */
 let MONGODB_URI = ''
- if(URL){
-    MONGODB_URI = URL
+ if(process.env.DATABASE_URL){
+    MONGODB_URI = process.env.DATABASE_URL
  }
  else{
     MONGODB_URI = 'mongodb+srv://MOCSArcade2:Hamburger69@cluster0-xczcq.gcp.mongodb.net/MOCSArcade?retryWrites=true&w=majority';
 
  }
-
- MONGODB_URI = 'mongodb+srv://MOCSArcade2:Hamburger69@cluster0-xczcq.gcp.mongodb.net/MOCSArcade?retryWrites=true&w=majority';
-
 
 /**
  * This is literally our application. It is a node server,

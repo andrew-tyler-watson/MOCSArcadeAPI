@@ -36,8 +36,7 @@
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <input type="hidden" name="gameName" value="<%= game.name %>">
                 </form>
-                <button 
-                onclick="approveGame('<%=game.name%>')" type="submit"
+                <button onclick="approveGame('<%=game.name%>')" type="submit"
                     <% if(!game.isApproved){ %> 
                     class="positive ui right floated button"
                     <% } else{ %>

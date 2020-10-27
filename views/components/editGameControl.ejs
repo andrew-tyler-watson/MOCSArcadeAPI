@@ -1,6 +1,4 @@
-<div class="ui divided items">
     <% if(games != null){
     for(let game of games){ %>
-    <%- include('./gameCard.ejs',  {game: game, adminView: adminView}) %>
+    <%- include('./gameCard.ejs',  {user: user, game: game, adminView: adminView}) %>
     <% }} %>
-</div>

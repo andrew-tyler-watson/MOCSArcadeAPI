@@ -2,14 +2,13 @@ const User = require('../models/user');
 const Game = require('../models/game')
 const mongoose = require('mongoose')
 
-//168k4wP0gE4OC2u2QkW42Tc6ust8T2ULh
-exports.games = (req, res, next) => {
+exports.allGames = (req, res, next) => {
     //load the current user
     User.findOne({ username: req.session.username }).then(
         user => {
             Game.find()
-                .where('userId').equals(user._id)
                 .where('isActive').equals(true)
+                .populate('userID')
                 .then(games => {
                     let message = req.flash('uploadError');
                     if(message.length > 0){
@@ -24,7 +23,72 @@ exports.games = (req, res, next) => {
                         count++;
                         game.key = count.toString();
                     }
-                    res.render('user/games', { user: user, games: games, pageTitle: 'Games', message: message})
+                    res.render('user/allGames', { user: user, games: games, pageTitle: 'Games', message: message})
+                })
+                .catch(err => {
+                    console.log(err)
+                });
+        }
+    )
+        .catch(err => {
+            console.log(err)
+        });
+
+}
+
+//168k4wP0gE4OC2u2QkW42Tc6ust8T2ULh
+exports.games = (req, res, next) => {
+    //load the current user
+    User.findOne({ username: req.session.username }).then(
+        user => {
+            Game.find()
+                .where('userId').equals(user._id)
+                .where('isActive').equals(true)
+                .populate('userID')
+                .then(games => {
+                    let message = req.flash('uploadError');
+                    if(message.length > 0){
+                        message = message[0]
+                    }
+                    else{
+                        message = null;
+                    }
+                    console.log(message)
+                    let count = 0;
+                    for (var game in games) {
+                        count++;
+                        game.key = count.toString();
+                    }
+                    res.render('user/myGames', { user: user, games: games, pageTitle: 'My Games', message: message})
+                })
+                .catch(err => {
+                    console.log(err)
+                });
+        }
+    )
+        .catch(err => {
+            console.log(err)
+        });
+
+}
+
+exports.details = (req, res, next) => {
+    //load the current user
+    console.log("Details!")
+    User.findOne({ username: req.session.username }).then(
+        user => {
+            Game.findOne({ _id: req.params.gameid }).then(
+                game => {
+                    console.log("Games! ", game)
+                    let message = req.flash('uploadError');
+                    if(message.length > 0){
+                        message = message[0]
+                    }
+                    else{
+                        message = null;
+                    }
+                    
+                    res.render('user/details', { user: user, game: game, pageTitle: game.name, message: message, isEdit: false})
                 })
                 .catch(err => {
                     console.log(err)

@@ -1,0 +1,18 @@
+<%- include('../includes/header.ejs') %>
+<%- include('../includes/nav.ejs') %>
+<%- include('../components/gameDeleteModal.ejs') %>
+
+    <div class="container">
+        <div class="py-5">
+            <h1 class="text-center">Mocs Arcade Global Library</h1>
+        </div>
+
+        <%- include('../components/editGameControl.ejs', {user: user, games: games, adminView: user.isAdmin}) %>
+       
+    </div>
+    
+    <%- include('../includes/footer.ejs') %>
+
+
+
+

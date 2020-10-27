@@ -9,7 +9,6 @@
     </h1>
     <%if (editGames){%>
     <%- include('../components/gameDeleteModal.ejs') %>
-    <%- include('../components/gameUpdateModal.ejs') %>
     <h3 class="ui header">All Games</h3>
     <%- include('../components/editGameControl.ejs', {games: games, adminView: true})%>
     <% } else { %>

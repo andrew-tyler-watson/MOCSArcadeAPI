@@ -1,40 +1,38 @@
-<div class="item" id="<%= game.name%>">
-    <div class="content">
-        <div class="header">
-            <%= game.name %>
-        </div>
-        <div class="meta">
-            Created <%= new Date(game.creationDate).getMonth() + 1 + "/" + 
-                        new Date(game.creationDate).getDate() + "/" + 
-                        new Date(game.creationDate).getYear()%>
-        </div>
-        <div class="description">
-            <%= game.description%>
-        </div>
-        
-
-
-        <div class="extra content">
-            <form action="/user/delete" method="POST" id="<%= game.name%>DeleteForm">
-
-                <input type="hidden" name="_csrf" value="<%= csrfToken%>">
-                <input id="<%= game.name%>Input" type="hidden" value="<%= game.name %>" name="gameId">
-            </form>
-           
-            <% if(!adminView){ %>
-            <button class="positive ui right floated button" onclick="showUpdateModal('<%=game.name%>', '<%=game.description%>')">Update</button>
-            <% } %>
-            <% if(adminView){ %>
-                <form class="ui form" id="<%= game.name%>IdApproveForm" action="/admin/approve" method="POST">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                    <input type="hidden" name="gameName" value="<%= game.name %>">
+<div id="<%= game.name%>">
+    <div class="row justify-content-center py-3">
+        <div class="col">
+            <h3 class="mb-0">
+                <a href='/user/details/<%= game._id %>'>
+                    <%= game.name %>
+                </a>
+            </h3>
+            <p class="text-secondary">
+                Created <%= new Date(game.creationDate).getMonth() + 1 + "/" + 
+                            new Date(game.creationDate).getDate() + "/" + 
+                            new Date(game.creationDate).getYear()%>
+            </p>
+            <p class="description">
+                <%= game.description%>
+            </p>
+    
+            <% if(game.userId.toString() === user._id.toString() || adminView){ %>
+                <form action="/user/delete" method="POST" id="<%= game.name%>DeleteForm">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+                    <input id="<%= game.name%>Input" type="hidden" value="<%= game.name %>" name="gameName">
                 </form>
-                <button class="positive ui right floated button" onclick="approveGame('<%=game.name%>')" type="submit">Approve</button>
-                
-            <% } %>
-            <button class="negative ui right floated button" onclick="showDeleteModal('<%=game.name%>', '<%= game.description%>')">Delete</button>
             
+                <% if(adminView){ %>
+                    <form class="d-inline" id="<%= game.name%>IdApproveForm" <%= game.isApproved ? 'action="/admin/revoke"' : 'action="/admin/approve"' %> method="POST">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <input type="hidden" name="gameName" value="<%= game.name %>">
+                    </form>
+                    <button class="btn btn-primary m-1" onclick="approveGame('<%=game.name%>')" type="submit"
+                        <%= !game.isApproved ? 'class="positive ui right floated button"' : 'class="negative ui right floated button"' %>>
+                        <%= !game.isApproved ? 'Approve' : 'Revoke' %>
+                    </button>
+                <% } %>
+                <button class="btn btn-primary m-1" onclick="showDeleteModal('<%=game.name%>', '<%= game.description%>')">Delete</button>
+            <% } %>
         </div>
-
     </div>
 </div>

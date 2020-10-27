@@ -1,11 +1,20 @@
 <%- include('../includes/header.ejs')%>
 
-<body>
-
-
   <div class="ui container">
+    <h1 id="login-header" class="ui centered header">
+      Welcome to the MOCS Arcade
+      <div class="sub header">A place to distribute your games</div>
+    </h1>
+    <% if(message) {%>
+      <div class="ui warning message">
+        <div class="header">
+          <%= message%>
+        </div>
+        Please fill out all fields and make sure you don't already have an account under this UTC Id
+      </div>
+  <% } %> 
+    <h3 class="ui dividing header">Registration: Please enter your UTC ID for the username and the proper domain for your email.</h3>
     <form class="ui form" action="/login/register" method="POST">
-      <h4 class="ui dividing header">Registration: </h4>
       <div class="field">
         <label>Email</label>
         <div class="two fields">

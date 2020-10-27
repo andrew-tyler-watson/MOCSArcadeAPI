@@ -6,6 +6,7 @@
  ***/
 const port = process.env.PORT || 8080;
 
+
 /**
  * Express is like a framework
  * It abstract away a lot of stuff
@@ -62,7 +63,14 @@ const mongoDBStore = require('connect-mongodb-session')(session)
  * This is our connection string to our mongo cluster.
  * Needed for heroku deployment
  */
-const MONGODB_URI = 'mongodb+srv://MOCSArcade2:Hamburger69@cluster0-xczcq.gcp.mongodb.net/MOCSArcade?retryWrites=true&w=majority';
+let MONGODB_URI = ''
+ if(process.env.DATABASE_URL){
+    MONGODB_URI = process.env.DATABASE_URL
+ }
+ else{
+    MONGODB_URI = 'mongodb+srv://MOCSArcade2:Hamburger69@cluster0-xczcq.gcp.mongodb.net/MOCSArcade?retryWrites=true&w=majority';
+
+ }
 
 /**
  * This is literally our application. It is a node server,

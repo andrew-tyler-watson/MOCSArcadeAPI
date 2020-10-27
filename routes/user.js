@@ -6,12 +6,27 @@ const userController = require('../controllers/user')
 const isAuth = require('../middleware/is-auth')
 
 /********************\\\\\\\\\
+ * Return the page for seeing
+ * all the other creators' 
+ * stuff
+ /*******************/////////
+
+router.get("/", isAuth.isLoggedIn, userController.allGames);
+
+/********************\\\\\\\\\
  * Return the page for doing
  * all of the upload related 
  * stuff
  /*******************/////////
+router.get("/Games", isAuth.isLoggedIn, userController.games);
 
-router.get("/", isAuth.isLoggedIn, userController.games);
+/********************\\\\\\\\\
+ * Return the page for seeing
+ * all the other creators' 
+ * stuff
+ /*******************/////////
+
+router.get("/details/:gameid", isAuth.isLoggedIn, userController.details);
 
 /********************\\\\\\\\\
  * Upload a game by writing
@@ -33,5 +48,7 @@ router.post('/Update', isAuth.isLoggedIn, userController.update)
  /*******************/////////
 
 router.post("/Delete", isAuth.isLoggedIn, userController.delete)
+
+router.get("/help", isAuth.isLoggedIn, userController.help)
 
 module.exports = router;

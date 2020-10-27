@@ -18,5 +18,9 @@ router.post("/promote", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postP
 
 router.post("/delete", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postDelete)
 
+router.post("/approve", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postApprove)
+
+router.post("/revoke", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postRevoke)
+
 
 module.exports = router;

@@ -1,0 +1,52 @@
+<%- include('../includes/header.ejs') %>
+<%- include('../includes/nav.ejs') %>
+
+    <div class="container">
+
+        <div class="py-5">
+            <h1 class="text-center"><%= game.name %></h1>
+        </div>
+
+        <div class="row">
+            <% if(message) {%>
+                <div class="ui warning message">
+                  <div class="header">
+                    Game name taken.
+                  </div>
+                  Please pick a different name.
+                </div>
+            <% } %>
+            <div class="col-6">
+                <form class="ui form" action="/user/upload" method="POST">
+                    <div class="p-1">
+                        <label for="name">Game Name:</label>
+                        <input type="text" class="form-control" name="name" id="name" value="<%= game.name %>" <%= !isEdit ? 'disabled' : '' %>>
+                    </div>
+                    <div class="p-1">
+                        <label for="description">Description:</label>
+                        <textarea rows="5" class="form-control" name="description" id="description" <%= !isEdit ? 'disabled' : '' %>><%= game.description %></textarea>
+                    </div>
+                    <div class="p-1">
+                        <label for="fileId">Google Drive File Id:</label>
+                        <input type="text" class="form-control" name="fileId" id="fileId" value="<%= game.fileId %>" <%= !isEdit ? 'disabled' : '' %>>
+                    </div>
+                    <% if(isEdit) { %>
+                        <div class="p-1">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    <% } %>
+                </form>
+            </div>
+            <div class="col-6">
+                <img class="w-100 mt-5" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fassets.rockpapershotgun.com%2Fimages%2F2018%2F08%2Fdead-cells-review-3.jpg&f=1&nofb=1">
+            </div>
+        </div>
+    </div>
+       
+
+    <%- include('../includes/footer.ejs') %>
+
+
+
+

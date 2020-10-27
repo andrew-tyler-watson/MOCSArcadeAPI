@@ -3,28 +3,30 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 
 const gameSchema = new Schema({
-    name: {
-        type: String,
-        required: true
+    // Old format value
+    name: String,
+    // New format value
+    gameInfo: {
+        name: String,
+        description: String,
+        icon:
+        {
+            data: Buffer, 
+            contentType: String 
+        },
+        gameplayPreview:
+        {
+            data: Buffer, 
+            contentType: String 
+        }
     },
-    fileId: {
-        type: String,
-        required: true
-    },
+    fileId: String,
     userId: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    creationDate: {
-        type: Date,
-        required: true
-    },
-    shouldUpdate: {
-        type: Boolean,
-        default: false,
-        required: true
-    },
+    creationDate: Date,
     isApproved: {
         type: Boolean,
         default: false,
@@ -36,9 +38,32 @@ const gameSchema = new Schema({
     },
     isActive: {
         type: Boolean,
-        required: true
-    }
+        default: true
+    },
+    isOldFormat: {
+        type: Boolean,
+        default: false
+    },
+    versions: [
+        {
+            name: String,
+            isGoogleDriveDownload: {
+                type: Boolean,
+                default: false
+            },
+            FileId: String,
+
+            isHttpDownload: {
+                type: Boolean,
+                default: false
+            },
+            FileId: String,
+
+            releaseNotes: String,
+            isActive: Boolean
+        }
+    ]
 })
 
 
-module.exports = mongoose.model('Game', gameSchema);
+module.exports = mongoose.model('Game', gameSchema, 'games');

@@ -9,6 +9,8 @@ exports.getAdminEditGames = (req, res, next) =>{
             res.redirect('/user')
         }
         Game.find()
+        .where('isActive').equals(true)
+        .populate('userID')
         .then(games =>{
             res.render('admin/admin', { user: user,
                                         games: games,
@@ -113,6 +115,7 @@ exports.postDelete = (req, res, next) =>{
 
 exports.postApprove = (req, res, next) =>{
     Game.findOne({name: req.body.gameName})
+    .populate('userID')
     .then(game => {
         game.isApproved = true;
         return game.save()
@@ -127,6 +130,7 @@ exports.postApprove = (req, res, next) =>{
 exports.postRevoke = (req, res, next) =>{
     console.log("revoke received")
     Game.findOne({name: req.body.gameName})
+    .populate('userID')
     .then(game => {
         game.isApproved = false;
         return game.save()

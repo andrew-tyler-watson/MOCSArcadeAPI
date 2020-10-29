@@ -38,7 +38,7 @@ const gameSchema = new Schema({
     },
     isActive: {
         type: Boolean,
-        default: true
+        default: false
     },
     isOldFormat: {
         type: Boolean,

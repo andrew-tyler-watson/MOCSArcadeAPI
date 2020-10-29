@@ -14,7 +14,7 @@
             <p class="description">
                 <%= game.description%>
             </p>
-    
+            
             <% if(game.userId.toString() === user._id.toString() || adminView){ %>
                 <form action="/user/delete" method="POST" id="<%= game.name%>DeleteForm">
                     <input type="hidden" name="_csrf" value="<%= csrfToken%>">

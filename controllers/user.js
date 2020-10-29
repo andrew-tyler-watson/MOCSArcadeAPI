@@ -8,6 +8,7 @@ exports.allGames = (req, res, next) => {
         user => {
             Game.find()
                 .where('isActive').equals(true)
+                .where('isApproved').equals(true)
                 .populate('userID')
                 .then(games => {
                     let message = req.flash('uploadError');
@@ -43,6 +44,7 @@ exports.games = (req, res, next) => {
             Game.find()
                 .where('userId').equals(user._id)
                 .where('isActive').equals(true)
+                .where('isApproved').equals(true)
                 .populate('userID')
                 .then(games => {
                     let message = req.flash('uploadError');
@@ -143,9 +145,6 @@ exports.upload = (req, res, next) => {
         .catch(err => {
             console.log(err)
         })
-
-
-
 
 }
 

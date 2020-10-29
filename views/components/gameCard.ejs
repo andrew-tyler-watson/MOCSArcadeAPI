@@ -22,16 +22,16 @@
                 </form>
             
                 <% if(adminView){ %>
-                    <form class="d-inline" id="<%= game.name%>IdApproveForm" <%= game.isApproved ? 'action="/admin/revoke"' : 'action="/admin/approve"' %> method="POST">
+                    <form class="d-inline" id="<%= game.name%>IdApproveForm" <%= game.isApproved ? 'action=/admin/revoke' : 'action=/admin/approve' %> method="POST">
                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <input type="hidden" name="gameName" value="<%= game.name %>">
                     </form>
-                    <button class="btn btn-primary m-1" onclick="approveGame('<%=game.name%>')" type="submit"
-                        <%= !game.isApproved ? 'class="positive ui right floated button"' : 'class="negative ui right floated button"' %>>
-                        <%= !game.isApproved ? 'Approve' : 'Revoke' %>
+                    <button onclick="approveGame('<%=game.name%>')" type="button"
+                        class="btn m-1 <%= game.isApproved ? 'btn-primary' : 'btn-success'%>">
+                        <%= game.isApproved ? 'Revoke' : 'Approve' %>
                     </button>
                 <% } %>
-                <button class="btn btn-primary m-1" onclick="showDeleteModal('<%=game.name%>', '<%= game.description%>')">Delete</button>
+                <button type="button" class="btn btn-danger m-1" onclick="showDeleteModal('<%=game.name%>', '<%= game.description%>')">Delete</button>
             <% } %>
         </div>
     </div>

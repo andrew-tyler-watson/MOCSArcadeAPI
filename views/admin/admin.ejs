@@ -1,19 +1,20 @@
 <%- include('../includes/header.ejs') %>
 <%- include('../includes/nav.ejs') %>
-<%- include('../includes/adminMenu.ejs') %>
 
 
-<div class="ui container">
-    <h1 class="ui dividing header">
-        Welcome <%= user.firstName + " " + user.lastName%>
-    </h1>
+<div class="container">
+    <div class="py-5">
+        <h1 class="text-center">Arcade Admin - <%= editGames ? 'Games' : 'Users' %></h1>
+    </div>
     <%if (editGames){%>
-    <%- include('../components/gameDeleteModal.ejs') %>
-    <h3 class="ui header">All Games</h3>
-    <%- include('../components/editGameControl.ejs', {games: games, adminView: true})%>
+        <%if (games.length > 0){%>
+            <%- include('../components/gameDeleteModal.ejs') %>
+            <%- include('../components/editGameControl.ejs', {user: user, games: games, adminView: true})%>
+        <% } else { %>
+            <h4 class="text-success text-center">You have no games awaiting approval! :)</h4>
+        <% } %>
     <% } else { %>
-    <h3 class="ui header">All Users</h3>
-    <%- include('../components/editUserControl.ejs', {users: users, adminView: true})%>
+        <%- include('../components/editUserControl.ejs', {users: users, adminView: true})%>
     <% } %>
 
 

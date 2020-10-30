@@ -1,39 +1,46 @@
 <%- include('../includes/header.ejs') %>
-  <div class="ui container">
-    <h1 id="login-header" class="ui centered header">
-      Welcome to the MOCS Arcade
-      <div class="sub header">A place to distribute your games</div>
-    </h1>
-    <% if(errorMessage) {%>
-      <div class="ui warning message">
-        <div class="header">
-          <%= errorMessage%>
+  <div class="container">
+    <div class="row justify-content-around">
+      <h1 id="login-header" class="text-center py-5">
+        Welcome to the MOCS Arcade<br>
+        <small class="sub header">A place to distribute your games</small>
+      </h1>
+      <% if(errorMessage) {%>
+        <div class="ui warning message">
+          <div class="header">
+            <%= errorMessage%>
+          </div>
+          Please check your credentials and try again
         </div>
-        Please check your credentials and try again
-      </div>
-  <% } %> 
-
-    <div class="ui padded segment">
-      <form class="ui form" action="/login" method="POST">
-        <div class="field">
-          <label>Username</label>
-          <input type="text" name="username">
-        </div>
-        <div class="field">
-          <label>Password</label>
-          <input type="password" name="password">
-        </div>
-
-        <input type="hidden" name="_csrf" value="<%= csrfToken%>">
-        <button type="submit" class="ui fluid blue button">Login</button>
-      </form>
+      <% } %> 
+  
     </div>
+    <div class="row justify-content-around">
+      <div class="col-8 m-2">
+        <form action="/login" method="POST">
+          <div class="p-1">
+            <label>Username</label>
+            <input type="text" name="username" class="form-control">
+          </div>
+          <div class="p-1">
+            <label>Password</label>
+            <input type="password" name="password" class="form-control">
+          </div>
 
-    <div class="ui padded segment">
-    <form class="ui form" action="/login/register" method="GET">
-      <button type="submit" class="ui yellow fluid button">Create an account</button>
-    </form>
-  </div>
+          <div class="m-3">
+            <button type="submit" class="form-control btn btn-primary">Login</button>
+          </div>
+          <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+        </form>
+      </div>
+    </div>
+    <div class="row justify-content-around">
+      <div class="col-8 m-2">
+        <form action="/login/register" method="GET">
+          <button type="submit" class="form-control btn btn-secondary">Create an account</button>
+        </form>
+      </div>
+    </div>
   </div>
 
   <%- include('../includes/footer.ejs') %>

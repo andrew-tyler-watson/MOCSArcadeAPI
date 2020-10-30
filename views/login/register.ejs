@@ -1,72 +1,68 @@
 <%- include('../includes/header.ejs')%>
 
-  <div class="ui container">
-    <h1 id="login-header" class="ui centered header">
-      Welcome to the MOCS Arcade
-      <div class="sub header">A place to distribute your games</div>
-    </h1>
-    <% if(message) {%>
-      <div class="ui warning message">
-        <div class="header">
-          <%= message%>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col">
+        <div class="py-5 text-center">
+          <h3 class="mb-0">
+            Welcome to the MOCS Arcade
+          </h3>
+          <p class="text-secondary">
+            A place to distribute your games
+          </p>
         </div>
-        Please fill out all fields and make sure you don't already have an account under this UTC Id
       </div>
-  <% } %> 
-    <h3 class="ui dividing header">Registration: Please enter your UTC ID for the username and the proper domain for your email.</h3>
-    <form class="ui form" action="/login/register" method="POST">
-      <div class="field">
-        <label>Email</label>
-        <div class="two fields">
-          <div class="field">
-            <input type="text" name="username" placeholder="Username">
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-12">
+        <% if(message) {%>
+          <div class="ui warning message">
+            <p><%= message%></p>
+            <p>Please fill out all fields and make sure you don't already have an account under this UTC Id</p>
           </div>
-          <div class="field">
-            <div class="ui fluid search selection dropdown">
-              <input type="hidden" name="domain">
-              <i class="dropdown icon"></i>
-              <div class="default text">Select Domain</div>
-              <div class="menu">
-                <div class="item" data-value="@mocs.utc.edu">@mocs.utc.edu</div>
-                <div class="item" data-value="@utc.edu">@utc.edu</div>
-              </div>
+        <% } %> 
+        <p>Registration: Please enter your UTC ID for the username and the proper domain for your email.</p>
+        <form action="/login/register" method="POST">
+          <p class="mb-1 mt-3">Email</p>
+          <div class="row">
+            <div class="col pr-0">
+              <input class="form-control" type="text" id="username" name="username" placeholder="Username">
+            </div>
+            <div class="col pl-0">
+              <select class="form-control">
+                <option value="" selected disabled hidden>Select a domain</option>
+                <option>@mocs.utc.edu</option>
+                <option>@utc.edu</option>
+              </select>
             </div>
           </div>
-        </div>
+      
+          <p class="mb-1 mt-3">Name</p>
+          <div class="row">
+            <div class="col pr-0">
+              <input class="form-control" type="text" name="firstName" placeholder="First Name">
+            </div>
+            <div class="col pl-0">
+              <input class="form-control" type="text" name="lastName" placeholder="Last Name">
+            </div>
+          </div>
+    
+          <p class="mb-1 mt-3">Password</p>
+          <div class="row mx-1">
+            <input class="form-control" type="password" name="password" placeholder="Enter Password">
+          </div>
+          <div class="row mx-1">
+            <input class="form-control" type="password" name="password2" placeholder="Confirm Password">
+          </div>
+    
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    
+          <button class="btn btn-primary my-4" type="submit">
+            Register
+          </button>
+        </form>
       </div>
-  
-      <div class="field">
-        <label>Name</label>
-        <div class="two fields">
-          <div class="field">
-            <input type="text" name="firstName" placeholder="First Name">
-          </div>
-          <div class="field">
-            <input type="text" name="lastName" placeholder="Last Name">
-          </div>
-        </div>
-
-      </div>
-
-      <div class="field">
-        <label>Password</label>
-        <div class="two fields">
-          <div class="field">
-            <input type="password" name="password" placeholder="Enter Password">
-          </div>
-          <div class="field">
-            <input type="password" name="password2" placeholder="Confirm Password">
-          </div>
-        </div>
-
-      </div>
-
-      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-
-      <button class="ui button submit" type="submit">
-        Register
-      </button>
-    </form>
+    </div>
   </div>
 
  

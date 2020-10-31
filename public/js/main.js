@@ -20,6 +20,7 @@ function fillDeleteModal(gameName, gameDescription){
 }
 
 function approveGame(gameName){
+    $('#redirectTo').val(window.location.pathname)
     document.getElementById(gameName + 'IdApproveForm').submit()
 }
 

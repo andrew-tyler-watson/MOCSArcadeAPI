@@ -72,7 +72,15 @@ exports.games = (req, res, next) => {
 
 }
 
+exports.edit = (req, res, next) => {
+    req.isEdit = true;
+    exports.details(req, res, next);
+}
+
 exports.details = (req, res, next) => {
+    if(!req.isEdit) {
+        req.isEdit = false
+    }
     //load the current user
     User.findOne({ username: req.session.username }).then(
         user => {
@@ -86,7 +94,7 @@ exports.details = (req, res, next) => {
                         message = null;
                     }
                     
-                    res.render('user/details', { user: user, game: game, pageTitle: game.name, message: message, isEdit: false})
+                    res.render('user/details', { user: user, game: game, pageTitle: game.name, message: message, isEdit: req.isEdit})
                 })
                 .catch(err => {
                     console.log(err)
@@ -164,7 +172,7 @@ exports.update = (req, res, next) => {
 exports.delete = (req, res, next) => {
     //load the current user
 
-    Game.findOne({name: req.body.gameName})
+    Game.findOne({_id: req.body.gameID})
         .then(game => {
             game.isActive = false;
 

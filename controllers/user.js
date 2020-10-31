@@ -109,64 +109,66 @@ exports.details = (req, res, next) => {
 
 exports.upload = (req, res, next) => {
     //load the current user
+    User.findOne({ username: req.session.username }).then(user => {
+        if (req.body.gameID == null) {
+            console.log("Creating game")
+            // Upload new game
+            const gameName = req.body.name;
+            const description = req.body.description;
+            const today = new Date();
+            const creationDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
-    Game.findOne({ name: req.body.name }).then(game => {
-        if (game != null) {
-            req.flash('uploadError', 'This game name is taken, please choose another')
-            return res.redirect('/user');
+            const newGame = new Game({
+                name: gameName,
+                description: description,
+                creationDate: creationDate,
+                userId: user._id,
+                isActive: true
+            })
+            newGame
+                .save()
+                .then(result => {
+                    res.redirect('/user/details/' + newGame._id.toString());
+                })
+                .catch(err => {
+                    console.log(err)
+                });
         }
         else {
-            User.findOne({ username: req.session.username }).then(
-                user => {
-                    const gameName = req.body.name;
-                    const fileId = req.body.fileId;
-                    const description = req.body.description;
-                    const today = new Date();
-                    const creationDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-
-                    const newGame = new Game({
-                        name: gameName,
-                        fileId: fileId,
-                        description: description,
-                        creationDate: creationDate,
-                        userId: user._id,
-                        shouldUpdate: true,
-                        isActive: true
-                    })
-                    newGame
-                        .save()
-                        .then(result => {
-                            res.redirect('/user')
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        });
-                }
-            )
+            // Edit game
+            Game.findOne({ name: req.body.name }).then(existingGame => {
+                Game.findOne({ _id: req.body.gameID }).then(game => {
+                    // Test for user priveleges and name uniqueness 
+                    if(game.userId.toString() != user._id.toString()
+                        || (existingGame != null && existingGame._id.toString() != game._id.toString())) {
+                        // Error for attempting to edit/create a game of the same name
+                        req.flash('uploadError', 'This game name is taken, please choose another')
+                        res.redirect('/user/details/' + game._id.toString());
+                    }
+                    else {
+                        // Edit exising game
+                        game.name = req.body.name;
+                        game.description = req.body.description;
+        
+                        game
+                            .save()
+                            .then(result => {
+                                res.redirect('/user/details/' + game._id.toString());
+                            });
+                    }
+                })
                 .catch(err => {
                     console.log(err)
                 })
+            })
+            .catch(err => {
+                console.log(err)
+            })
         }
-    }
-
-    )
-        .catch(err => {
-            console.log(err)
-        })
-
-}
-
-exports.update = (req, res, next) => {
-    Game.findOne({name: req.body.gameName})
-        .then(game => {
-            game.fileId = req.body.newFileId;
-            game.shouldUpdate = true;
-            return game.save();
-        }).then(result => {
-            res.redirect('/user')
-        })
-
-
+    })
+    .catch(err => {
+        console.log(err)
+    })
 }
 
 exports.delete = (req, res, next) => {

@@ -10,13 +10,10 @@
 
         <div class="row">
             <% if(message) {%>
-                <div class="ui warning message">
-                  <div class="header">
-                    Game name taken.
-                  </div>
-                  Please pick a different name.
-                </div>
+                <p class="text-danger">Game name taken. Please pick a different name.</p>
             <% } %>
+        </div>
+        <div class="row">
             <div class="col-6">
                 <form action="/user/upload" method="POST">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -31,7 +28,6 @@
                     </div>
                     <% if(isEdit) { %>
                         <div class="py-2">
-                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                             <button type="submit" class="btn btn-primary">Save</button>
                         </div>
                     <% } %>

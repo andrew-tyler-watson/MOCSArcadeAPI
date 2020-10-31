@@ -22,11 +22,19 @@ router.get("/Games", isAuth.isLoggedIn, userController.games);
 
 /********************\\\\\\\\\
  * Return the page for seeing
- * all the other creators' 
- * stuff
+ * all the personal details
+ * of a specific game
  /*******************/////////
 
 router.get("/details/:gameid", isAuth.isLoggedIn, userController.details);
+
+/********************\\\\\\\\\
+ * Return the page for editing
+ * all the personal details 
+ * of a specific game
+ /*******************/////////
+
+router.get("/edit/:gameid", isAuth.isLoggedIn, userController.edit);
 
 /********************\\\\\\\\\
  * Upload a game by writing
@@ -34,13 +42,6 @@ router.get("/details/:gameid", isAuth.isLoggedIn, userController.details);
  /*******************/////////
 
 router.post('/Upload', isAuth.isLoggedIn, userController.upload);
-
-/********************\\\\\\\\\
- * Update a gmae by setting
- * its ShouldUpdate bit to 1
- /*******************/////////
-
-router.post('/Update', isAuth.isLoggedIn, userController.update)
 
 /********************\\\\\\\\\
  * Delete a game by deleting

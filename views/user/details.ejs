@@ -3,9 +3,15 @@
 <%- include('../includes/nav.ejs', {active: "Games", editGameID: (canEdit ? game._id : undefined)}) %>
 
     <div class="container">
+        <div class="author-tab py-1">
+            <a class="author-box p-1">
+                <i class="fa fa-user"></i>
+                <%= user.username %> (<%= user.firstName %> <%= user.lastName %>)
+            </a>
+        </div>
 
         <div class="py-5">
-            <h1 class="text-center"><%= game.name %></h1>
+            <h1 class="text-center"><%= game.gameInfo.name %></h1>
         </div>
 
         <div class="row">
@@ -20,11 +26,11 @@
                     <input type="hidden" name="gameID" value="<%= game._id %>">
                     <div class="py-1">
                         <label for="name">Game Name:</label>
-                        <input type="text" class="form-control" name="name" id="name" value="<%= game.name %>" <%= !isEdit ? 'disabled' : '' %>>
+                        <input type="text" class="form-control" name="name" id="name" value="<%= game.gameInfo.name %>" <%= !isEdit ? 'disabled' : '' %>>
                     </div>
                     <div class="py-1">
                         <label for="description">Description:</label>
-                        <textarea rows="5" class="form-control" name="description" id="description" <%= !isEdit ? 'disabled' : '' %>><%= game.description %></textarea>
+                        <textarea rows="5" class="form-control" name="description" id="description" <%= !isEdit ? 'disabled' : '' %>><%= game.gameInfo.description %></textarea>
                     </div>
                     <% if(isEdit) { %>
                         <div class="py-2">
@@ -34,14 +40,25 @@
                 </form>
             </div>
             <div class="col-6">
-                <img class="w-100 mt-5" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fassets.rockpapershotgun.com%2Fimages%2F2018%2F08%2Fdead-cells-review-3.jpg&f=1&nofb=1">
+                <form action="" method="GET"> <!-- TODO: Get game from public endpoint -->
+                    <div class="form-row my-3">
+                        <div class="col-8">
+                            <select class="form-control">
+                                <% for(let version of game.revisionHistory.revisions){ %>
+                                    <option><%= version.version %></option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary form-control">Download</button>
+                        </div>
+                    </div>
+                </form>
+                    
+                <img class="w-100 my-2" src="<%= game.gameInfo.imageUrl %>">
             </div>
         </div>
     </div>
-       
-
+    
     <%- include('../includes/footer.ejs') %>
-
-
-
 

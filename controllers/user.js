@@ -18,11 +18,7 @@ exports.allGames = (req, res, next) => {
                     else{
                         message = null;
                     }
-                    let count = 0;
-                    for (var game in games) {
-                        count++;
-                        game.key = count.toString();
-                    }
+                    
                     res.render('user/allGames', { user: user, games: games, pageTitle: 'Games', message: message})
                 })
                 .catch(err => {
@@ -54,11 +50,7 @@ exports.games = (req, res, next) => {
                     else{
                         message = null;
                     }
-                    let count = 0;
-                    for (var game in games) {
-                        count++;
-                        game.key = count.toString();
-                    }
+                    
                     res.render('user/myGames', { user: user, games: games, pageTitle: 'My Games', message: message})
                 })
                 .catch(err => {
@@ -94,7 +86,7 @@ exports.details = (req, res, next) => {
                         message = null;
                     }
                     
-                    res.render('user/details', { user: user, game: game, pageTitle: game.name, message: message, isEdit: req.isEdit})
+                    res.render('user/details', { user: user, game: game, pageTitle: game.gameInfo.name, message: message, isEdit: req.isEdit})
                 })
                 .catch(err => {
                     console.log(err)
@@ -147,8 +139,8 @@ exports.upload = (req, res, next) => {
                     }
                     else {
                         // Edit exising game
-                        game.name = req.body.name;
-                        game.description = req.body.description;
+                        game.gameInfo.name = req.body.name;
+                        game.gameInfo.description = req.body.description;
         
                         game
                             .save()

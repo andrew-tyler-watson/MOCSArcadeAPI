@@ -1,4 +1,4 @@
-<div id="<%= game.gameInfo.name%>" >
+<div id="<%= game.gameInfo.name%>">
     <div class="row justify-content-center py-3">
         <div class="col">
             <h3 class="mb-0">
@@ -16,9 +16,9 @@
             </p>
             
             <% if(game.userId.toString() === user._id.toString() || adminView){ %>
-                <form action="/user/delete" method="POST" id="<%= game.name%>DeleteForm">
+                <form action="/user/delete" method="POST" id="<%= game.gameInfo.name%>DeleteForm">
                     <input type="hidden" name="_csrf" value="<%= csrfToken%>">
-                    <input id="<%= game.name%>Input" type="hidden" value="<%= game._id %>" name="gameID">
+                    <input id="<%= game.gameInfo.name%>Input" type="hidden" value="<%= game._id %>" name="gameID">
                 </form>
             
                 <% if(adminView){ %>

@@ -12,11 +12,11 @@ const gameSchema = new Schema({
             data: Buffer, 
             contentType: String 
         },*/
-        /*gameplayPreview:
+        gameplayPreview:
         {
             data: Buffer, 
             contentType: String 
-        }*/
+        },
         imageUrl: String
     },
     revisionHistory : {

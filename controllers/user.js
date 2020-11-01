@@ -2,6 +2,9 @@ const User = require('../models/user');
 const Game = require('../models/game')
 const mongoose = require('mongoose')
 
+var fs = require('fs'); 
+var path = require('path'); 
+
 exports.allGames = (req, res, next) => {
     //load the current user
     User.findOne({ username: req.session.username }).then(
@@ -141,6 +144,13 @@ exports.upload = (req, res, next) => {
                         // Edit exising game
                         game.gameInfo.name = req.body.name;
                         game.gameInfo.description = req.body.description;
+                        if (typeof req.file != "undefined") {
+                            game.gameInfo.gameplayPreview = { 
+                                data: fs.readFileSync(path.join(process.cwd() + '/uploads/' + req.file.filename)), 
+                                contentType: 'image/png'
+                            }
+                        }
+                        
         
                         game
                             .save()

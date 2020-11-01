@@ -19,28 +19,28 @@
                 <p class="text-danger">Game name taken. Please pick a different name.</p>
             <% } %>
         </div>
-        <div class="row">
-            <div class="col-6">
-                <form action="/user/upload" method="POST">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                    <input type="hidden" name="gameID" value="<%= game._id %>">
-                    <div class="py-1">
-                        <label for="name">Game Name:</label>
-                        <input type="text" class="form-control" name="name" id="name" value="<%= game.gameInfo.name %>" <%= !isEdit ? 'disabled' : '' %>>
-                    </div>
-                    <div class="py-1">
-                        <label for="description">Description:</label>
-                        <textarea rows="5" class="form-control" name="description" id="description" <%= !isEdit ? 'disabled' : '' %>><%= game.gameInfo.description %></textarea>
-                    </div>
-                    <% if(isEdit) { %>
-                        <div class="py-2">
-                            <button type="submit" class="btn btn-primary">Save</button>
+        <!-- TODO: Fix using middleware solution: https://github.com/EthanRBrown/web-development-with-node-and-express/issues/53 -->
+        <form action="/user/upload?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data">
+            <div class="form-row">
+                <div class="col-6">
+                        <!-- <input type="hidden" name="_csrf" value=""> -->
+                        <input type="hidden" name="gameID" value="<%= game._id %>">
+                        <div class="py-1">
+                            <label for="name">Game Name:</label>
+                            <input type="text" class="form-control" name="name" id="name" value="<%= game.gameInfo.name %>" <%= !isEdit ? 'disabled' : '' %>>
                         </div>
-                    <% } %>
-                </form>
-            </div>
-            <div class="col-6">
-                <form action="" method="GET"> <!-- TODO: Get game from public endpoint -->
+                        <div class="py-1">
+                            <label for="description">Description:</label>
+                            <textarea rows="5" class="form-control" name="description" id="description" <%= !isEdit ? 'disabled' : '' %>><%= game.gameInfo.description %></textarea>
+                        </div>
+                        <% if(isEdit) { %>
+                            <div class="py-2">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        <% } %>
+                </div>
+                <div class="col-6">
+                    <!-- Download button: Cannot be a form within another form, so use javascript to dynamically download -->
                     <div class="form-row my-3">
                         <div class="col-8">
                             <select class="form-control">
@@ -50,13 +50,23 @@
                             </select>
                         </div>
                         <div class="col-4">
-                            <button type="submit" class="btn btn-primary form-control">Download</button>
+                            <button type="button" class="btn btn-primary form-control" <%= isEdit ? 'disabled' : '' %>>Download</button>
                         </div>
                     </div>
-                </form>
                     
-                <img class="w-100 my-2" src="<%= game.gameInfo.imageUrl %>">
-            </div>
+                    <% if(typeof game.gameInfo.gameplayPreview.data != "undefined") { %>
+                        <img class="w-100"
+                            src="data:image/<%=game.gameInfo.gameplayPreview.contentType%>;base64, 
+                            <%=game.gameInfo.gameplayPreview.data.toString('base64')%>"> 
+                    <% } else { %>
+                        <img class="w-100 my-2" src="<%= game.gameInfo.imageUrl %>">
+                    <% } %>
+                    
+                    <% if(isEdit) { %>
+                        <input type="file" id="image" name="image" value=""> 
+                    <% } %>
+                </div>
+            </form>
         </div>
     </div>
     

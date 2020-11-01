@@ -21,4 +21,17 @@
     width: 50px;
 }
 
+.author-tab
+{
+    position: absolute;
+    right: 0;
+}
 
+.author-box
+{
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
+    border: 1px solid rgba(10,10,10,0.5);
+    border-radius: 3px;
+    background: darkblue;
+    color: white !important;
+}

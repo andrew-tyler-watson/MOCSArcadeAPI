@@ -134,10 +134,13 @@ exports.upload = (req, res, next) => {
             Game.findOne({ name: req.body.name }).then(existingGame => {
                 Game.findOne({ _id: req.body.gameID }).then(game => {
                     // Test for user priveleges and name uniqueness 
-                    if(game.userId.toString() != user._id.toString()
-                        || (existingGame != null && existingGame._id.toString() != game._id.toString())) {
+                    if(existingGame != null && existingGame._id.toString() != game._id.toString()) {
                         // Error for attempting to edit/create a game of the same name
                         req.flash('uploadError', 'This game name is taken, please choose another')
+                        res.redirect('/user/details/' + game._id.toString());
+                    }
+                    else if(game.userId.toString() != user._id.toString() && !user.isAdmin) {
+                        req.flash('uploadError', 'You don\'t have proper permissions to update this game')
                         res.redirect('/user/details/' + game._id.toString());
                     }
                     else {
@@ -150,7 +153,6 @@ exports.upload = (req, res, next) => {
                                 contentType: 'image/png'
                             }
                         }
-                        
         
                         game
                             .save()

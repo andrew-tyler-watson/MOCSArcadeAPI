@@ -1,5 +1,4 @@
 function showDeleteModal(gameName, gameDescription){
-    //console.log(gameElementId);
     fillDeleteModal(gameName, gameDescription)
     $('#gameDeleteModal').modal({onApprove: function(event) {
         $('#gameDeleteModal').modal({
@@ -11,7 +10,6 @@ function showDeleteModal(gameName, gameDescription){
 }
 function deleteGame(gameName)
 {
-    //console.log('deleted')
     document.getElementById(gameName+'DeleteForm').submit()
 }
 function fillDeleteModal(gameName, gameDescription){

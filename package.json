@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/andrew-tyler-watson/MOCSArcadeAPI.git"
   },
-  "author": "Andrew Watson, Mason Coolican, Colby Wolfe, Clara Mefford",
+  "author": "Andrew Watson, Connor McPherson",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/andrew-tyler-watson/MOCSArcadeAPI/issues"

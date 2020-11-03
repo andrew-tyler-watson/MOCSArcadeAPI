@@ -22,5 +22,4 @@ router.post("/approve", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postA
 
 router.post("/revoke", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postRevoke)
 
-
 module.exports = router;

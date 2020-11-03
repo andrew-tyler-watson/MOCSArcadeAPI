@@ -42,7 +42,7 @@ exports.games = (req, res, next) => {
     User.findOne({ username: req.session.username }).then(
         user => {
             Game.find()
-                .where('userId').equals(user._id)
+                .where('UserId').equals(user._id)
                 .where('isActive').equals(true)
                 .populate('userID')
                 .then(games => {

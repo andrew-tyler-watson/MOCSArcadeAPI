@@ -2,5 +2,6 @@
     <% if(users != null){
     for(let user of users){ %>
     <%- include('./userCard.ejs',  {user: user}) %>
+    <hr>
     <% }} %>
 </div>

@@ -8,6 +8,7 @@ exports.allGames = (req, res, next) => {
         user => {
             Game.find()
                 .where('isActive').equals(true)
+                .where('isApproved').equals(true)
                 .populate('userID')
                 .then(games => {
                     let message = req.flash('uploadError');
@@ -17,7 +18,6 @@ exports.allGames = (req, res, next) => {
                     else{
                         message = null;
                     }
-                    console.log(message)
                     let count = 0;
                     for (var game in games) {
                         count++;
@@ -44,6 +44,7 @@ exports.games = (req, res, next) => {
             Game.find()
                 .where('UserId').equals(user._id)
                 .where('isActive').equals(true)
+                .where('isApproved').equals(true)
                 .populate('userID')
                 .then(games => {
                     let message = req.flash('uploadError');
@@ -53,7 +54,6 @@ exports.games = (req, res, next) => {
                     else{
                         message = null;
                     }
-                    console.log(message)
                     let count = 0;
                     for (var game in games) {
                         count++;
@@ -74,12 +74,10 @@ exports.games = (req, res, next) => {
 
 exports.details = (req, res, next) => {
     //load the current user
-    console.log("Details!")
     User.findOne({ username: req.session.username }).then(
         user => {
             Game.findOne({ _id: req.params.gameid }).then(
                 game => {
-                    console.log("Games! ", game)
                     let message = req.flash('uploadError');
                     if(message.length > 0){
                         message = message[0]
@@ -147,9 +145,6 @@ exports.upload = (req, res, next) => {
         .catch(err => {
             console.log(err)
         })
-
-
-
 
 }
 

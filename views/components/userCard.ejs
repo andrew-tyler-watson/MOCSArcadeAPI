@@ -1,43 +1,45 @@
-<div class="item" id="<%= user.username%>">
-    <div class="content">
-        <div class="header">
-            <%=user.firstName + " " + user.lastName %>
-        </div>
-        <div class="meta">
-            <%= user.username%>
-        </div>
-
-        <div class="extra content">
+<div id="<%= user.username%>">
+    <div class="row justify-content-center py-3">
+        <div class="col">
+            <h3 class="mb-0">
+                <a href='#'>
+                    <%=user.firstName + " " + user.lastName %>
+                </a>
+            </h3>
+            <p class="text-secondary meta">
+                <%= user.username%>
+            </p>
+    
             <% if(user.isAdmin) { %>
-            <form action="/admin/demote" method="POST" id="<%= user.username%>MakeAdminForm">
+            <form class="d-inline" action="/admin/demote" method="POST" id="<%= user.username%>MakeAdminForm">
                 <input type="hidden" value="<%= user.username %>" name="username">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button class="negative ui right floated button" type="submit">Demote</button>
+                <button class="btn btn-danger m-1" type="submit">Demote</button>
             </form>
             <% } else { %>
-            <form action="/admin/promote" method="POST" id="<%= user.username%>MakeAdminForm">
+            <form class="d-inline" action="/admin/promote" method="POST" id="<%= user.username%>MakeAdminForm">
                 <input type="hidden" value="<%= user.username %>" name="username">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button class="positive ui right floated button" type="submit">Elevate</button>
+                <button class="btn btn-success m-1" type="submit">Elevate</button>
             </form>
             <% } %>
             <% if(!user.isAuthorized) { %>
-            <form action="/admin/authorize" method="POST" id="<%= user.username%>MakeAdminForm">
+            <form class="d-inline" action="/admin/authorize" method="POST" id="<%= user.username%>MakeAdminForm">
                 <input type="hidden" value="<%= user.username %>" name="username">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button class="positive ui right floated button" type="submit">Authorize</button>
+                <button class="btn btn-success m-1" type="submit">Authorize</button>
             </form>
             <% } else { %>
-            <form action="/admin/deauthorize" method="POST">
+            <form class="d-inline" action="/admin/deauthorize" method="POST">
                 <input type="hidden" value="<%= user.username %>" name="username">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button class="negative ui right floated button" type="submit">Deauthorize</button>
+                <button class="btn btn-danger m-1" type="submit">Deauthorize</button>
             </form>
             <% } %>
-            <form action="/admin/delete" method="POST">
+            <form class="d-inline" action="/admin/delete" method="POST">
                 <input type="hidden" value="<%= user.username %>" name="username">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button class="negative ui right floated button" type="submit">Delete</button>
+                <button class="btn btn-danger m-1" type="submit">Delete</button>
             </form>
         </div>
     </div>

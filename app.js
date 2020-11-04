@@ -147,7 +147,6 @@ app.use(flash())
 const adminRoutes = require('./routes/admin')
 const loginRoutes = require('./routes/login')
 const userRoutes = require('./routes/user')
-const apiRoutes = require('./routes/api')
 
 /**
  * Now that we have added all of our middle ware (largely packages)
@@ -158,7 +157,6 @@ const apiRoutes = require('./routes/api')
 app.use("/admin", adminRoutes);
 app.use("/login", loginRoutes);
 app.use("/user", userRoutes);
-app.use('/api', apiRoutes)
 
 /**
  * This is a global redirect pretty much.

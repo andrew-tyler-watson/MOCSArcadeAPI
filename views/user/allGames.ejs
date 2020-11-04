@@ -1,6 +1,7 @@
 <%- include('../includes/header.ejs') %>
 <%- include('../includes/nav.ejs') %>
 <%- include('../components/gameDeleteModal.ejs') %>
+<%- include('../components/addGameModal.ejs') %>
 
     <div class="container">
         <div class="py-5">
@@ -8,10 +9,10 @@
         </div>
 
         <%- include('../components/editGameControl.ejs', {user: user, games: games, adminView: user.isAdmin}) %>
-       
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#gameAddModal">Add New Game</button>
     </div>
     
-    <%- include('../includes/footer.ejs') %>
+<%- include('../includes/footer.ejs') %>
 
 
 

@@ -1,9 +1,9 @@
-<div id="<%= game.name%>">
+<div id="<%= game.gameInfo.name%>">
     <div class="row justify-content-center py-3">
         <div class="col">
             <h3 class="mb-0">
                 <a href='/user/details/<%= game._id %>'>
-                    <%= game.name %>
+                    <%= game.gameInfo.name %>
                 </a>
             </h3>
             <p class="text-secondary">
@@ -12,7 +12,7 @@
                             new Date(game.creationDate).getYear()%>
             </p>
             <p class="description">
-                <%= game.description%>
+                <%= game.gameInfo.description%>
             </p>
             
             <% if(game.userId.toString() === user._id.toString() || adminView){ %>
@@ -22,16 +22,16 @@
                 </form>
             
                 <% if(adminView){ %>
-                    <form class="d-inline" id="<%= game.name%>IdApproveForm" <%= game.isApproved ? 'action=/admin/revoke' : 'action=/admin/approve' %> method="POST">
+                    <form class="d-inline" id="<%= game.gameInfo.name%>IdApproveForm" <%= game.isApproved ? 'action=/admin/revoke' : 'action=/admin/approve' %> method="POST">
                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                        <input type="hidden" name="gameName" value="<%= game.name %>">
+                        <input type="hidden" name="gameName" value="<%= game.gameInfo.name %>">
                     </form>
-                    <button onclick="approveGame('<%=game.name%>')" type="button"
+                    <button onclick="approveGame('<%=game.gameInfo.name%>')" type="button"
                         class="btn m-1 <%= game.isApproved ? 'btn-primary' : 'btn-success'%>">
                         <%= game.isApproved ? 'Revoke' : 'Approve' %>
                     </button>
                 <% } %>
-                <button type="button" class="btn btn-danger m-1" onclick="showDeleteModal('<%=game.name%>', '<%= game.description%>')">Delete</button>
+                <button type="button" class="btn btn-danger m-1" onclick="showDeleteModal('<%=game.gameInfo.name%>', '<%= game.gameInfo.description%>')">Delete</button>
             <% } %>
         </div>
     </div>

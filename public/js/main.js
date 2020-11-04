@@ -22,3 +22,4 @@ function fillDeleteModal(gameName, gameDescription){
 function approveGame(gameName){
     document.getElementById(gameName + 'IdApproveForm').submit()
 }
+

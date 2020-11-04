@@ -4,10 +4,10 @@ const Schema = mongoose.Schema;
 
 const gameSchema  = new Schema({
 
-        GameInfo : {
-            Name : String,
-            Description : String,
-            ImageUrl : String,
+        gameInfo : {
+            name : String,
+            description : String,
+            imageUrl : String,
             icon:
             {
                 data: Buffer, 
@@ -19,17 +19,7 @@ const gameSchema  = new Schema({
                 contentType: String 
             }
         },
-        Author : {
-            AuthorName : String,
-            Bio : String,
-            ImageUrl : String,
-            UserID : {
-                type: Schema.Types.ObjectId,
-                ref: 'User',
-                required: true
-            }
-        },
-        RevisionHistory : {
+        revisionHistory : {
             MinimumRequired : String,
             LatestStableRelease : String,
             TestRelease : String,
@@ -41,6 +31,11 @@ const gameSchema  = new Schema({
             default: false,
             required: true
         },
+        userId : {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        }
 })
 
 module.exports = mongoose.model('Game', gameSchema, 'games');

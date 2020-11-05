@@ -1,4 +1,4 @@
-<div id="<%= game.gameInfo.name%>">
+<div id="<%= game.gameInfo.name%>" >
     <div class="row justify-content-center py-3">
         <div class="col">
             <h3 class="mb-0">
@@ -32,7 +32,12 @@
                     </button>
                 <% } %>
                 <button type="button" class="btn btn-danger m-1" onclick="showDeleteModal('<%=game.gameInfo.name%>', '<%= game.gameInfo.description%>')">Delete</button>
+                <button class="btn btn-primary" id="<%= game.gameInfo.name %>RevisionsCollapseButton" data-toggle="collapse" data-target="#<%= game.gameInfo.name %>RevisionsCollapsePanel">
+                    Show Revisions
+                </button>
             <% } %>
         </div>
+    </div>
+    <div class="collapse" id="<%= game.gameInfo.name %>RevisionsCollapsePanel">
     </div>
 </div>

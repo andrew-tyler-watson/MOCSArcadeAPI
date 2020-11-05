@@ -23,3 +23,6 @@ function approveGame(gameName){
     document.getElementById(gameName + 'IdApproveForm').submit()
 }
 
+function submitGameAddForm(){
+    $("#addGameForm").submit()
+}

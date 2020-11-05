@@ -1,0 +1,54 @@
+<form id="addGameForm" method="POST" action="/game/add">
+    <h6>Game Information</h6>
+    <div class="form-group">
+        <label for="gameName">Name</label>
+        <input type="text" class="form-control" id="gameName">
+        <small>Game names must be unique</small>
+    </div>
+    <div class="form-group">
+        <label for="gameDescription">Description</label>
+        <textarea type="text" class="form-control" id="gameDescription" rows="4"></textarea>
+        <small>Game names must be unique</small>
+    </div>
+
+    <div class="form-group">
+        <label for="gameplayPreview">Gameplay Image</label>
+        <input type="file" accept="image/*" class="form-control" id="gameplayPreview">
+        <small></small>
+    </div>
+
+    <h6>Download and Version Information</h6> 
+
+    <div class="form-group">
+        <label for="gameAddVersion">Version</label>
+        <input type="text" class="form-control" id="gameAddVersion">
+        <small>Example: 1.0.0.1</small>
+    </div> 
+    <!-- <div class="form-group">
+        <label for="gameAddReleaseNotes">Release Notes:</label>
+        <textarea type="text" class="form-control" id="gameAddReleaseNotes">
+        <small>You can add these later</small>
+    </div> -->
+
+    <div class="form-group">
+        <label for="gameReleaseNotes">Release Notes: </label>
+        <textarea type="text" class="form-control" id="gameReleaseNotes" rows="4"></textarea>
+        <small>You can add these later</small>
+    </div> 
+    
+    <div class="form-group">
+        <label for="gameHost">Select a hosting option:</label>
+        <select class="form-control" id="gameHost">
+            <option>Google Drive</option>
+            <option>Http</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="gameUrlOrFileId">Http Url or Google Drive File ID:</label>
+        <input type="text" class="form-control" id="gameUrlOrFileId" >
+    </div>
+
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+</form>

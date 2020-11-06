@@ -23,7 +23,7 @@ const gameSchema = new Schema({
         MinimumRequired : String,
         LatestStableRelease : String,
         TestRelease : String,
-        Revisions : [Schema.Types.Mixed]
+        revisions : [Schema.Types.Mixed]
     },
     creationDate: Date,
     isApproved: {

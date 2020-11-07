@@ -123,7 +123,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({secret: 'alkjasdlfk;lasdasdfiahusdfkljasdfbalksdhfjalkjsdnfljkasdnf',
                     resave: false, saveUninitialized: false, store: store}))
 
-
 /**
  * Next we register a middle ware to add a CSRF token to every request.
  * Now we can put a hidden input on all of our forms that will guarantee

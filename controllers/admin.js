@@ -116,14 +116,14 @@ exports.postDelete = (req, res, next) =>{
 
 exports.postApprove = (req, res, next) =>{
     console.log("approve received")
-    Game.findOne({name: req.body.gameName})
+    Game.findOne({_id: req.body.gameID})
     .populate('userID')
     .then(game => {
         game.isApproved = true;
         return game.save()
     })
     .then(result =>{
-        res.redirect('/admin/editGames')
+        res.redirect(req.body.redirectTo)
     })
     .catch(err => {
         console.log(err)
@@ -131,14 +131,14 @@ exports.postApprove = (req, res, next) =>{
 }
 exports.postRevoke = (req, res, next) =>{
     console.log("revoke received")
-    Game.findOne({name: req.body.gameName})
+    Game.findOne({_id: req.body.gameID})
     .populate('userID')
     .then(game => {
         game.isApproved = false;
         return game.save()
     })
     .then(result =>{
-        res.redirect('/user')
+        res.redirect(req.body.redirectTo)
     })
     .catch(err => {
         console.log(err)

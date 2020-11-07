@@ -9,7 +9,7 @@
         <ul class="navbar-nav mr-auto">
             <% if(user.isAdmin){ %> 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle <%= active=='Admin' ? 'active' : '' %>" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Admin
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -19,16 +19,32 @@
                 </li>
             <% } %> 
             <li class="nav-item">
-                <a class="nav-link" href="/user">Games</a>
+                <a class="nav-link <%= active=='Games' ? 'active' : '' %>" href="/user">Games</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/user/games">My Library</a>
+                <a class="nav-link <%= active=='MyGames' ? 'active' : '' %>" href="/user/games">My Library</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/user/help">Help</a>
+                <a class="nav-link <%= active=='Help' ? 'active' : '' %>" href="/user/help">Help</a>
             </li>
         </ul>
-        <span class="navbar-text pr-1">
+        <% if(typeof editGameID != "undefined") { %>
+            <% if(user.isAdmin){ %> 
+                <form class="d-inline" id="<%= game.gameInfo.name%>IdApproveForm" <%= game.isApproved ? 'action=/admin/revoke' : 'action=/admin/approve' %> method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" name="gameID" value="<%= game._id %>">
+                    <input type="hidden" name="redirectTo" id="redirectTo" value="">
+                </form>
+                <button onclick="approveGame('<%=game.gameInfo.name%>')" type="button"
+                    class="btn <%= game.isApproved ? 'btn-primary' : 'btn-success'%> m-2">
+                    <%= game.isApproved ? 'Revoke' : 'Approve' %>
+                </button>
+            <% } %> 
+
+            <a class="btn btn-primary m-2" href="/user/edit/<%= game._id%>" role="button">Edit</a>
+        <% } %>
+
+        <span class="navbar-text px-2">
             <a href="/login/logout">Logout</a>
         </span>
     </div>

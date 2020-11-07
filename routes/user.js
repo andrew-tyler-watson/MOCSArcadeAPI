@@ -5,6 +5,8 @@ const router = express.Router();
 const userController = require('../controllers/user')
 const isAuth = require('../middleware/is-auth')
 
+const multer = require('multer');
+
 /********************\\\\\\\\\
  * Return the page for seeing
  * all the other creators' 
@@ -22,25 +24,37 @@ router.get("/Games", isAuth.isLoggedIn, userController.games);
 
 /********************\\\\\\\\\
  * Return the page for seeing
- * all the other creators' 
- * stuff
+ * all the personal details
+ * of a specific game
  /*******************/////////
 
 router.get("/details/:gameid", isAuth.isLoggedIn, userController.details);
 
 /********************\\\\\\\\\
+ * Return the page for editing
+ * all the personal details 
+ * of a specific game
+ /*******************/////////
+
+router.get("/edit/:gameid", isAuth.isLoggedIn, userController.edit);
+
+/********************\\\\\\\\\
  * Upload a game by writing
  * A record into the db
  /*******************/////////
+  
+var storage = multer.diskStorage({ 
+    destination: (req, file, cb) => { 
+        cb(null, 'uploads') 
+    }, 
+    filename: (req, file, cb) => { 
+        cb(null, file.fieldname + '-' + Date.now()) 
+    } 
+}); 
+  
+var upload = multer({ storage: storage }); 
 
-router.post('/Upload', isAuth.isLoggedIn, userController.upload);
-
-/********************\\\\\\\\\
- * Update a gmae by setting
- * its ShouldUpdate bit to 1
- /*******************/////////
-
-router.post('/Update', isAuth.isLoggedIn, userController.update)
+router.post('/Upload', isAuth.isLoggedIn, upload.single('image'), userController.upload);
 
 /********************\\\\\\\\\
  * Delete a game by deleting

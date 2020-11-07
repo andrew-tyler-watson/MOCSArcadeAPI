@@ -2,6 +2,9 @@ const User = require('../models/user');
 const Game = require('../models/game')
 const mongoose = require('mongoose')
 
+var fs = require('fs'); 
+var path = require('path'); 
+
 exports.allGames = (req, res, next) => {
     //load the current user
     User.findOne({ username: req.session.username }).then(
@@ -18,11 +21,7 @@ exports.allGames = (req, res, next) => {
                     else{
                         message = null;
                     }
-                    let count = 0;
-                    for (var game in games) {
-                        count++;
-                        game.key = count.toString();
-                    }
+                    
                     res.render('user/allGames', { user: user, games: games, pageTitle: 'Games', message: message})
                 })
                 .catch(err => {
@@ -54,11 +53,7 @@ exports.games = (req, res, next) => {
                     else{
                         message = null;
                     }
-                    let count = 0;
-                    for (var game in games) {
-                        count++;
-                        game.key = count.toString();
-                    }
+                    
                     res.render('user/myGames', { user: user, games: games, pageTitle: 'My Games', message: message})
                 })
                 .catch(err => {
@@ -72,7 +67,15 @@ exports.games = (req, res, next) => {
 
 }
 
+exports.edit = (req, res, next) => {
+    req.isEdit = true;
+    exports.details(req, res, next);
+}
+
 exports.details = (req, res, next) => {
+    if(!req.isEdit) {
+        req.isEdit = false
+    }
     //load the current user
     User.findOne({ username: req.session.username }).then(
         user => {
@@ -86,7 +89,7 @@ exports.details = (req, res, next) => {
                         message = null;
                     }
                     
-                    res.render('user/details', { user: user, game: game, pageTitle: game.name, message: message, isEdit: false})
+                    res.render('user/details', { user: user, game: game, pageTitle: game.gameInfo.name, message: message, isEdit: req.isEdit})
                 })
                 .catch(err => {
                     console.log(err)
@@ -101,70 +104,81 @@ exports.details = (req, res, next) => {
 
 exports.upload = (req, res, next) => {
     //load the current user
+    User.findOne({ username: req.session.username }).then(user => {
+        if (req.body.gameID == null) {
+            console.log("Creating game")
+            // Upload new game
+            const gameName = req.body.name;
+            const description = req.body.description;
+            const today = new Date();
+            const creationDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
-    Game.findOne({ name: req.body.name }).then(game => {
-        if (game != null) {
-            req.flash('uploadError', 'This game name is taken, please choose another')
-            return res.redirect('/user');
+            const newGame = new Game({
+                name: gameName,
+                description: description,
+                creationDate: creationDate,
+                userId: user._id,
+                isActive: true
+            })
+            newGame
+                .save()
+                .then(result => {
+                    res.redirect('/user/details/' + newGame._id.toString());
+                })
+                .catch(err => {
+                    console.log(err)
+                });
         }
         else {
-            User.findOne({ username: req.session.username }).then(
-                user => {
-                    const gameName = req.body.name;
-                    const fileId = req.body.fileId;
-                    const description = req.body.description;
-                    const today = new Date();
-                    const creationDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-
-                    const newGame = new Game({
-                        name: gameName,
-                        fileId: fileId,
-                        description: description,
-                        creationDate: creationDate,
-                        userId: user._id,
-                        shouldUpdate: true,
-                        isActive: true
-                    })
-                    newGame
-                        .save()
-                        .then(result => {
-                            res.redirect('/user')
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        });
-                }
-            )
+            // Edit game
+            Game.findOne({ name: req.body.name }).then(existingGame => {
+                Game.findOne({ _id: req.body.gameID }).then(game => {
+                    // Test for user priveleges and name uniqueness 
+                    if(existingGame != null && existingGame._id.toString() != game._id.toString()) {
+                        // Error for attempting to edit/create a game of the same name
+                        req.flash('uploadError', 'This game name is taken, please choose another')
+                        res.redirect('/user/details/' + game._id.toString());
+                    }
+                    else if(game.userId.toString() != user._id.toString() && !user.isAdmin) {
+                        req.flash('uploadError', 'You don\'t have proper permissions to update this game')
+                        res.redirect('/user/details/' + game._id.toString());
+                    }
+                    else {
+                        // Edit exising game
+                        game.gameInfo.name = req.body.name;
+                        game.gameInfo.description = req.body.description;
+                        if (typeof req.file != "undefined") {
+                            game.gameInfo.gameplayPreview = { 
+                                data: fs.readFileSync(path.join(process.cwd() + '/uploads/' + req.file.filename)), 
+                                contentType: 'image/png'
+                            }
+                        }
+        
+                        game
+                            .save()
+                            .then(result => {
+                                res.redirect('/user/details/' + game._id.toString());
+                            });
+                    }
+                })
                 .catch(err => {
                     console.log(err)
                 })
+            })
+            .catch(err => {
+                console.log(err)
+            })
         }
-    }
-
-    )
-        .catch(err => {
-            console.log(err)
-        })
-
-}
-
-exports.update = (req, res, next) => {
-    Game.findOne({name: req.body.gameName})
-        .then(game => {
-            game.fileId = req.body.newFileId;
-            game.shouldUpdate = true;
-            return game.save();
-        }).then(result => {
-            res.redirect('/user')
-        })
-
-
+    })
+    .catch(err => {
+        console.log(err)
+    })
 }
 
 exports.delete = (req, res, next) => {
     //load the current user
 
-    Game.findOne({name: req.body.gameName})
+    Game.findOne({_id: req.body.gameID})
         .then(game => {
             game.isActive = false;
 

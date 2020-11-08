@@ -27,23 +27,22 @@ exports.getAdminEditGames = (req, res, next) =>{
 }
 exports.getAdminEditUsers = (req, res, next) =>{
     User.findOne({username: req.session.username})
-    .select("username firstName lastName isAdmin")
-    .then(user =>{
-        if(!user.isAdmin){
-            res.redirect('/user')
-        }
-        User.find({username: {$ne: req.session.username}})
-        .then(users =>{
-            res.render('admin/admin', { user: user,
-                                        users: users,
-                                        editGames: false,
-                                        pageTitle: 'Administration - Edit Users'})
+        .select("username firstName lastName isAdmin")
+        .then(user =>{
+            if(!user.isAdmin){
+                res.redirect('/user')
+            }
+            User.find({username: {$ne: req.session.username}})
+                .then(users =>{
+                    res.render('admin/admin', { user: user,
+                                                users: users,
+                                                editGames: false,
+                                                pageTitle: 'Administration - Edit Users'})
+                })
         })
-        
-    })
-    .catch(err =>{
-        console.log(err)
-    })
+        .catch(err =>{
+            console.log(err)
+        })
 }
 
 exports.postPromote = (req, res, next) =>{

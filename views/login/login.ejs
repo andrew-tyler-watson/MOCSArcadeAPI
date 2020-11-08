@@ -5,15 +5,14 @@
         Welcome to the MOCS Arcade<br>
         <small class="sub header">A place to distribute your games</small>
       </h1>
+    </div>
+    <div class="row justify-content-around">
       <% if(errorMessage) {%>
-        <div class="ui warning message">
-          <div class="header">
-            <%= errorMessage%>
-          </div>
+        <p class="text-center text-danger">
+          <%= errorMessage%>
           Please check your credentials and try again
-        </div>
+        </p>
       <% } %> 
-  
     </div>
     <div class="row justify-content-around">
       <div class="col-8 m-2">

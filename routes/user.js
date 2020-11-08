@@ -39,6 +39,22 @@ router.get("/details/:gameid", isAuth.isLoggedIn, userController.details);
 router.get("/edit/:gameid", isAuth.isLoggedIn, userController.edit);
 
 /********************\\\\\\\\\
+ * Return the page for seeing
+ * all the personal details
+ * of a user
+ /*******************/////////
+
+router.get("/user/:userid", isAuth.isLoggedIn, userController.userDetails);
+
+/********************\\\\\\\\\
+ * Return the page for editing
+ * all the personal details 
+ * of a specific game
+ /*******************/////////
+
+router.get("/editUser/:userid", isAuth.isLoggedIn, userController.editUser);
+
+/********************\\\\\\\\\
  * Upload a game by writing
  * A record into the db
  /*******************/////////

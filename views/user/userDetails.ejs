@@ -1,0 +1,46 @@
+<%- include('../includes/header.ejs') %>
+<% canEdit = !isEdit && (isPageUser || user.isAdmin) %>
+<%- include('../includes/nav.ejs', {active: "Games", editUserID: (canEdit ? user._id : undefined)}) %>
+
+    <div class="container">
+        <div class="py-5">
+            <h1 class="text-center"><%= user.firstName + " " + user.lastName %></h1>
+        </div>
+
+        <!-- TODO: Fix using middleware solution: https://github.com/EthanRBrown/web-development-with-node-and-express/issues/53 -->
+        <form action="/user/uploadUser %>" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="form-row">
+                <div class="col-6">
+                        <div class="py-1">
+                            <label for="name">Username:</label>
+                            <input type="text" class="form-control" name="name" id="name" value="<%= user.username %>" <%= !isEdit ? 'disabled' : '' %>>
+                        </div>
+                        <% if(isEdit) { %>
+                            <div class="py-2">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                                <a class="btn btn-primary" href="/user/user/<%= user._id %>">Cancel</a>
+                            </div>
+                        <% } %>
+                </div>
+                <div class="col-6">
+                    <div class="py-1">
+                        <label for="description">Bio:</label>
+                        <!-- <textarea rows="5" class="form-control" name="description" id="description" <%= !isEdit ? 'disabled' : '' %>><%= user.bio %></textarea> -->
+                    </div>
+                </div>
+            </form>
+        </div>
+        <% if(games.length > 0) { %>
+            <hr>
+            <div class="form-row justify-content-around pt-4">
+                <h3 class="text-center">
+                    <%= user.firstName %>'s games
+                </h3>
+                <%- include('../components/editGameControl.ejs', {user: user, games: games, adminView: user.isAdmin}) %>
+            </div>
+        <% } %>
+    </div>
+    
+    <%- include('../includes/footer.ejs') %>
+

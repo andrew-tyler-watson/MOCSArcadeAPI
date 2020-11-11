@@ -55,6 +55,12 @@ router.get("/user/:userid", isAuth.isLoggedIn, userController.userDetails);
 router.get("/editUser/:userid", isAuth.isLoggedIn, userController.editUser);
 
 /********************\\\\\\\\\
+ * Save changes to a user
+ /*******************/////////
+
+router.post('/uploadUser/:userid', isAuth.isLoggedIn, userController.uploadUser);
+
+/********************\\\\\\\\\
  * Upload a game by writing
  * A record into the db
  /*******************/////////

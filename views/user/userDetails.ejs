@@ -8,13 +8,17 @@
         </div>
 
         <!-- TODO: Fix using middleware solution: https://github.com/EthanRBrown/web-development-with-node-and-express/issues/53 -->
-        <form action="/user/uploadUser %>" method="POST">
+        <form action="/user/uploadUser/<%= user._id %> %>" method="POST">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="form-row">
                 <div class="col-6">
                         <div class="py-1">
                             <label for="name">Username:</label>
-                            <input type="text" class="form-control" name="name" id="name" value="<%= user.username %>" <%= !isEdit ? 'disabled' : '' %>>
+                            <input type="text" class="form-control" name="name" id="name" value="<%= user.username %>" disabled>
+                        </div>
+                        <div class="py-1">
+                            <label for="description">Bio:</label>
+                            <textarea rows="5" class="form-control" name="bio" id="bio" <%= !isEdit ? 'disabled' : '' %>><%= user.bio %></textarea>
                         </div>
                         <% if(isEdit) { %>
                             <div class="py-2">
@@ -24,10 +28,6 @@
                         <% } %>
                 </div>
                 <div class="col-6">
-                    <div class="py-1">
-                        <label for="description">Bio:</label>
-                        <!-- <textarea rows="5" class="form-control" name="description" id="description" <%= !isEdit ? 'disabled' : '' %>><%= user.bio %></textarea> -->
-                    </div>
                 </div>
             </form>
         </div>

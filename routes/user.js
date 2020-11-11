@@ -71,7 +71,8 @@ var storage = multer.diskStorage({
     }, 
     filename: (req, file, cb) => { 
         cb(null, file.fieldname + '-' + Date.now()) 
-    } 
+    } ,
+    limits: { fileSize: 1500000 }
 }); 
   
 var upload = multer({ storage: storage }); 

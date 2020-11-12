@@ -31,7 +31,12 @@ const userSchema = new Schema({
     isAuthorized: {
         type: Boolean,
         default: false
-    }
+    },
+    isAuthenticated: {
+        type: Boolean,
+        default: false
+    },
+    authenticationCode: String
 });
 
 module.exports = mongoose.model('User', userSchema, 'users');

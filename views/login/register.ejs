@@ -18,22 +18,13 @@
         <% if(message) {%>
           <div class="ui warning message">
             <p><%= message%></p>
-            <p>Please fill out all fields and make sure you don't already have an account under this UTC Id</p>
           </div>
         <% } %> 
-        <p>Registration: Please enter your UTC ID for the username and the proper domain for your email.</p>
         <form action="/login/register" method="POST">
           <p class="mb-1 mt-3">Email</p>
           <div class="row">
             <div class="col pr-0">
-              <input class="form-control" type="text" id="username" name="username" placeholder="Username">
-            </div>
-            <div class="col pl-0">
-              <select class="form-control">
-                <option value="" selected disabled hidden>Select a domain</option>
-                <option>@mocs.utc.edu</option>
-                <option>@utc.edu</option>
-              </select>
+              <input class="form-control" type="text" id="username" name="username" placeholder="Email">
             </div>
           </div>
       

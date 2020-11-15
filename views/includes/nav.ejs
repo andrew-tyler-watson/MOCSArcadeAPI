@@ -41,7 +41,10 @@
                 </button>
             <% } %> 
 
-            <a class="btn btn-primary m-2" href="/user/edit/<%= game._id%>" role="button">Edit</a>
+            <a class="btn btn-primary m-2" href="/user/edit/<%= editGameID %>" role="button">Edit</a>
+        <% } %>
+        <% if(typeof editUserID != "undefined") { %>
+            <a class="btn btn-primary m-2" href="/user/editUser/<%= editUserID %>" role="button">Edit</a>
         <% } %>
 
         <span class="navbar-text px-2">

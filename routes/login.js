@@ -17,6 +17,10 @@ router.post('/', isAuth.isNotLoggedIn, loginController.postLogin)
 
 router.post('/register',  isAuth.isNotLoggedIn, loginController.postRegister)
 
+// Email authentication
+
+router.get('/authenticate/:authenticationCode', loginController.authenticate)
+
 
 router.get('/logout',  loginController.logout)
 

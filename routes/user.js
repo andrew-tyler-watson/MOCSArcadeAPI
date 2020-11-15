@@ -64,7 +64,7 @@ router.post('/uploadUser/:userid', isAuth.isLoggedIn, userController.uploadUser)
  * Upload a game by writing
  * A record into the db
  /*******************/////////
-  
+
 var storage = multer.diskStorage({ 
     destination: (req, file, cb) => { 
         cb(null, 'uploads') 

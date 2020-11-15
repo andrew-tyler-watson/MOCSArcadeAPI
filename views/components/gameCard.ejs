@@ -34,12 +34,14 @@
                 <% } %>
                 <button type="button" class="btn btn-danger m-1" onclick="showDeleteModal('<%=game.gameInfo.name%>', '<%= game.gameInfo.description%>')">Delete</button>
                 <button class="btn btn-primary" id="<%= game.gameInfo.name %>RevisionsCollapseButton" data-toggle="collapse" data-target="#<%= game.gameInfo.name %>RevisionsCollapsePanel">
-                    Show Revisions
+                   Revisions
                 </button>
             <% } %>
         </div>
     </div>
     <div class="collapse" id="<%= game.gameInfo.name %>RevisionsCollapsePanel">
-        revisions here
+        <%  for(let revision of game.revisionHistory.revisions){ %>
+            <%- include('./revisionCard.ejs',  {gameInfo: game.gameInfo, revision: revision}) %>
+        <% } %>
     </div>
 </div>

@@ -5,6 +5,13 @@ const mongoose = require('mongoose')
 var fs = require('fs'); 
 var path = require('path'); 
 
+function saveImage(game, req){
+    game.gameInfo.gameplayPreview = { 
+        data: fs.readFileSync(path.join(process.cwd() + '/uploads/' + req.file.filename)), 
+        contentType: 'image/png'
+    }
+}
+
 exports.allGames = (req, res, next) => {
     //load the current user
     User.findOne({ username: req.session.username }).then(
@@ -117,18 +124,64 @@ exports.upload = (req, res, next) => {
         if (req.body.gameID == null) {
             console.log("Creating game")
             // Upload new game
-            const gameName = req.body.name;
-            const description = req.body.description;
+
+            /**
+             * making the game info and creationDate
+             */
+
             const today = new Date();
             const creationDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
+            const gameInfo = {
+                name: req.body.gameName,
+                description: req.body.gameDescription
+            }
+
+            /**
+             * Adding the revision History here
+             */
+
+            const version = req.body.gameAddVersion
+
+            const firstRevision = {
+                releaseNotes: req.body.gameReleaseNotes,
+                isActive: true,
+                version: version
+            }
+
+            if(req.body.gameHost.toLowerCase() === "google drive"){
+                firstRevision.isGoogleDriveDownload = true
+                firstRevision.fileId = req.body.gameUrlOrFileId
+            }
+            else{
+                firstRevision.isHttpDownload = true
+                firstRevision.url = req.body.gameUrlOrFileId
+            }
+
+
+
+            const revisionHistory = {
+                MinimumRequired: version,
+                LatestStableRelease: version,
+                TestRelease: version,
+                revisions : [firstRevision]
+            }
+
+            /**
+             * saving the game
+             */
             const newGame = new Game({
-                name: gameName,
-                description: description,
+                gameInfo: gameInfo,
                 creationDate: creationDate,
                 userId: user._id,
+                revisionHistory: revisionHistory,
                 isActive: true
             })
+
+            if (typeof req.file != "undefined") {
+                saveImage(newGame, req)
+             }
+
             newGame
                 .save()
                 .then(result => {
@@ -157,10 +210,7 @@ exports.upload = (req, res, next) => {
                         game.gameInfo.name = req.body.name;
                         game.gameInfo.description = req.body.description;
                         if (typeof req.file != "undefined") {
-                            game.gameInfo.gameplayPreview = { 
-                                data: fs.readFileSync(path.join(process.cwd() + '/uploads/' + req.file.filename)), 
-                                contentType: 'image/png'
-                            }
+                           saveImage(game, req)
                         }
         
                         game

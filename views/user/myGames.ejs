@@ -1,10 +1,12 @@
 <%- include('../includes/header.ejs') %>
 <%- include('../includes/nav.ejs', {active: "MyGames"}) %>
 <%- include('../components/gameDeleteModal.ejs') %>
+<%- include('../components/addGameModal.ejs') %>
 
     <div class="container">
-        <div class="py-5">
+        <div class="col text-center py-5">
             <h1 class="text-center">Welcome <%= user.firstName + " " + user.lastName%></h1>
+            <button type="button" class="btn btn-success content-center my-3" data-toggle="modal" data-target="#gameAddModal">Add New Game</button>
         </div>
 
         <%- include('../components/editGameControl.ejs', {user: user, games: games, adminView: user.isAdmin}) %>

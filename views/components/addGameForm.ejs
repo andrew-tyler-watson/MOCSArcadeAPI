@@ -1,13 +1,13 @@
-<form id="addGameForm" method="POST" action="/user/addGame">
+<form id="addGameForm" method="POST" action="/user/upload?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
     <h6>Game Information</h6>
     <div class="form-group">
         <label for="gameName">Name</label>
-        <input type="text" class="form-control" id="gameName">
+        <input type="text" class="form-control" id="gameName" name="gameName">
         <small>Game names must be unique</small>
     </div>
     <div class="form-group">
         <label for="gameDescription">Description</label>
-        <textarea type="text" class="form-control" id="gameDescription" rows="4"></textarea>
+        <textarea type="text" class="form-control" id="gameDescription" name="gameDescription" rows="4"></textarea>
         <small>Game names must be unique</small>
     </div>
     
@@ -19,20 +19,19 @@
             </div>
 
             <div class="custom-file">
-                <input type="file" accept="image/*" class="custom-file-input" id="gameplayPreview" 
-                        aria-describedby="inputGroupFileAddon">
-                <label class="custom-file-label" for="gameplayPreview">Choose file</label>
+                <input type="file" id="image" name="image" value="" onchange="changeImageFileLabel()"
+                        aria-describedby="inputGroupFileAddon"  class="custom-file-input">
+                <label class="custom-file-label" for="gameplayPreview" id="imageFileLabel">Choose file</label>
             </div>
-        </div>
+        </div> 
+        <p id="fileError" class="text-danger"></p>
        
     </div>
 
-
     <h6>Download and Version Information</h6>
-
     <div class="form-group">
         <label for="gameAddVersion">Version</label>
-        <input type="text" class="form-control" id="gameAddVersion">
+        <input type="text" class="form-control" id="gameAddVersion" name="gameAddVersion">
         <small>Example: 1.0.0.1</small>
     </div>
     <!-- <div class="form-group">
@@ -43,13 +42,13 @@
 
     <div class="form-group">
         <label for="gameReleaseNotes">Release Notes: </label>
-        <textarea type="text" class="form-control" id="gameReleaseNotes" rows="4"></textarea>
+        <textarea type="text" class="form-control" id="gameReleaseNotes" name="gameReleaseNotes" rows="4"></textarea>
         <small>You can add these later</small>
     </div>
 
     <div class="form-group">
         <label for="gameHost">Select a hosting option:</label>
-        <select class="form-control" id="gameHost">
+        <select class="form-control" id="gameHost" name="gameHost">
             <option>Google Drive</option>
             <option>Http</option>
         </select>
@@ -57,9 +56,11 @@
 
     <div class="form-group">
         <label for="gameUrlOrFileId">Http Url or Google Drive File ID:</label>
-        <input type="text" class="form-control" id="gameUrlOrFileId">
+        <input type="text" class="form-control" id="gameUrlOrFileId" name="gameUrlOrFileId">
     </div>
-
-    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <button type="submit" class="btn btn-success" >Submit</button>
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
 
 </form>
+
+

@@ -2,12 +2,12 @@
     <h6>Game Information</h6>
     <div class="form-group">
         <label for="gameName">Name</label>
-        <input type="text" class="form-control" id="gameName" name="gameName">
+        <input type="text" class="form-control" id="gameName" name="gameName" required>
         <small>Game names must be unique</small>
     </div>
     <div class="form-group">
         <label for="gameDescription">Description</label>
-        <textarea type="text" class="form-control" id="gameDescription" name="gameDescription" rows="4"></textarea>
+        <textarea type="text" class="form-control" id="gameDescription" name="gameDescription" rows="4" required></textarea>
         <small>Game names must be unique</small>
     </div>
     
@@ -31,7 +31,7 @@
     <h6>Download and Version Information</h6>
     <div class="form-group">
         <label for="gameAddVersion">Version</label>
-        <input type="text" class="form-control" id="gameAddVersion" name="gameAddVersion">
+        <input type="text" class="form-control" id="gameAddVersion" name="gameAddVersion" required>
         <small>Example: 1.0.0.1</small>
     </div>
     <!-- <div class="form-group">
@@ -56,7 +56,7 @@
 
     <div class="form-group">
         <label for="gameUrlOrFileId">Http Url or Google Drive File ID:</label>
-        <input type="text" class="form-control" id="gameUrlOrFileId" name="gameUrlOrFileId">
+        <input type="text" class="form-control" id="gameUrlOrFileId" name="gameUrlOrFileId" required>
     </div>
     <button type="submit" class="btn btn-success" >Submit</button>
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>

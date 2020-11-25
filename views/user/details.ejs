@@ -56,23 +56,28 @@
                                         <% if(version.isHttpDownload) { %>
                                             <h5>Http Download</h5>
                                             <div class="py-1">
-                                                <label for="url">URL:</label>
-                                                <input type="text" class="form-control" name="url" id="url" value="<%= version.url %>" <%= !isEdit ? 'disabled' : '' %>>
+                                                <label for="url<%= version.version %>">URL:</label>
+                                                <input type="text" class="form-control" name="url[<%= version.version %>]" id="url<%= version.version %>" value="<%= version.url %>" <%= !isEdit ? 'disabled' : '' %>>
                                             </div>
                                         <% } else { %>
                                             <h5>Google Drive Download</h5>
                                             <div class="py-1">
-                                                <label for="fileID">File ID:</label>
-                                                <input type="text" class="form-control" name="fileID" id="fileID" value="<%= version.fileId %>" <%= !isEdit ? 'disabled' : '' %>>
+                                                <label for="fileId<%= version.version %>">File ID:</label>
+                                                <input type="text" class="form-control" name="fileId[<%= version.version %>]" id="fileId<%= version.version %>" value="<%= version.fileId %>" <%= !isEdit ? 'disabled' : '' %>>
                                             </div>
                                         <% } %>
                                         <div class="py-1">
-                                            <label for="releaseNotes">Release Notes:</label>
-                                            <textarea rows="2" class="form-control" name="releaseNotes" id="releaseNotes" <%= !isEdit ? 'disabled' : '' %>><%= version.releaseNotes %></textarea>
+                                            <label for="releaseNotes<%= version.version %>">Release Notes:</label>
+                                            <textarea rows="2" class="form-control" name="releaseNotes[<%= version.version %>]" id="releaseNotes<%= version.version %>" <%= !isEdit ? 'disabled' : '' %>><%= version.releaseNotes %></textarea>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        <% } %>
+                        <% if(isEdit) { %>
+                            <button type="button" class="form-control btn btn-secondary">
+                                Add New Version
+                            </button>
                         <% } %>
                     </div>
                     <% if(isEdit) { %>

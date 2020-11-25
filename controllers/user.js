@@ -196,23 +196,60 @@ exports.upload = (req, res, next) => {
             Game.findOne({ name: req.body.name }).then(existingGame => {
                 Game.findOne({ _id: req.body.gameID }).then(game => {
                     // Test for user priveleges and name uniqueness 
-                    if(existingGame != null && existingGame._id.toString() != game._id.toString()) {
-                        // Error for attempting to edit/create a game of the same name
+                    if (existingGame != null && existingGame._id.toString() != game._id.toString()) {
+                        /**
+                         * Error for attempting to edit/create a game of the same name
+                         */
                         req.flash('uploadError', 'This game name is taken, please choose another')
                         res.redirect('/user/details/' + game._id.toString());
                     }
-                    else if(game.userId.toString() != user._id.toString() && !user.isAdmin) {
+                    else if (game.userId.toString() != user._id.toString() && !user.isAdmin) {
+                        /**
+                         * Error for attempting to edit/create a game you don't own
+                         */
                         req.flash('uploadError', 'You don\'t have proper permissions to update this game')
                         res.redirect('/user/details/' + game._id.toString());
                     }
                     else {
-                        // Edit exising game
+                        /**
+                         * Editting game data
+                         */
                         game.gameInfo.name = req.body.name;
                         game.gameInfo.description = req.body.description;
                         if (typeof req.file != "undefined") {
                            saveImage(game, req)
                         }
+
+                        /**
+                         * Editting version data
+                         */
+                        for (i = 0; i < game.revisionHistory.revisions.length; i++) {
+                            var versionNum = game.revisionHistory.revisions[i].version;
+                            if (game.revisionHistory.revisions[i].releaseNotes != req.body.releaseNotes[versionNum]) {
+                                game.revisionHistory.revisions[i].releaseNotes = req.body.releaseNotes[versionNum];
+                                game.markModified('revisionHistory.revisions');
+                            }
+                            if (req.body.fileId) {
+                                if (req.body.fileId[versionNum]) {
+                                    if (game.revisionHistory.revisions[i].fileId != req.body.fileId[versionNum]) {
+                                        game.revisionHistory.revisions[i].fileId = req.body.fileId[versionNum];
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                }
+                            }
+                            if (req.body.url) {
+                                if (req.body.url[versionNum]) {
+                                    if (game.revisionHistory.revisions[i].url != req.body.url[versionNum]) {
+                                        game.revisionHistory.revisions[i].url = req.body.url[versionNum];
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                }
+                            }
+                        }
         
+                        /**
+                         * Saving the game
+                         */
                         game
                             .save()
                             .then(result => {

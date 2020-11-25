@@ -75,9 +75,36 @@
                             </div>
                         <% } %>
                         <% if(isEdit) { %>
-                            <button type="button" class="form-control btn btn-secondary">
-                                Add New Version
-                            </button>
+                            <div class="card">
+                                <button type="button" class="form-control btn btn-secondary" data-toggle="collapse"
+                                        data-target="#collapseNew" aria-expanded="true"
+                                        aria-controls="collapseNew">
+                                    Add New Version
+                                </button>
+                                <div id="collapseNew" class="collapse" data-parent="#accordion">
+                                    <div class="card-body">
+                                        <div class="py-1">
+                                            <label for="versionHostNew">File ID:</label>
+                                            <select class="form-control" name="newVersionHost" id="versionHostNew">
+                                                <option>Http Download</option>
+                                                <option>Google Drive Download</option>
+                                            </select>
+                                        </div>
+                                        <div class="py-1">
+                                            <label for="versionNew">Version Number:</label>
+                                            <input type="text" class="form-control" name="newVersionName" id="versionNew">
+                                        </div>
+                                        <div class="py-1">
+                                            <label for="fileIdNew">Http Url or Google Drive File ID:</label>
+                                            <input type="text" class="form-control" name="newVersionURL" id="fileIdNew">
+                                        </div>
+                                        <div class="py-1">
+                                            <label for="releaseNotesNew">Release Notes:</label>
+                                            <textarea rows="2" class="form-control" name="newVersionNotes" id="releaseNotesNew"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         <% } %>
                     </div>
                     <% if(isEdit) { %>

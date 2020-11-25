@@ -34,46 +34,72 @@
                         <textarea rows="5" class="form-control" name="description" id="description" <%= !isEdit ? 'disabled' : '' %>><%= game.gameInfo.description %></textarea>
                     </div>
 
+                    <!-- Version list -->
                     <div id="accordion" class="py-1">
                         <label>Versions:</label>
                         <% for(let version of game.revisionHistory.revisions){ %>
-                            <div class="card">
-                                <div class="card-header" id="heading<%= version.version %>">
-                                    <h5 class="mb-0 form-row justify-content-between">
-                                        <button type="button" class="btn bg-transparent" data-toggle="collapse"
-                                                data-target="#collapse<%= version.version %>" aria-expanded="true"
-                                                aria-controls="collapse<%= version.version %>">
-                                            <%= version.version %>
-                                        </button>
-                                        <!-- Download button: Cannot be a form within another form, so use javascript to dynamically download -->
-                                        <button type="button" class="btn btn-primary" <%= isEdit ? 'disabled' : '' %>>
-                                            <i class="fa fa-download"></i>
-                                        </button>
-                                    </h5>
-                                </div>
-                                <div id="collapse<%= version.version %>" class="collapse" aria-labelledby="heading<%= version.version %>" data-parent="#accordion">
-                                    <div class="card-body">
-                                        <% if(version.isHttpDownload) { %>
-                                            <h5>Http Download</h5>
-                                            <div class="py-1">
-                                                <label for="url<%= version.version %>">URL:</label>
-                                                <input type="text" class="form-control" name="url[<%= version.version %>]" id="url<%= version.version %>" value="<%= version.url %>" <%= !isEdit ? 'disabled' : '' %>>
+                            <% if(version.isActive || isEdit) { %>
+                                <div class="card">
+                                    <div class="card-header" id="heading<%= version.version %>">
+                                        <h5 class="mb-0 form-row justify-content-between">
+                                            <div class="col">
+                                                <button type="button" class="btn bg-transparent" data-toggle="collapse"
+                                                        data-target="#collapse<%= version.version %>" aria-expanded="true"
+                                                        aria-controls="collapse<%= version.version %>">
+                                                    <%= version.version %><%= version.isStable ? '' : ' - unstable' %>
+                                                </button>
                                             </div>
-                                        <% } else { %>
-                                            <h5>Google Drive Download</h5>
-                                            <div class="py-1">
-                                                <label for="fileId<%= version.version %>">File ID:</label>
-                                                <input type="text" class="form-control" name="fileId[<%= version.version %>]" id="fileId<%= version.version %>" value="<%= version.fileId %>" <%= !isEdit ? 'disabled' : '' %>>
+
+                                            <% if(isEdit) { %>
+                                                <div class="col-auto">
+                                                    <div class="btn-group-toggle" data-toggle="buttons">
+                                                        <label class="btn btn-primary btn-checkbox-toggle <%= !version.isActive ? 'active' : '' %>">
+                                                            <input type="checkbox" autocomplete="off" value="true" name="deactivate[<%= version.version %>]" <%= !version.isActive ? 'checked' : '' %>>Active
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="btn-group-toggle" data-toggle="buttons">
+                                                        <label class="btn btn-success btn-checkbox-toggle <%= !version.isStable ? 'active' : '' %>">
+                                                            <input type="checkbox" autocomplete="off" value="true" name="destabilize[<%= version.version %>]" <%= !version.isStable ? 'checked' : '' %>>Stable
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            <% } %>
+
+                                            <!-- Download button: Cannot be a form within another form, so use javascript to dynamically download -->
+                                            <div class="col-auto">
+                                                <button type="button" class="btn btn-primary" <%= isEdit ? 'disabled' : '' %>>
+                                                    <i class="fa fa-download"></i>
+                                                </button>
                                             </div>
-                                        <% } %>
-                                        <div class="py-1">
-                                            <label for="releaseNotes<%= version.version %>">Release Notes:</label>
-                                            <textarea rows="2" class="form-control" name="releaseNotes[<%= version.version %>]" id="releaseNotes<%= version.version %>" <%= !isEdit ? 'disabled' : '' %>><%= version.releaseNotes %></textarea>
+                                        </h5>
+                                    </div>
+                                    <div id="collapse<%= version.version %>" class="collapse" aria-labelledby="heading<%= version.version %>" data-parent="#accordion">
+                                        <div class="card-body">
+                                            <% if(version.isHttpDownload) { %>
+                                                <h5>Http Download</h5>
+                                                <div class="py-1">
+                                                    <label for="url<%= version.version %>">URL:</label>
+                                                    <input type="text" class="form-control" name="url[<%= version.version %>]" id="url<%= version.version %>" value="<%= version.url %>" <%= !isEdit ? 'disabled' : '' %>>
+                                                </div>
+                                            <% } else { %>
+                                                <h5>Google Drive Download</h5>
+                                                <div class="py-1">
+                                                    <label for="fileId<%= version.version %>">File ID:</label>
+                                                    <input type="text" class="form-control" name="fileId[<%= version.version %>]" id="fileId<%= version.version %>" value="<%= version.fileId %>" <%= !isEdit ? 'disabled' : '' %>>
+                                                </div>
+                                            <% } %>
+                                            <div class="py-1">
+                                                <label for="releaseNotes<%= version.version %>">Release Notes:</label>
+                                                <textarea rows="2" class="form-control" name="releaseNotes[<%= version.version %>]" id="releaseNotes<%= version.version %>" <%= !isEdit ? 'disabled' : '' %>><%= version.releaseNotes %></textarea>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            <% } %>
                         <% } %>
+                        <!-- Adding a new version in the edit page -->
                         <% if(isEdit) { %>
                             <div class="card">
                                 <button type="button" class="form-control btn btn-secondary" data-toggle="collapse"

@@ -20,9 +20,6 @@ const gameSchema = new Schema({
         imageUrl: String
     },
     revisionHistory : {
-        MinimumRequired : String,
-        LatestStableRelease : String,
-        TestRelease : String,
         revisions : [Schema.Types.Mixed]
     },
     creationDate: Date,

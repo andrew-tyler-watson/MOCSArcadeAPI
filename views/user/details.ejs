@@ -23,38 +23,66 @@
         <form action="/user/upload?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="col-6">
-                        <!-- <input type="hidden" name="_csrf" value=""> -->
-                        <input type="hidden" name="gameID" value="<%= game._id %>">
-                        <div class="py-1">
-                            <label for="name">Game Name:</label>
-                            <input type="text" class="form-control" name="name" id="name" value="<%= game.gameInfo.name %>" <%= !isEdit ? 'disabled' : '' %>>
-                        </div>
-                        <div class="py-1">
-                            <label for="description">Description:</label>
-                            <textarea rows="5" class="form-control" name="description" id="description" <%= !isEdit ? 'disabled' : '' %>><%= game.gameInfo.description %></textarea>
-                        </div>
-                        <% if(isEdit) { %>
-                            <div class="py-2">
-                                <button type="submit" class="btn btn-primary">Save</button>
-                                <a class="btn btn-primary" href="/user/details/<%= game._id %>">Cancel</a>
+                    <!-- <input type="hidden" name="_csrf" value=""> -->
+                    <input type="hidden" name="gameID" value="<%= game._id %>">
+                    <div class="py-1">
+                        <label for="name">Game Name:</label>
+                        <input type="text" class="form-control" name="name" id="name" value="<%= game.gameInfo.name %>" <%= !isEdit ? 'disabled' : '' %>>
+                    </div>
+                    <div class="py-1">
+                        <label for="description">Description:</label>
+                        <textarea rows="5" class="form-control" name="description" id="description" <%= !isEdit ? 'disabled' : '' %>><%= game.gameInfo.description %></textarea>
+                    </div>
+
+                    <div id="accordion" class="py-1">
+                        <label>Versions:</label>
+                        <% for(let version of game.revisionHistory.revisions){ %>
+                            <div class="card">
+                                <div class="card-header" id="heading<%= version.version %>">
+                                    <h5 class="mb-0 form-row justify-content-between">
+                                        <button type="button" class="btn bg-transparent" data-toggle="collapse"
+                                                data-target="#collapse<%= version.version %>" aria-expanded="true"
+                                                aria-controls="collapse<%= version.version %>">
+                                            <%= version.version %>
+                                        </button>
+                                        <!-- Download button: Cannot be a form within another form, so use javascript to dynamically download -->
+                                        <button type="button" class="btn btn-primary" <%= isEdit ? 'disabled' : '' %>>
+                                            <i class="fa fa-download"></i>
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div id="collapse<%= version.version %>" class="collapse" aria-labelledby="heading<%= version.version %>" data-parent="#accordion">
+                                    <div class="card-body">
+                                        <% if(version.isHttpDownload) { %>
+                                            <h5>Http Download</h5>
+                                            <div class="py-1">
+                                                <label for="url">URL:</label>
+                                                <input type="text" class="form-control" name="url" id="url" value="<%= version.url %>" <%= !isEdit ? 'disabled' : '' %>>
+                                            </div>
+                                        <% } else { %>
+                                            <h5>Google Drive Download</h5>
+                                            <div class="py-1">
+                                                <label for="fileID">File ID:</label>
+                                                <input type="text" class="form-control" name="fileID" id="fileID" value="<%= version.fileId %>" <%= !isEdit ? 'disabled' : '' %>>
+                                            </div>
+                                        <% } %>
+                                        <div class="py-1">
+                                            <label for="releaseNotes">Release Notes:</label>
+                                            <textarea rows="2" class="form-control" name="releaseNotes" id="releaseNotes" <%= !isEdit ? 'disabled' : '' %>><%= version.releaseNotes %></textarea>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         <% } %>
+                    </div>
+                    <% if(isEdit) { %>
+                        <div class="py-2">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a class="btn btn-primary" href="/user/details/<%= game._id %>">Cancel</a>
+                        </div>
+                    <% } %>
                 </div>
                 <div class="col-6">
-                    <!-- Download button: Cannot be a form within another form, so use javascript to dynamically download -->
-                    <div class="form-row my-3">
-                        <div class="col-8">
-                            <select class="form-control">
-                                <% for(let version of game.revisionHistory.revisions){ %>
-                                    <option><%= version.version %></option>
-                                <% } %>
-                            </select>
-                        </div>
-                        <div class="col-4">
-                            <button type="button" class="btn btn-primary form-control" <%= isEdit ? 'disabled' : '' %>>Download</button>
-                        </div>
-                    </div>
-                    
                     <% if(typeof game.gameInfo.gameplayPreview.data != "undefined") { %>
                         <img class="w-100"
                             src="data:image/<%=game.gameInfo.gameplayPreview.contentType%>;base64, 

@@ -246,6 +246,27 @@ exports.upload = (req, res, next) => {
                                 }
                             }
                         }
+
+                        /**
+                         * Adding new version
+                         */
+                        if (req.body.newVersionName) {
+                            var newRevision = {
+                                releaseNotes: req.body.newVersionNotes,
+                                isActive: true,
+                                version:  req.body.newVersionName
+                            }
+                            if(req.body.newVersionHost.toLowerCase() === "google drive download"){
+                                newRevision.isGoogleDriveDownload = true
+                                newRevision.fileId = req.body.newVersionURL
+                            }
+                            else{
+                                newRevision.isHttpDownload = true
+                                newRevision.url = req.body.newVersionURL
+                            }
+                            game.revisionHistory.revisions.push(newRevision)
+                            game.markModified('revisionHistory.revisions');
+                        }
         
                         /**
                          * Saving the game

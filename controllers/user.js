@@ -161,9 +161,6 @@ exports.upload = (req, res, next) => {
 
 
             const revisionHistory = {
-                MinimumRequired: version,
-                LatestStableRelease: version,
-                TestRelease: version,
                 revisions : [firstRevision]
             }
 
@@ -241,6 +238,32 @@ exports.upload = (req, res, next) => {
                                 if (req.body.url[versionNum]) {
                                     if (game.revisionHistory.revisions[i].url != req.body.url[versionNum]) {
                                         game.revisionHistory.revisions[i].url = req.body.url[versionNum];
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                }
+                            }
+                            if (req.body.deactivate) {
+                                if (req.body.deactivate[versionNum]) {
+                                    if (game.revisionHistory.revisions[i].isActive) {
+                                        game.revisionHistory.revisions[i].isActive = false;
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                } else {
+                                    if (!game.revisionHistory.revisions[i].isActive) {
+                                        game.revisionHistory.revisions[i].isActive = true;
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                }
+                            }
+                            if (req.body.destabilize) {
+                                if (req.body.destabilize[versionNum]) {
+                                    if (game.revisionHistory.revisions[i].isStable) {
+                                        game.revisionHistory.revisions[i].isStable = false;
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                } else {
+                                    if (!game.revisionHistory.revisions[i].isStable) {
+                                        game.revisionHistory.revisions[i].isStable = true;
                                         game.markModified('revisionHistory.revisions');
                                     }
                                 }

@@ -39,6 +39,12 @@ router.get("/details/:gameid", isAuth.isLoggedIn, userController.details);
 router.get("/edit/:gameid", isAuth.isLoggedIn, userController.edit);
 
 /********************\\\\\\\\\
+ * Get keybinds for game by name
+ /*******************/////////
+
+router.get('/keybinds/:gameName', isAuth.isLoggedIn, userController.keybinds);
+
+/********************\\\\\\\\\
  * Return the page for seeing
  * all the personal details
  * of a user

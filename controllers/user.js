@@ -158,10 +158,37 @@ exports.upload = (req, res, next) => {
                 firstRevision.url = req.body.gameUrlOrFileId
             }
 
-
-
             const revisionHistory = {
                 revisions : [firstRevision]
+            }
+
+            /**
+             * Keybinds
+             */
+
+            const keybinds = {
+                P1up : req.body.P1up,
+                P1left : req.body.P1left,
+                P1right : req.body.P1right,
+                P1down : req.body.P1down,
+                P1A : req.body.P1A,
+                P1B : req.body.P1B,
+                P1X : req.body.P1X,
+                P1Y : req.body.P1Y,
+                P1Z : req.body.P1Z,
+
+                P2up : req.body.P2up,
+                P2left : req.body.P2left,
+                P2right : req.body.P2right,
+                P2down : req.body.P2down,
+                P2A : req.body.P2A,
+                P2B : req.body.P2B,
+                P2X : req.body.P2X,
+                P2Y : req.body.P2Y,
+                P2Z : req.body.P2Z,
+
+                Start : req.body.KeybindStart,
+                Exit : req.body.KeybindExit
             }
 
             /**
@@ -172,7 +199,8 @@ exports.upload = (req, res, next) => {
                 creationDate: creationDate,
                 userId: user._id,
                 revisionHistory: revisionHistory,
-                isActive: true
+                isActive: true,
+                keybinds: keybinds
             })
 
             if (typeof req.file != "undefined") {
@@ -290,6 +318,35 @@ exports.upload = (req, res, next) => {
                             game.revisionHistory.revisions.push(newRevision)
                             game.markModified('revisionHistory.revisions');
                         }
+
+                        /**
+                         * Keybinds
+                         */
+            
+                        game.keybinds = {
+                            P1up : req.body.P1up,
+                            P1left : req.body.P1left,
+                            P1right : req.body.P1right,
+                            P1down : req.body.P1down,
+                            P1A : req.body.P1A,
+                            P1B : req.body.P1B,
+                            P1X : req.body.P1X,
+                            P1Y : req.body.P1Y,
+                            P1Z : req.body.P1Z,
+            
+                            P2up : req.body.P2up,
+                            P2left : req.body.P2left,
+                            P2right : req.body.P2right,
+                            P2down : req.body.P2down,
+                            P2A : req.body.P2A,
+                            P2B : req.body.P2B,
+                            P2X : req.body.P2X,
+                            P2Y : req.body.P2Y,
+                            P2Z : req.body.P2Z,
+
+                            Start : req.body.KeybindStart,
+                            Exit : req.body.KeybindExit
+                        }
         
                         /**
                          * Saving the game
@@ -354,6 +411,19 @@ exports.userDetails = (req, res, next) => {
         console.log(err)
     });
 
+}
+
+exports.keybinds = (req, res, next) => {
+    //load the game
+    Game.find()
+        .where('gameInfo.name').equals(req.params.gameName)
+        .where('isActive').equals(true)
+        .then(games => {
+            res.json(games[0].keybinds);
+        })
+        .catch(err => {
+            console.log(err)
+        });
 }
 
 exports.uploadUser = (req, res, next) => {

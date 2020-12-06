@@ -153,6 +153,135 @@
                         <input type="file" id="image" name="image" value=""> 
                         <p id="fileError" class="text-danger"></p>
                     <% } %>
+
+                    <!-- Keybinds -->
+                    <% var keyOptions = ['Up','Down','Left','Right','Enter','Escape','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'] %>
+                    <div id="keybinds" class="pb-5">
+                        <% for(let player of [1, 2]){ %>
+                            <div class="card">
+                                <div class="card-header" id="keybindHeader<%= player %>">
+                                    <h5 class="mb-0 text-center">
+                                        <button type="button" class="btn bg-transparent" data-toggle="collapse" data-target="#keybindCard<%= player %>" aria-controls="keybindCard<%= player %>">
+                                        Player <%= player %> Keybinds
+                                        </button>
+                                    </h5>
+                                </div>
+                            
+                                <div id="keybindCard<%= player %>" class="collapse" aria-labelledby="keybindHeader<%= player %>" data-parent="#keybinds">
+                                    <div class="card-body">
+                                        <div class="row" id="keybinds">
+                                            <div class="col">
+                                                <p class="text-center">
+                                                    <i class="fa fa-long-arrow-up"></i>
+                                                    <select name="P<%= player %>up" style="max-width: 48px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                        <% for(let keyOption of keyOptions) {
+                                                            var selected = (game.keybinds['P'+player+'up'] == keyOption) ? "selected" : "";%>
+                                                            <option <%= selected %>><%= keyOption %></option>
+                                                        <% } %>
+                                                    </select>
+                                                </p>
+                                                <p class="text-center">
+                                                    <i class="fa fa-long-arrow-left"></i>
+                                                    <select name="P<%= player %>left" style="max-width: 48px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                        <% for(let keyOption of keyOptions) {
+                                                            var selected = (game.keybinds['P'+player+'left'] == keyOption) ? "selected" : "";%>
+                                                            <option <%= selected %>><%= keyOption %></option>
+                                                        <% } %>
+                                                    </select>
+                                                    <i class="fa fa-long-arrow-right"></i>
+                                                    <select name="P<%= player %>right" style="max-width: 48px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                        <% for(let keyOption of keyOptions) {
+                                                            var selected = (game.keybinds['P'+player+'right'] == keyOption) ? "selected" : "";%>
+                                                            <option <%= selected %>><%= keyOption %></option>
+                                                        <% } %>
+                                                    </select>
+                                                </p>
+                                                <p class="text-center">
+                                                    <i class="fa fa-long-arrow-down"></i>
+                                                    <select name="P<%= player %>down" style="max-width: 48px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                        <% for(let keyOption of keyOptions) {
+                                                            var selected = (game.keybinds['P'+player+'down'] == keyOption) ? "selected" : "";%>
+                                                            <option <%= selected %>><%= keyOption %></option>
+                                                        <% } %>
+                                                    </select>
+                                                </p>
+                                            </div>
+                                            <div class="col">
+                                                <p class="text-center">
+                                                    <% for(let key of ['X', 'Y', 'Z']){ %>
+                                                        <%= key %>
+                                                        <select name="P<%= player %><%= key %>" style="max-width: 32px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                            <%for(let keyOption of keyOptions)
+                                                            {
+                                                                var selected = (game.keybinds['P'+player+key] == keyOption) ? "selected" : "";%>
+                                                                <option <%= selected %>><%= keyOption %></option>
+                                                            <% } %>
+                                                        </select>
+                                                    <% } %>
+                                                </p>
+                                                <p>
+                                                    A
+                                                    <select name="P<%= player %>A" style="max-width: 32px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                        <%for(let keyOption of keyOptions)
+                                                        {
+                                                            var selected = (game.keybinds['P'+player+'A'] == keyOption) ? "selected" : "";%>
+                                                            <option <%= selected %>><%= keyOption %></option>
+                                                        <% } %>
+                                                    </select>
+                                                </p>
+                                                <p class="ml-4">
+                                                    B
+                                                    <select name="P<%= player %>B" style="max-width: 32px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                        <%for(let keyOption of keyOptions)
+                                                        {
+                                                            var selected = (game.keybinds['P'+player+'B'] == keyOption) ? "selected" : "";%>
+                                                            <option <%= selected %>><%= keyOption %></option>
+                                                        <% } %>
+                                                    </select>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %> <!-- End Keybinds -->
+                        <div class="card">
+                            <div class="card-header" id="keybindHeaderOther">
+                                <h5 class="mb-0 text-center">
+                                    <button type="button" class="btn bg-transparent" data-toggle="collapse" data-target="#keybindCardOther" aria-controls="keybindCardOther">
+                                    Other Keybinds
+                                    </button>
+                                </h5>
+                            </div>
+                        
+                            <div id="keybindCardOther" class="collapse" aria-labelledby="keybindHeaderOther" data-parent="#keybinds">
+                                <div class="card-body">
+                                    <div class="row justify-content-around">
+                                        <div class="col">
+                                            <p class="text-right">
+                                                Start
+                                                <select name="KeybindStart" <%= !isEdit ? 'disabled' : '' %>>
+                                                    <% for(let keyOption of keyOptions) {
+                                                        var selected = (game.keybinds['Start'] == keyOption) ? "selected" : "";%>
+                                                        <option <%= selected %>><%= keyOption %></option>
+                                                    <% } %>
+                                                </select>
+                                            </p>
+                                        </div>
+                                        <div class="col">
+                                            Exit
+                                            <select name="KeybindExit" <%= !isEdit ? 'disabled' : '' %>>
+                                                <% for(let keyOption of keyOptions) {
+                                                    var selected = (game.keybinds['Exit'] == keyOption) ? "selected" : "";%>
+                                                    <option <%= selected %>><%= keyOption %></option>
+                                                <% } %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>

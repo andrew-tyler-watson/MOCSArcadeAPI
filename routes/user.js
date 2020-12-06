@@ -42,7 +42,7 @@ router.get("/edit/:gameid", isAuth.isLoggedIn, userController.edit);
  * Get keybinds for game by name
  /*******************/////////
 
-router.get('/keybinds/:gameName', isAuth.isLoggedIn, userController.keybinds);
+router.get('/keybinds/:gameName', userController.keybinds);
 
 /********************\\\\\\\\\
  * Return the page for seeing

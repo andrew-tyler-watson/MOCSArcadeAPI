@@ -7,6 +7,7 @@ const gameSchema = new Schema({
     gameInfo: {
         name: String,
         description: String,
+        title: String,
         /*icon:
         {
             data: Buffer, 

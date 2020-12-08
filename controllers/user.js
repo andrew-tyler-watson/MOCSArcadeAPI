@@ -134,7 +134,8 @@ exports.upload = (req, res, next) => {
 
             const gameInfo = {
                 name: req.body.gameName,
-                description: req.body.gameDescription
+                description: req.body.gameDescription,
+                title: req.body.title
             }
 
             /**
@@ -241,6 +242,7 @@ exports.upload = (req, res, next) => {
                          */
                         game.gameInfo.name = req.body.name;
                         game.gameInfo.description = req.body.description;
+                        game.gameInfo.title = req.body.title;
                         if (typeof req.file != "undefined") {
                            saveImage(game, req)
                         }
@@ -419,7 +421,10 @@ exports.keybinds = (req, res, next) => {
         .where('gameInfo.name').equals(req.params.gameName)
         .where('isActive').equals(true)
         .then(games => {
-            res.json(games[0].keybinds);
+            // Create editable copy of the keybinds dictionary
+            var ret = {...games[0].keybinds};
+            ret['Title'] = games[0].gameInfo.title;
+            res.json(ret);
         })
         .catch(err => {
             console.log(err)

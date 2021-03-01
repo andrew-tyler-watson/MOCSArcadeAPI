@@ -23,38 +23,129 @@
         <form action="/user/upload?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="col-6">
-                        <!-- <input type="hidden" name="_csrf" value=""> -->
-                        <input type="hidden" name="gameID" value="<%= game._id %>">
-                        <div class="py-1">
-                            <label for="name">Game Name:</label>
-                            <input type="text" class="form-control" name="name" id="name" value="<%= game.gameInfo.name %>" <%= !isEdit ? 'disabled' : '' %>>
-                        </div>
-                        <div class="py-1">
-                            <label for="description">Description:</label>
-                            <textarea rows="5" class="form-control" name="description" id="description" <%= !isEdit ? 'disabled' : '' %>><%= game.gameInfo.description %></textarea>
-                        </div>
+                    <!-- <input type="hidden" name="_csrf" value=""> -->
+                    <input type="hidden" name="gameID" value="<%= game._id %>">
+                    <div class="py-1">
+                        <label for="name">Game Name:</label>
+                        <input type="text" class="form-control" name="name" id="name" value="<%= game.gameInfo.name %>" <%= !isEdit ? 'disabled' : '' %>>
+                    </div>
+                    <div class="py-1">
+                        <label for="description">Description:</label>
+                        <textarea rows="5" class="form-control" name="description" id="description" <%= !isEdit ? 'disabled' : '' %>><%= game.gameInfo.description %></textarea>
+                    </div>
+
+                    <!-- Version list -->
+                    <div id="accordion" class="py-1">
+                        <label>Versions:</label>
+                        <% for(let version of game.revisionHistory.revisions){ %>
+                            <% if(version.isActive || isEdit) { %>
+                                <div class="card">
+                                    <div class="card-header" id="heading<%= version.version %>">
+                                        <h5 class="mb-0 form-row justify-content-between">
+                                            <div class="col">
+                                                <button type="button" class="btn bg-transparent" data-toggle="collapse"
+                                                        data-target="#collapse<%= version.version %>" aria-expanded="true"
+                                                        aria-controls="collapse<%= version.version %>">
+                                                    <%= version.version %><%= version.isStable ? '' : ' - unstable' %>
+                                                </button>
+                                            </div>
+
+                                            <% if(isEdit) { %>
+                                                <div class="col-auto">
+                                                    <div class="btn-group-toggle" data-toggle="buttons">
+                                                        <label class="btn btn-primary btn-checkbox-toggle <%= !version.isActive ? 'active' : '' %>">
+                                                            <input type="checkbox" autocomplete="off" value="true" name="deactivate[<%= version.version %>]" <%= !version.isActive ? 'checked' : '' %>>Active
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="btn-group-toggle" data-toggle="buttons">
+                                                        <label class="btn btn-success btn-checkbox-toggle <%= !version.isStable ? 'active' : '' %>">
+                                                            <input type="checkbox" autocomplete="off" value="true" name="destabilize[<%= version.version %>]" <%= !version.isStable ? 'checked' : '' %>>Stable
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            <% } %>
+
+                                            <!-- Download button: Cannot be a form within another form, so use javascript to dynamically download -->
+                                            <div class="col-auto">
+                                                <button type="button" class="btn btn-primary" <%= isEdit ? 'disabled' : '' %>>
+                                                    <i class="fa fa-download"></i>
+                                                </button>
+                                            </div>
+                                        </h5>
+                                    </div>
+                                    <div id="collapse<%= version.version %>" class="collapse" aria-labelledby="heading<%= version.version %>" data-parent="#accordion">
+                                        <div class="card-body">
+                                            <% if(version.isHttpDownload) { %>
+                                                <h5>Http Download</h5>
+                                                <div class="py-1">
+                                                    <label for="url<%= version.version %>">URL:</label>
+                                                    <input type="text" class="form-control" name="url[<%= version.version %>]" id="url<%= version.version %>" value="<%= version.url %>" <%= !isEdit ? 'disabled' : '' %>>
+                                                </div>
+                                            <% } else { %>
+                                                <h5>Google Drive Download</h5>
+                                                <div class="py-1">
+                                                    <label for="fileId<%= version.version %>">File ID:</label>
+                                                    <input type="text" class="form-control" name="fileId[<%= version.version %>]" id="fileId<%= version.version %>" value="<%= version.fileId %>" <%= !isEdit ? 'disabled' : '' %>>
+                                                </div>
+                                            <% } %>
+                                            <div class="py-1">
+                                                <label for="releaseNotes<%= version.version %>">Release Notes:</label>
+                                                <textarea rows="2" class="form-control" name="releaseNotes[<%= version.version %>]" id="releaseNotes<%= version.version %>" <%= !isEdit ? 'disabled' : '' %>><%= version.releaseNotes %></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } %>
+                        <% } %>
+                        <!-- Adding a new version in the edit page -->
                         <% if(isEdit) { %>
-                            <div class="py-2">
-                                <button type="submit" class="btn btn-primary">Save</button>
-                                <a class="btn btn-primary" href="/user/details/<%= game._id %>">Cancel</a>
+                            <div class="card">
+                                <button type="button" class="form-control btn btn-secondary" data-toggle="collapse"
+                                        data-target="#collapseNew" aria-expanded="true"
+                                        aria-controls="collapseNew">
+                                    Add New Version
+                                </button>
+                                <div id="collapseNew" class="collapse" data-parent="#accordion">
+                                    <div class="card-body">
+                                        <div class="py-1">
+                                            <label for="versionHostNew">File ID:</label>
+                                            <select class="form-control" name="newVersionHost" id="versionHostNew">
+                                                <option>Http Download</option>
+                                                <option>Google Drive Download</option>
+                                            </select>
+                                        </div>
+                                        <div class="py-1">
+                                            <label for="versionNew">Version Number:</label>
+                                            <input type="text" class="form-control" name="newVersionName" id="versionNew">
+                                        </div>
+                                        <div class="py-1">
+                                            <label for="fileIdNew">Http Url or Google Drive File ID:</label>
+                                            <input type="text" class="form-control" name="newVersionURL" id="fileIdNew">
+                                        </div>
+                                        <div class="py-1">
+                                            <label for="releaseNotesNew">Release Notes:</label>
+                                            <textarea rows="2" class="form-control" name="newVersionNotes" id="releaseNotesNew"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         <% } %>
+                    </div>
+                    <% if(isEdit) { %>
+                        <div class="py-1">
+                            <label for="title">Game Window Title:</label>
+                            <input type="text" class="form-control" name="title" id="title" value="<%= game.gameInfo.title %>">
+                            <small>The window title is metadata for the Mocs Arcade application. The window's title is needed so the opened game's window can be found when opened. Without this, the application won't be able to focus the window, apply keybinds or reopen the game-select menu when this game has closed</small>
+                        </div>
+                        <div class="py-2">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a class="btn btn-primary" href="/user/details/<%= game._id %>">Cancel</a>
+                        </div>
+                    <% } %>
                 </div>
                 <div class="col-6">
-                    <!-- Download button: Cannot be a form within another form, so use javascript to dynamically download -->
-                    <div class="form-row my-3">
-                        <div class="col-8">
-                            <select class="form-control">
-                                <% for(let version of game.revisionHistory.revisions){ %>
-                                    <option><%= version.version %></option>
-                                <% } %>
-                            </select>
-                        </div>
-                        <div class="col-4">
-                            <button type="button" class="btn btn-primary form-control" <%= isEdit ? 'disabled' : '' %>>Download</button>
-                        </div>
-                    </div>
-                    
                     <% if(typeof game.gameInfo.gameplayPreview.data != "undefined") { %>
                         <img class="w-100"
                             src="data:image/<%=game.gameInfo.gameplayPreview.contentType%>;base64, 
@@ -67,6 +158,135 @@
                         <input type="file" id="image" name="image" value=""> 
                         <p id="fileError" class="text-danger"></p>
                     <% } %>
+
+                    <!-- Keybinds -->
+                    <% var keyOptions = ['Up','Down','Left','Right','Enter','Escape','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'] %>
+                    <div id="keybinds" class="pb-5">
+                        <% for(let player of [1, 2]){ %>
+                            <div class="card">
+                                <div class="card-header" id="keybindHeader<%= player %>">
+                                    <h5 class="mb-0 text-center">
+                                        <button type="button" class="btn bg-transparent" data-toggle="collapse" data-target="#keybindCard<%= player %>" aria-controls="keybindCard<%= player %>">
+                                        Player <%= player %> Keybinds
+                                        </button>
+                                    </h5>
+                                </div>
+                            
+                                <div id="keybindCard<%= player %>" class="collapse" aria-labelledby="keybindHeader<%= player %>" data-parent="#keybinds">
+                                    <div class="card-body">
+                                        <div class="row" id="keybinds">
+                                            <div class="col">
+                                                <p class="text-center">
+                                                    <i class="fa fa-long-arrow-up"></i>
+                                                    <select name="P<%= player %>up" style="max-width: 48px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                        <% for(let keyOption of keyOptions) {
+                                                            var selected = (game.keybinds['P'+player+'up'] == keyOption) ? "selected" : "";%>
+                                                            <option <%= selected %>><%= keyOption %></option>
+                                                        <% } %>
+                                                    </select>
+                                                </p>
+                                                <p class="text-center">
+                                                    <i class="fa fa-long-arrow-left"></i>
+                                                    <select name="P<%= player %>left" style="max-width: 48px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                        <% for(let keyOption of keyOptions) {
+                                                            var selected = (game.keybinds['P'+player+'left'] == keyOption) ? "selected" : "";%>
+                                                            <option <%= selected %>><%= keyOption %></option>
+                                                        <% } %>
+                                                    </select>
+                                                    <i class="fa fa-long-arrow-right"></i>
+                                                    <select name="P<%= player %>right" style="max-width: 48px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                        <% for(let keyOption of keyOptions) {
+                                                            var selected = (game.keybinds['P'+player+'right'] == keyOption) ? "selected" : "";%>
+                                                            <option <%= selected %>><%= keyOption %></option>
+                                                        <% } %>
+                                                    </select>
+                                                </p>
+                                                <p class="text-center">
+                                                    <i class="fa fa-long-arrow-down"></i>
+                                                    <select name="P<%= player %>down" style="max-width: 48px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                        <% for(let keyOption of keyOptions) {
+                                                            var selected = (game.keybinds['P'+player+'down'] == keyOption) ? "selected" : "";%>
+                                                            <option <%= selected %>><%= keyOption %></option>
+                                                        <% } %>
+                                                    </select>
+                                                </p>
+                                            </div>
+                                            <div class="col">
+                                                <p class="text-center">
+                                                    <% for(let key of ['X', 'Y', 'Z']){ %>
+                                                        <%= key %>
+                                                        <select name="P<%= player %><%= key %>" style="max-width: 32px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                            <%for(let keyOption of keyOptions)
+                                                            {
+                                                                var selected = (game.keybinds['P'+player+key] == keyOption) ? "selected" : "";%>
+                                                                <option <%= selected %>><%= keyOption %></option>
+                                                            <% } %>
+                                                        </select>
+                                                    <% } %>
+                                                </p>
+                                                <p>
+                                                    A
+                                                    <select name="P<%= player %>A" style="max-width: 32px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                        <%for(let keyOption of keyOptions)
+                                                        {
+                                                            var selected = (game.keybinds['P'+player+'A'] == keyOption) ? "selected" : "";%>
+                                                            <option <%= selected %>><%= keyOption %></option>
+                                                        <% } %>
+                                                    </select>
+                                                </p>
+                                                <p class="ml-4">
+                                                    B
+                                                    <select name="P<%= player %>B" style="max-width: 32px;" <%= !isEdit ? 'disabled' : '' %>>
+                                                        <%for(let keyOption of keyOptions)
+                                                        {
+                                                            var selected = (game.keybinds['P'+player+'B'] == keyOption) ? "selected" : "";%>
+                                                            <option <%= selected %>><%= keyOption %></option>
+                                                        <% } %>
+                                                    </select>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %> <!-- End Keybinds -->
+                        <div class="card">
+                            <div class="card-header" id="keybindHeaderOther">
+                                <h5 class="mb-0 text-center">
+                                    <button type="button" class="btn bg-transparent" data-toggle="collapse" data-target="#keybindCardOther" aria-controls="keybindCardOther">
+                                    Other Keybinds
+                                    </button>
+                                </h5>
+                            </div>
+                        
+                            <div id="keybindCardOther" class="collapse" aria-labelledby="keybindHeaderOther" data-parent="#keybinds">
+                                <div class="card-body">
+                                    <div class="row justify-content-around">
+                                        <div class="col">
+                                            <p class="text-right">
+                                                Start
+                                                <select name="KeybindStart" <%= !isEdit ? 'disabled' : '' %>>
+                                                    <% for(let keyOption of keyOptions) {
+                                                        var selected = (game.keybinds['Start'] == keyOption) ? "selected" : "";%>
+                                                        <option <%= selected %>><%= keyOption %></option>
+                                                    <% } %>
+                                                </select>
+                                            </p>
+                                        </div>
+                                        <div class="col">
+                                            Exit
+                                            <select name="KeybindExit" <%= !isEdit ? 'disabled' : '' %>>
+                                                <% for(let keyOption of keyOptions) {
+                                                    var selected = (game.keybinds['Exit'] == keyOption) ? "selected" : "";%>
+                                                    <option <%= selected %>><%= keyOption %></option>
+                                                <% } %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -74,12 +294,12 @@
 
     <script>
         $("#image").on("change", function (e) {
-            console.log("Oho!")
-            console.log(this.files[0].size)
-            if(this.files[0].size > 1500000){
+            if(this.files[0].size > 50000){
                 this.value = "";
-                $("#fileError").text("File is too large! Please decrease the size of your file to 1.5MB and try again!")
-            };
+                $("#fileError").text("File is too large! Please decrease the size of your file to 50KB and try again!")
+            } else {
+                $("#fileError").text("")
+            }
         })
     </script>
     

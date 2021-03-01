@@ -134,7 +134,8 @@ exports.upload = (req, res, next) => {
 
             const gameInfo = {
                 name: req.body.gameName,
-                description: req.body.gameDescription
+                description: req.body.gameDescription,
+                title: req.body.title
             }
 
             /**
@@ -158,13 +159,37 @@ exports.upload = (req, res, next) => {
                 firstRevision.url = req.body.gameUrlOrFileId
             }
 
-
-
             const revisionHistory = {
-                MinimumRequired: version,
-                LatestStableRelease: version,
-                TestRelease: version,
                 revisions : [firstRevision]
+            }
+
+            /**
+             * Keybinds
+             */
+
+            const keybinds = {
+                P1up : req.body.P1up,
+                P1left : req.body.P1left,
+                P1right : req.body.P1right,
+                P1down : req.body.P1down,
+                P1A : req.body.P1A,
+                P1B : req.body.P1B,
+                P1X : req.body.P1X,
+                P1Y : req.body.P1Y,
+                P1Z : req.body.P1Z,
+
+                P2up : req.body.P2up,
+                P2left : req.body.P2left,
+                P2right : req.body.P2right,
+                P2down : req.body.P2down,
+                P2A : req.body.P2A,
+                P2B : req.body.P2B,
+                P2X : req.body.P2X,
+                P2Y : req.body.P2Y,
+                P2Z : req.body.P2Z,
+
+                Start : req.body.KeybindStart,
+                Exit : req.body.KeybindExit
             }
 
             /**
@@ -175,7 +200,8 @@ exports.upload = (req, res, next) => {
                 creationDate: creationDate,
                 userId: user._id,
                 revisionHistory: revisionHistory,
-                isActive: true
+                isActive: true,
+                keybinds: keybinds
             })
 
             if (typeof req.file != "undefined") {
@@ -196,23 +222,137 @@ exports.upload = (req, res, next) => {
             Game.findOne({ name: req.body.name }).then(existingGame => {
                 Game.findOne({ _id: req.body.gameID }).then(game => {
                     // Test for user priveleges and name uniqueness 
-                    if(existingGame != null && existingGame._id.toString() != game._id.toString()) {
-                        // Error for attempting to edit/create a game of the same name
+                    if (existingGame != null && existingGame._id.toString() != game._id.toString()) {
+                        /**
+                         * Error for attempting to edit/create a game of the same name
+                         */
                         req.flash('uploadError', 'This game name is taken, please choose another')
                         res.redirect('/user/details/' + game._id.toString());
                     }
-                    else if(game.userId.toString() != user._id.toString() && !user.isAdmin) {
+                    else if (game.userId.toString() != user._id.toString() && !user.isAdmin) {
+                        /**
+                         * Error for attempting to edit/create a game you don't own
+                         */
                         req.flash('uploadError', 'You don\'t have proper permissions to update this game')
                         res.redirect('/user/details/' + game._id.toString());
                     }
                     else {
-                        // Edit exising game
+                        /**
+                         * Editting game data
+                         */
                         game.gameInfo.name = req.body.name;
                         game.gameInfo.description = req.body.description;
+                        game.gameInfo.title = req.body.title;
                         if (typeof req.file != "undefined") {
                            saveImage(game, req)
                         }
+
+                        /**
+                         * Editting version data
+                         */
+                        for (i = 0; i < game.revisionHistory.revisions.length; i++) {
+                            var versionNum = game.revisionHistory.revisions[i].version;
+                            if (game.revisionHistory.revisions[i].releaseNotes != req.body.releaseNotes[versionNum]) {
+                                game.revisionHistory.revisions[i].releaseNotes = req.body.releaseNotes[versionNum];
+                                game.markModified('revisionHistory.revisions');
+                            }
+                            if (req.body.fileId) {
+                                if (req.body.fileId[versionNum]) {
+                                    if (game.revisionHistory.revisions[i].fileId != req.body.fileId[versionNum]) {
+                                        game.revisionHistory.revisions[i].fileId = req.body.fileId[versionNum];
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                }
+                            }
+                            if (req.body.url) {
+                                if (req.body.url[versionNum]) {
+                                    if (game.revisionHistory.revisions[i].url != req.body.url[versionNum]) {
+                                        game.revisionHistory.revisions[i].url = req.body.url[versionNum];
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                }
+                            }
+                            if (req.body.deactivate) {
+                                if (req.body.deactivate[versionNum]) {
+                                    if (game.revisionHistory.revisions[i].isActive) {
+                                        game.revisionHistory.revisions[i].isActive = false;
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                } else {
+                                    if (!game.revisionHistory.revisions[i].isActive) {
+                                        game.revisionHistory.revisions[i].isActive = true;
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                }
+                            }
+                            if (req.body.destabilize) {
+                                if (req.body.destabilize[versionNum]) {
+                                    if (game.revisionHistory.revisions[i].isStable) {
+                                        game.revisionHistory.revisions[i].isStable = false;
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                } else {
+                                    if (!game.revisionHistory.revisions[i].isStable) {
+                                        game.revisionHistory.revisions[i].isStable = true;
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                }
+                            }
+                        }
+
+                        /**
+                         * Adding new version
+                         */
+                        if (req.body.newVersionName) {
+                            var newRevision = {
+                                releaseNotes: req.body.newVersionNotes,
+                                isActive: true,
+                                version:  req.body.newVersionName
+                            }
+                            if(req.body.newVersionHost.toLowerCase() === "google drive download"){
+                                newRevision.isGoogleDriveDownload = true
+                                newRevision.fileId = req.body.newVersionURL
+                            }
+                            else{
+                                newRevision.isHttpDownload = true
+                                newRevision.url = req.body.newVersionURL
+                            }
+                            game.revisionHistory.revisions.push(newRevision)
+                            game.markModified('revisionHistory.revisions');
+                        }
+
+                        /**
+                         * Keybinds
+                         */
+            
+                        game.keybinds = {
+                            P1up : req.body.P1up,
+                            P1left : req.body.P1left,
+                            P1right : req.body.P1right,
+                            P1down : req.body.P1down,
+                            P1A : req.body.P1A,
+                            P1B : req.body.P1B,
+                            P1X : req.body.P1X,
+                            P1Y : req.body.P1Y,
+                            P1Z : req.body.P1Z,
+            
+                            P2up : req.body.P2up,
+                            P2left : req.body.P2left,
+                            P2right : req.body.P2right,
+                            P2down : req.body.P2down,
+                            P2A : req.body.P2A,
+                            P2B : req.body.P2B,
+                            P2X : req.body.P2X,
+                            P2Y : req.body.P2Y,
+                            P2Z : req.body.P2Z,
+
+                            Start : req.body.KeybindStart,
+                            Exit : req.body.KeybindExit
+                        }
         
+                        /**
+                         * Saving the game
+                         */
                         game
                             .save()
                             .then(result => {
@@ -273,6 +413,22 @@ exports.userDetails = (req, res, next) => {
         console.log(err)
     });
 
+}
+
+exports.keybinds = (req, res, next) => {
+    //load the game
+    Game.find()
+        .where('gameInfo.name').equals(req.params.gameName)
+        .where('isActive').equals(true)
+        .then(games => {
+            // Create editable copy of the keybinds dictionary
+            var ret = {...games[0].keybinds};
+            ret['Title'] = games[0].gameInfo.title;
+            res.json(ret);
+        })
+        .catch(err => {
+            console.log(err)
+        });
 }
 
 exports.uploadUser = (req, res, next) => {

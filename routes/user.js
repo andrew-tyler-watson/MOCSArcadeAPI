@@ -39,6 +39,12 @@ router.get("/details/:gameid", isAuth.isLoggedIn, userController.details);
 router.get("/edit/:gameid", isAuth.isLoggedIn, userController.edit);
 
 /********************\\\\\\\\\
+ * Get keybinds for game by name
+ /*******************/////////
+
+router.get('/keybinds/:gameName', userController.keybinds);
+
+/********************\\\\\\\\\
  * Return the page for seeing
  * all the personal details
  * of a user
@@ -72,7 +78,7 @@ var storage = multer.diskStorage({
     filename: (req, file, cb) => { 
         cb(null, file.fieldname + '-' + Date.now()) 
     } ,
-    limits: { fileSize: 1500000 }
+    limits: { fileSize: 50000 }
 }); 
   
 var upload = multer({ storage: storage }); 

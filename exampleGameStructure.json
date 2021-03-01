@@ -1,0 +1,43 @@
+{
+    "game" : {
+        "game-info" : {
+            "name" : "game name",
+            "description" : "lorem ipsum da dada dada",
+            "gameplayPreview" : "a;sldkfja;ldkfj",
+            "icon" : "a;sldkfja;ldkfj"
+        },
+        "Revisions" : {
+            "AuthorizedUsers" : [
+                "Andrew",//this would probably be our username with the site
+                "Connor"
+            ],
+            "LatestStableRelease" : "1.0.2.1",
+            "Revisions" : {
+                "1.0.0.1" : {
+                    "IsGoogleDriveDownload": "true",
+                    "FileId" : "true",
+                    "Release Notes" : "added a new level",
+                    "IsActive" : "true"
+                },
+                "1.0.1.1" : {
+                    "IsHttpDownload": "true",
+                    "Url" : "http://mocsarcade.filehost.com/Andrew/game/1.0.1.1",
+                    "Release Notes" : "added a new level",
+                    "IsActive" : "false"
+                },
+                "1.0.2.1" : {
+                    "IsHttpDownload": "true",
+                    "Url" : "http://mocsarcade.filehost.com/Andrew/game/1.0.2.1",
+                    "Release Notes" : "added a new level",
+                    "IsActive" : "true"
+                },
+                "2.0.0.1" : {
+                    "IsGoogleDriveDownload": "true",
+                    "FileId" : "true",
+                    "Release Notes" : "added a new level",
+                    "IsActive" : "false"
+                }
+            }
+        }
+    }
+}

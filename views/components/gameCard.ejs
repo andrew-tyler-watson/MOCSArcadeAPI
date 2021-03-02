@@ -9,7 +9,7 @@
             <p class="text-secondary">
                 Created <%= new Date(game.creationDate).getMonth() + 1 + "/" + 
                             new Date(game.creationDate).getDate() + "/" + 
-                            new Date(game.creationDate).getYear()%>
+                            new Date(game.creationDate).getFullYear()%>
             </p>
             <p class="description">
                 <%= game.gameInfo.description%>
@@ -41,7 +41,9 @@
     </div>
     <div class="collapse" id="<%= game.gameInfo.name %>RevisionsCollapsePanel">
         <%  for(let revision of game.revisionHistory.revisions){ %>
-            <%- include('./revisionCard.ejs',  {gameInfo: game.gameInfo, revision: revision}) %>
+            <% if(revision.isActive) { %>
+                <%- include('./revisionCard.ejs',  {gameInfo: game.gameInfo, revision: revision}) %>
+            <% } %>
         <% } %>
     </div>
 </div>

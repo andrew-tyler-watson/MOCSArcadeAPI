@@ -29,7 +29,19 @@ exports.download = (req, res, next) => {
                 res.status(410).send('No game with that name is available');
                 return;
             }
-            downloadGame(game, res, game.revisionHistory.revisions.length-1)
+            if(req.params.versionName) {
+                var versionIndex = game.revisionHistory.revisions.findIndex(
+                    (element) => element.version == req.params.versionName
+                )
+                if(versionIndex == -1) {
+                    res.status(404).send('Version not found');
+                } else {
+                    downloadGame(game, res, versionIndex, false)
+                }
+            } else {
+                // Download the latest reachable version
+                downloadGame(game, res, game.revisionHistory.revisions.length-1)
+            }
         })
         .catch(err => {
             console.log(err)
@@ -38,7 +50,7 @@ exports.download = (req, res, next) => {
 
 // Recursive function that downloads versions from newest to oldest
 // Starting version index should be the index of the last revision (revisions.length-1)
-function downloadGame(game, res, versionIndex){
+function downloadGame(game, res, versionIndex, recurse=true){
     if(versionIndex < 0) {
         res.status(422).send('This game has no working version endpoints');
         return;
@@ -59,13 +71,21 @@ function downloadGame(game, res, versionIndex){
                 responseType: 'stream'
             })
             .then(function(response) {
+                res.setHeader('Content-disposition', 'attachment; filename=game.zip');
+                res.setHeader('Content-type', 'application/zip');
                 response.data.pipe(res);
             })
             .catch(function(response) {
                 // If request fails: Go to next revision type
-                downloadGame(game, res, versionIndex-1)
+                if(recurse)
+                    downloadGame(game, res, versionIndex-1)
+                else
+                    res.status(500).send('Requested version cannot be downloaded');
             })
     } else {
-        downloadGame(game, res, versionIndex-1)
+        if(recurse)
+            downloadGame(game, res, versionIndex-1)
+        else
+            res.status(500).send('Requested version is inactive')
     }
 }

@@ -219,7 +219,7 @@ exports.upload = (req, res, next) => {
         }
         else {
             // Edit game
-            Game.findOne({ name: req.body.name }).then(existingGame => {
+            Game.findOne({ 'gameInfo.name': req.body.name }).then(existingGame => {
                 Game.findOne({ _id: req.body.gameID }).then(game => {
                     // Test for user priveleges and name uniqueness 
                     if (existingGame != null && existingGame._id.toString() != game._id.toString()) {
@@ -409,22 +409,6 @@ exports.userDetails = (req, res, next) => {
         console.log(err)
     });
 
-}
-
-exports.keybinds = (req, res, next) => {
-    //load the game
-    Game.find()
-        .where('gameInfo.name').equals(req.params.gameName)
-        .where('isActive').equals(true)
-        .then(games => {
-            // Create editable copy of the keybinds dictionary
-            var ret = {...games[0].keybinds};
-            ret['Title'] = games[0].gameInfo.title;
-            res.json(ret);
-        })
-        .catch(err => {
-            console.log(err)
-        });
 }
 
 exports.uploadUser = (req, res, next) => {

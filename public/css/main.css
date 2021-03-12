@@ -41,3 +41,9 @@
     background-color: #545b62;
     border-color: #4e555b;
 }
+
+img {
+    margin: 20px;
+    width: 75%;
+    height: auto;
+}

@@ -1,21 +1,24 @@
 const Game = require('../models/game')
+const User = require('../models/user')
 const mongoose = require('mongoose')
 
 
 exports.games = (req, res, next) => {
-
-    var games = [];
-
     Game.find()
-    .then(
-        (games) =>{
-        
-            res.send(games)
-            console.log(games)
-        }
-    )
-    .catch(err => {
-        console.log(err)
-    })
+        .populate('userId')
+        .then(
+            (games) => {
+                games.forEach(
+                    game => { 
+                        game = game.gameInfo.gameplayPreview = {}
+                    }
+                    
+                    )
+                res.send(games)
+            }
+        )
+        .catch(err => {
+            console.log(err)
+        })
 
 }

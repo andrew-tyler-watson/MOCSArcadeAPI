@@ -8,7 +8,6 @@
     <div class="form-group">
         <label for="gameDescription">Description</label>
         <textarea type="text" class="form-control" id="gameDescription" name="gameDescription" rows="4" required></textarea>
-        <small>Game names must be unique</small>
     </div>
     
     <div class="form-group">
@@ -58,6 +57,13 @@
         <label for="gameUrlOrFileId">Http Url or Google Drive File ID:</label>
         <input type="text" class="form-control" id="gameUrlOrFileId" name="gameUrlOrFileId" required>
     </div>
+
+    <div class="form-group">
+        <label for="gameTitle">Game Window Title:</label>
+        <input type="text" class="form-control" name="title" id="gameTitle">
+        <small>The window title is metadata for the Mocs Arcade application. The window's title is needed so the opened game's window can be found when opened. Without this, the application won't be able to focus the window, apply keybinds or reopen the game-select menu when this game has closed</small>
+    </div>
+
     <button type="submit" class="btn btn-success" >Submit</button>
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
 

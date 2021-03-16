@@ -13,8 +13,12 @@ function deleteGame(gameName)
     document.getElementById(gameName+'DeleteForm').submit()
 }
 function fillDeleteModal(gameName, gameDescription){
-    document.getElementById('deleteModalGameName').textContent = gameName;
-    document.getElementById("deleteModalGameDescription").textContent = gameDescription;
+    $('#deleteModalGameName').val(gameName);
+    $("#deleteModalGameDescription").val(gameDescription);
+    $("#gameNameDisplay").html(gameName)
+}
+function submitGameDeleteForm(){
+    deleteGame($("#deleteModalGameName").val())
 }
 
 function approveGame(gameName){

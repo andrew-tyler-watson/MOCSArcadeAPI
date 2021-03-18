@@ -1,14 +1,14 @@
 <%- include('../includes/header.ejs') %>
 <%- include('../includes/nav.ejs', {active: "MyGames"}) %>
 <%- include('../components/gameDeleteModal.ejs') %>
-<% if(user.isAuthorized) { %>
+<% if(user.isAuthenticated) { %>
     <%- include('../components/addGameModal.ejs') %>
 <% } %>
 
     <div class="container">
         <div class="col text-center py-5">
             <h1 class="text-center">Welcome <%= user.firstName + " " + user.lastName%></h1>
-            <% if(user.isAuthorized) { %>
+            <% if(user.isAuthenticated) { %>
                 <button type="button" class="btn btn-success content-center my-3" data-toggle="modal" data-target="#gameAddModal">Add New Game</button>
             <% } %>
         </div>

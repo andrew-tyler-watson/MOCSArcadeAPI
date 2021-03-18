@@ -136,7 +136,6 @@ exports.postRegister = (req, res, next) => {
                     lastName: lastName,
                     email: email,
                     isAdmin: false,
-                    isAuthorized: false,
                     authenticationCode: authUID
                 })
                 // Attempt to send verification email

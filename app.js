@@ -147,6 +147,7 @@ const adminRoutes = require('./routes/admin')
 const loginRoutes = require('./routes/login')
 const userRoutes = require('./routes/user')
 const gameRoutes = require('./routes/game')
+const apiRoutes = require('./routes/api')
 
 /**
  * Now that we have added all of our middle ware (largely packages)
@@ -158,6 +159,7 @@ app.use("/admin", adminRoutes);
 app.use("/login", loginRoutes);
 app.use("/user", userRoutes);
 app.use("/game", gameRoutes);
+app.use("/api", apiRoutes)
 
 /**
  * This is a global redirect pretty much.

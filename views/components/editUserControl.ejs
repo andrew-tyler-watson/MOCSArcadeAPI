@@ -1,7 +1,29 @@
-<div class="ui divided items">
-    <% if(users != null){
-    for(let user of users){ %>
-    <%- include('./userCard.ejs',  {user: user}) %>
-    <hr>
-    <% }} %>
+<div class="mb-4 w-100">
+    <% if(users != null){ %>
+        <table id="gamesTable" class="table">
+            <thead>
+                <tr>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let user of users){ %>
+                    <tr>
+                        <td>
+                            <%- include('./userCard.ejs',  {user: user}) %>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    <% } %>
+
+    <script>
+        var table = $('#gamesTable').DataTable({
+            "info": false,
+            "drawCallback": function( settings ) {
+                $("#gamesTable thead").remove();
+            }       
+        });
+    </script>
 </div>

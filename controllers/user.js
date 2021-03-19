@@ -91,8 +91,9 @@ exports.details = (req, res, next) => {
     //load the current user
     User.findOne({ username: req.session.username }).then(
         user => {
-            Game.findOne({ _id: req.params.gameid }).then(
-                game => {
+            Game.findOne({ _id: req.params.gameid })
+                .populate('userId')
+                .then(game => {
                     let message = req.flash('uploadError');
                     if(message.length > 0){
                         message = message[0]

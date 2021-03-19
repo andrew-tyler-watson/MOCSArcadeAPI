@@ -1,14 +1,16 @@
 <%- include('../includes/header.ejs') %>
-<% canEdit = !isEdit && (game.userId == user._id.toString() || user.isAdmin) %>
+<% canEdit = !isEdit && ((game.userId && game.userId._id == user._id.toString()) || user.isAdmin) %>
 <%- include('../includes/nav.ejs', {active: "Games", editGameID: (canEdit ? game._id : undefined)}) %>
 
     <div class="container">
-        <div class="author-tab py-1">
-            <a class="author-box p-1" href="/user/user/<%= user._id %>">
-                <i class="fa fa-user"></i>
-                <%= user.username %> (<%= user.firstName %> <%= user.lastName %>)
-            </a>
-        </div>
+        <% if(game.userId) { %>
+            <div class="author-tab py-1">
+                <a class="author-box p-1" href="/user/user/<%= game.userId._id %>">
+                    <i class="fa fa-user"></i>
+                    <%= game.userId.username %> (<%= game.userId.firstName %> <%= game.userId.lastName %>)
+                </a>
+            </div>
+        <% } %>
 
         <div class="py-5">
             <h1 class="text-center"><%= game.gameInfo.name %></h1>

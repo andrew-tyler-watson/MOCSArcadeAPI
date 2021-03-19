@@ -12,6 +12,27 @@ function saveImage(game, req){
     }
 }
 
+/**
+ * Email system for sending email authentication emails
+ */
+ const nodemailer = require('nodemailer');
+
+ let transporter = null
+ if(process.env.NODEMAILER_EMAIL){
+     transporter = nodemailer.createTransport({
+     service: "gmail",
+     auth: {
+         type: 'OAuth2',
+         user: process.env.NODEMAILER_EMAIL,
+         clientId: process.env.CLIENT_ID,
+         clientSecret: process.env.CLIENT_SECRET,
+         refreshToken: process.env.REFRESH_TOKEN,
+         accessToken: process.env.ACCESS_TOKEN,
+         expires: Number.parseInt(process.env.TOKEN_EXPIRE, 10),
+     },
+     });
+ }
+
 exports.allGames = (req, res, next) => {
     //load the current user
     User.findOne({ username: req.session.username }).then(
@@ -207,12 +228,47 @@ exports.upload = (req, res, next) => {
 
             if (typeof req.file != "undefined") {
                 saveImage(newGame, req)
-             }
+            }
 
             newGame
                 .save()
                 .then(result => {
-                    res.redirect('/user/details/' + newGame._id.toString());
+                    User.find()
+                        .where('isAdmin').equals(true)
+                        .then(users => {
+                            var emails = [];
+                            users.forEach(function(adminUser){
+                                emails.push(adminUser.email);
+                            });
+
+                            // then send email to admin
+                            let message = {
+                                from: process.env.NODEMAILER_EMAIL,
+                                to: emails,
+                                subject: "MocsArcade: New game to review",
+                                html: `
+                                        <p>
+                                            Admin, <br><br>
+                                            A new game has been added to the MocsArcade by ${user.username}
+                                        </p>
+                                        <p>
+                                            ${newGame.gameInfo.name}: ${newGame.gameInfo.description}
+                                        </p>
+                                    `
+                            };
+                            // Attempt to send email to admin
+                            if (transporter != null) {
+                                transporter
+                                    .sendMail(message)
+                                    .then(() => {
+                                        res.redirect('/user/details/' + newGame._id.toString());
+                                    })
+                                    .catch((error) => {
+                                        console.error(error)
+                                        res.redirect('/user/details/' + newGame._id.toString());
+                                    });
+                            }
+                        })
                 })
                 .catch(err => {
                     console.log(err)

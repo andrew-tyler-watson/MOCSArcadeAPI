@@ -1,4 +1,29 @@
-    <% if(games != null){
-    for(let game of games){ %>
-    <%- include('./gameCard.ejs',  {user: user, game: game, adminView: adminView}) %>
-    <% }} %>
+<div class="mb-4">
+    <% if(games != null){ %>
+        <table id="gamesTable" class="table">
+            <thead>
+                <tr>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let game of games){ %>
+                    <tr>
+                        <td>
+                            <%- include('./gameCard.ejs',  {user: user, game: game, adminView: adminView}) %>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    <% } %>
+
+    <script>
+        var table = $('#gamesTable').DataTable({
+            "info": false,
+            "drawCallback": function( settings ) {
+                $("#gamesTable thead").remove();
+            }       
+        });
+    </script>
+</div>

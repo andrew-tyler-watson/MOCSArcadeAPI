@@ -19,7 +19,7 @@ exports.allGames = (req, res, next) => {
             Game.find()
                 .where('isActive').equals(true)
                 .where('isApproved').equals(true)
-                .populate('userID')
+                .populate('userId')
                 .then(games => {
                     let message = req.flash('uploadError');
                     if(message.length > 0){

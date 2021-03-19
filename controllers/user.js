@@ -248,11 +248,13 @@ exports.upload = (req, res, next) => {
                                 subject: "MocsArcade: New game to review",
                                 html: `
                                         <p>
-                                            Admin, <br><br>
+                                            Admin,
+                                            <br><br>
                                             A new game has been added to the MocsArcade by ${user.username}
-                                        </p>
-                                        <p>
-                                            ${newGame.gameInfo.name}: ${newGame.gameInfo.description}
+                                            <br>
+                                            <b>Game name:</b> ${newGame.gameInfo.name}
+                                            <br>
+                                            <b>Description:</b> ${newGame.gameInfo.description}
                                         </p>
                                     `
                             };

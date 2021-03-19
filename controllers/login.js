@@ -123,9 +123,13 @@ exports.postRegister = (req, res, next) => {
                     to: email,
                     subject: "MocsArcade: Verify your email",
                     html: `
+                            <p>
+                            ${firstName},
+                            <br><br>
                             Thank you for joining the Mocs Arcade initiative! Click the link below to verify your email!
-                            
+                            <br><br>
                             https://mocsarcade.herokuapp.com/login/authenticate/${authUID}
+                            </p>
                         `
                 };
 

@@ -15,11 +15,6 @@
     </p>
     
     <% if(game.userId && game.userId._id.toString() === user._id.toString() || adminView){ %>
-        <form action="/user/delete" method="POST" id="<%= game.gameInfo.name%>DeleteForm">
-            <input type="hidden" name="_csrf" value="<%= csrfToken%>">
-            <input id="<%= game.gameInfo.name%>Input" type="hidden" value="<%= game._id %>" name="gameID">
-        </form>
-    
         <% if(adminView){ %>
             <form class="d-inline" id="<%= game.gameInfo.name%>IdApproveForm" <%= game.isApproved ? 'action=/admin/revoke' : 'action=/admin/approve' %> method="POST">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -31,7 +26,7 @@
                 <%= game.isApproved ? 'Revoke' : 'Approve' %>
             </button>
         <% } %>
-        <button type="button" class="btn btn-danger m-1" onclick="showDeleteModal('<%=game.gameInfo.name%>', '<%= game.gameInfo.description%>')">Delete</button>
+        <button type="button" class="btn btn-danger m-1" onclick="showDeleteModal('<%=game._id%>', '<%=game.gameInfo.name%>', '<%= game.gameInfo.description%>')">Delete</button>
         <button class="btn btn-primary" id="<%= game.gameInfo.name %>RevisionsCollapseButton" data-toggle="collapse" data-target="#<%= game.gameInfo.name %>RevisionsCollapsePanel">
             Revisions
         </button>

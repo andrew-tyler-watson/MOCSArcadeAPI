@@ -1,24 +1,11 @@
-function showDeleteModal(gameName, gameDescription){
-    fillDeleteModal(gameName, gameDescription)
-    $('#gameDeleteModal').modal({onApprove: function(event) {
-        $('#gameDeleteModal').modal({
-            transition: 'fade',
-            duration: 10000
-        }).modal('hide');
-        deleteGame(gameName);
-    }}).modal('show');
+function showDeleteModal(gameId, gameName, gameDescription){
+    fillDeleteModal(gameId, gameName, gameDescription)
+    $('#gameDeleteModal').modal('show');
 }
-function deleteGame(gameName)
-{
-    document.getElementById(gameName+'DeleteForm').submit()
-}
-function fillDeleteModal(gameName, gameDescription){
-    $('#deleteModalGameName').val(gameName);
+function fillDeleteModal(gameId, gameName, gameDescription){
+    $('#deleteModalGameID').val(gameId);
     $("#deleteModalGameDescription").val(gameDescription);
     $("#gameNameDisplay").html(gameName)
-}
-function submitGameDeleteForm(){
-    deleteGame($("#deleteModalGameName").val())
 }
 
 function approveGame(gameName){

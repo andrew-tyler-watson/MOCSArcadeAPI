@@ -427,8 +427,53 @@ exports.report = (req, res, next) => {
             report
                 .save()
                 .then(result => {
-                    req.flash('error', 'Report has been submitted. Thank you')
-                    return res.redirect('/game/details/' + req.body.gameId)
+                    User.find()
+                        .where('isAdmin').equals(true)
+                        .then(users => {
+                            var emails = [];
+                            users.forEach(function(adminUser){
+                                emails.push(adminUser.email);
+                            });
+
+                            // then send email to admin
+                            let message = {
+                                from: process.env.NODEMAILER_EMAIL,
+                                to: emails,
+                                subject: "MocsArcade: New game problem report",
+                                html: `
+                                        <p>
+                                            Admin,
+                                            <br><br>
+                                            A new report has been flagged on the MocsArcade for ${game.gameInfo.name}
+                                            <br><br>
+                                            <b>Game name:</b> ${game.gameInfo.name}
+                                            <br>
+                                            <b>Report type:</b> ${req.body.reportType}
+                                            <br>
+                                            <b>Version:</b> ${req.body.versionNumber}
+                                            <br>
+                                            <b>Description:</b> ${req.body.reportInfo}
+                                        </p>
+                                    `
+                            };
+                            // Attempt to send email to admin
+                            if (transporter != null) {
+                                transporter
+                                    .sendMail(message)
+                                    .then(() => {
+                                        req.flash('error', 'Report has been submitted. Thank you')
+                                        return res.redirect('/game/details/' + req.body.gameId)
+                                    })
+                                    .catch((error) => {
+                                        console.error(error)
+                                        req.flash('error', 'Report has been submitted. Thank you')
+                                        return res.redirect('/game/details/' + req.body.gameId)
+                                    });
+                            } else {
+                                req.flash('error', 'Report has been submitted. Thank you')
+                                return res.redirect('/game/details/' + req.body.gameId)
+                            }
+                        })
                 })
                 .catch(err => {
                     console.log(err)

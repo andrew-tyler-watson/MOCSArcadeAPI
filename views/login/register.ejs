@@ -16,34 +16,34 @@
     <div class="row justify-content-center">
       <div class="col-md-8 col-12">
         <% if(message) {%>
-          <div class="ui warning message">
-            <p><%= message%></p>
+          <div class="text-danger">
+            <p><%= message %></p>
           </div>
         <% } %> 
         <form action="/login/register" method="POST">
           <p class="mb-1 mt-3">Email</p>
           <div class="row">
             <div class="col pr-0">
-              <input class="form-control" type="text" id="username" name="username" placeholder="Email">
+              <input class="form-control" type="email" id="username" name="username" placeholder="Email" required>
             </div>
           </div>
       
           <p class="mb-1 mt-3">Name</p>
           <div class="row">
             <div class="col pr-0">
-              <input class="form-control" type="text" name="firstName" placeholder="First Name">
+              <input class="form-control" type="text" name="firstName" placeholder="First Name" required>
             </div>
             <div class="col pl-0">
-              <input class="form-control" type="text" name="lastName" placeholder="Last Name">
+              <input class="form-control" type="text" name="lastName" placeholder="Last Name" required>
             </div>
           </div>
     
           <p class="mb-1 mt-3">Password</p>
           <div class="row mx-1">
-            <input class="form-control" type="password" name="password" placeholder="Enter Password">
+            <input class="form-control" type="password" name="password" placeholder="Enter Password" required>
           </div>
           <div class="row mx-1">
-            <input class="form-control" type="password" name="password2" placeholder="Confirm Password">
+            <input class="form-control" type="password" name="password2" placeholder="Confirm Password" required>
           </div>
     
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">

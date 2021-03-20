@@ -1,28 +1,25 @@
-function showDeleteModal(gameName, gameDescription){
-    fillDeleteModal(gameName, gameDescription)
-    $('#gameDeleteModal').modal({onApprove: function(event) {
-        $('#gameDeleteModal').modal({
-            transition: 'fade',
-            duration: 10000
-        }).modal('hide');
-        deleteGame(gameName);
-    }}).modal('show');
+function showDeleteModal(gameId, gameName){
+    fillDeleteModal(gameId, gameName)
+    $('#gameDeleteModal').modal('show');
 }
-function deleteGame(gameName)
-{
-    document.getElementById(gameName+'DeleteForm').submit()
-}
-function fillDeleteModal(gameName, gameDescription){
-    $('#deleteModalGameName').val(gameName);
-    $("#deleteModalGameDescription").val(gameDescription);
+function fillDeleteModal(gameId, gameName){
+    $('#deleteModalGameID').val(gameId);
     $("#gameNameDisplay").html(gameName)
 }
-function submitGameDeleteForm(){
-    deleteGame($("#deleteModalGameName").val())
+
+function showReportModal(gameId, gameName, versionNumber){
+    fillReportModal(gameId, gameName, versionNumber)
+    $('#gameReportModal').modal('show');
+}
+function fillReportModal(gameId, gameName, versionNumber){
+    $('#ReportModalGameId').val(gameId);
+    $('#ReportModalVersionNumber').val(versionNumber);
+    $('#versionNumberDisplay').html(versionNumber);
+    $("#gameNameDisplay").html(gameName)
 }
 
 function approveGame(gameName){
-    $('#redirectTo').val(window.location.pathname)
+    $('.redirectTo').val(window.location.pathname)
     document.getElementById(gameName + 'IdApproveForm').submit()
 }
 

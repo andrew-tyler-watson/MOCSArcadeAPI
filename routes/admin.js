@@ -8,9 +8,7 @@ router.get("/editGames", isAuth.isLoggedIn, isAuth.isAdmin, adminController.getA
 
 router.get("/editUsers", isAuth.isLoggedIn, isAuth.isAdmin, adminController.getAdminEditUsers)
 
-router.post("/authorize", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postAuthorize)
-
-router.post("/deauthorize", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postDeauthorize)
+router.get("/viewReports", isAuth.isLoggedIn, isAuth.isAdmin, adminController.getAdminReportViewer)
 
 router.post("/demote", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postDemote)
 
@@ -21,5 +19,7 @@ router.post("/delete", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postDe
 router.post("/approve", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postApprove)
 
 router.post("/revoke", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postRevoke)
+
+router.post("/closeReport", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postCloseReport)
 
 module.exports = router;

@@ -1,16 +1,16 @@
 <div class="mb-4 w-100">
-    <% if(users != null){ %>
-        <table id="gamesTable" class="table">
+    <% if(reports != null){ %>
+        <table id="reportsTable" class="table">
             <thead>
                 <tr>
                     <td></td>
                 </tr>
             </thead>
             <tbody>
-                <% for(let user of users){ %>
+                <% for(let report of reports){ %>
                     <tr>
                         <td>
-                            <%- include('./userCard.ejs',  {user: user}) %>
+                            <%- include('./reportCard.ejs',  {user: user, report: report, adminView: adminView}) %>
                         </td>
                     </tr>
                 <% } %>
@@ -19,10 +19,10 @@
     <% } %>
 
     <script>
-        var table = $('#gamesTable').DataTable({
+        var table = $('#reportsTable').DataTable({
             "info": false,
             "drawCallback": function( settings ) {
-                $("#gamesTable thead").remove();
+                $("#reportsTable thead").remove();
             }       
         });
     </script>

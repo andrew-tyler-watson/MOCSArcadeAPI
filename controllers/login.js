@@ -97,7 +97,7 @@ exports.postRegister = (req, res, next) => {
     }
 
     if(req.body.password != req.body.password2){
-        req.flash('error', 'Password mismatch')
+        req.flash('error', 'Passwords do not match!')
         return res.redirect('/login/register')
     }
 
@@ -123,9 +123,13 @@ exports.postRegister = (req, res, next) => {
                     to: email,
                     subject: "MocsArcade: Verify your email",
                     html: `
+                            <p>
+                            ${firstName},
+                            <br><br>
                             Thank you for joining the Mocs Arcade initiative! Click the link below to verify your email!
-                            
+                            <br><br>
                             https://mocsarcade.herokuapp.com/login/authenticate/${authUID}
+                            </p>
                         `
                 };
 
@@ -136,7 +140,6 @@ exports.postRegister = (req, res, next) => {
                     lastName: lastName,
                     email: email,
                     isAdmin: false,
-                    isAuthorized: false,
                     authenticationCode: authUID
                 })
                 // Attempt to send verification email

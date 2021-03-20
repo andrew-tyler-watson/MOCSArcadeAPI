@@ -23,19 +23,6 @@
                 <button class="btn btn-success m-1" type="submit">Elevate</button>
             </form>
             <% } %>
-            <% if(!user.isAuthorized) { %>
-            <form class="d-inline" action="/admin/authorize" method="POST" id="<%= user.username%>MakeAdminForm">
-                <input type="hidden" value="<%= user.username %>" name="username">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button class="btn btn-success m-1" type="submit">Authorize</button>
-            </form>
-            <% } else { %>
-            <form class="d-inline" action="/admin/deauthorize" method="POST">
-                <input type="hidden" value="<%= user.username %>" name="username">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button class="btn btn-danger m-1" type="submit">Deauthorize</button>
-            </form>
-            <% } %>
             <form class="d-inline" action="/admin/delete" method="POST">
                 <input type="hidden" value="<%= user.username %>" name="username">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">

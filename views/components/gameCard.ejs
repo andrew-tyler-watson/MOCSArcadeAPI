@@ -1,44 +1,36 @@
-<div id="<%= game.gameInfo.name%>">
-    <div class="row justify-content-center py-3">
-        <div class="col">
-            <h3 class="mb-0">
-                <a href='/user/details/<%= game._id %>'>
-                    <%= game.gameInfo.name %>
-                </a>
-            </h3>
-            <p class="text-secondary">
-                Created <%= new Date(game.creationDate).getMonth() + 1 + "/" + 
-                            new Date(game.creationDate).getDate() + "/" + 
-                            new Date(game.creationDate).getFullYear()%>
-            </p>
-            <p class="description">
-                <%= game.gameInfo.description%>
-            </p>
-            
-            <% if(game.userId.toString() === user._id.toString() || adminView){ %>
-                <form action="/user/delete" method="POST" id="<%= game.gameInfo.name%>DeleteForm">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken%>">
-                    <input id="<%= game.gameInfo.name%>Input" type="hidden" value="<%= game._id %>" name="gameID">
-                </form>
-            
-                <% if(adminView){ %>
-                    <form class="d-inline" id="<%= game.gameInfo.name%>IdApproveForm" <%= game.isApproved ? 'action=/admin/revoke' : 'action=/admin/approve' %> method="POST">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                        <input type="hidden" name="gameID" value="<%= game._id %>">
-                        <input type="hidden" name="redirectTo" id="redirectTo" value="">
-                    </form>
-                    <button onclick="approveGame('<%=game.gameInfo.name%>')" type="button"
-                        class="btn m-1 <%= game.isApproved ? 'btn-primary' : 'btn-success'%>">
-                        <%= game.isApproved ? 'Revoke' : 'Approve' %>
-                    </button>
-                <% } %>
-                <button type="button" class="btn btn-danger m-1" onclick="showDeleteModal('<%=game.gameInfo.name%>', '<%= game.gameInfo.description%>')">Delete</button>
-                <button class="btn btn-primary" id="<%= game.gameInfo.name %>RevisionsCollapseButton" data-toggle="collapse" data-target="#<%= game.gameInfo.name %>RevisionsCollapsePanel">
-                   Revisions
-                </button>
-            <% } %>
-        </div>
-    </div>
+<div id="<%= game.gameInfo.name%>" class="py-2">
+    <h3 class="mb-0">
+        <a href='/game/details/<%= game._id %>'>
+            <%= game.gameInfo.name %>
+        </a>
+    </h3>
+    <p class="text-secondary">
+        Created <%= new Date(game.creationDate).getMonth() + 1 + "/" + 
+                    new Date(game.creationDate).getDate() + "/" + 
+                    new Date(game.creationDate).getFullYear()%>
+        <% if(game.userId) { %>by <%= game.userId.firstName %> <%= game.userId.lastName %><% } %>
+    </p>
+    <p class="description">
+        <%= game.gameInfo.description%>
+    </p>
+    
+    <% if(game.userId && game.userId._id.toString() === user._id.toString() || adminView){ %>
+        <% if(adminView){ %>
+            <form class="d-inline" id="<%= game.gameInfo.name%>IdApproveForm" <%= game.isApproved ? 'action=/admin/revoke' : 'action=/admin/approve' %> method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="gameID" value="<%= game._id %>">
+                <input type="hidden" name="redirectTo" class="redirectTo" value="">
+            </form>
+            <button onclick="approveGame('<%=game.gameInfo.name%>')" type="button"
+                class="btn m-1 <%= game.isApproved ? 'btn-primary' : 'btn-success'%>">
+                <%= game.isApproved ? 'Revoke' : 'Approve' %>
+            </button>
+        <% } %>
+        <button type="button" class="btn btn-danger m-1" onclick="showDeleteModal('<%=game._id%>', '<%=game.gameInfo.name%>')">Delete</button>
+        <button class="btn btn-primary" id="<%= game.gameInfo.name %>RevisionsCollapseButton" data-toggle="collapse" data-target="#<%= game.gameInfo.name %>RevisionsCollapsePanel">
+            Revisions
+        </button>
+    <% } %>
     <div class="collapse" id="<%= game.gameInfo.name %>RevisionsCollapsePanel">
         <%  for(let revision of game.revisionHistory.revisions){ %>
             <% if(revision.isActive) { %>

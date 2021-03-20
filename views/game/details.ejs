@@ -25,7 +25,7 @@
             <% } %>
         </div>
         <!-- TODO: Fix using middleware solution: https://github.com/EthanRBrown/web-development-with-node-and-express/issues/53 -->
-        <form action="/user/upload?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data">
+        <form action="/game/upload?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="col-6">
                     <!-- <input type="hidden" name="_csrf" value=""> -->
@@ -153,7 +153,7 @@
                         </div>
                         <div class="py-2">
                             <button type="submit" class="btn btn-primary">Save</button>
-                            <a class="btn btn-primary" href="/user/details/<%= game._id %>">Cancel</a>
+                            <a class="btn btn-primary" href="/game/details/<%= game._id %>">Cancel</a>
                         </div>
                     <% } %>
                 </div>

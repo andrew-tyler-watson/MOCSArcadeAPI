@@ -1,11 +1,11 @@
 <div id="<%= report.gameId.gameInfo.name%>" class="py-2">
     <h3 class="mb-0">
-        <a href='/user/details/<%= report.gameId._id %>'>
+        <a href='/game/details/<%= report.gameId._id %>'>
             <%= report.gameId.gameInfo.name %>
         </a>
     </h3>
     <p class="text-secondary">
-        Version <%= report.version %>
+        Version <%= report.version %> (reported for <%= report.reportType %>)
     </p>
     <p class="description">
         <%= report.description%>

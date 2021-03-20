@@ -1,10 +1,9 @@
-function showDeleteModal(gameId, gameName, gameDescription){
-    fillDeleteModal(gameId, gameName, gameDescription)
+function showDeleteModal(gameId, gameName){
+    fillDeleteModal(gameId, gameName)
     $('#gameDeleteModal').modal('show');
 }
-function fillDeleteModal(gameId, gameName, gameDescription){
+function fillDeleteModal(gameId, gameName){
     $('#deleteModalGameID').val(gameId);
-    $("#deleteModalGameDescription").val(gameDescription);
     $("#gameNameDisplay").html(gameName)
 }
 

@@ -26,7 +26,7 @@
                 <%= game.isApproved ? 'Revoke' : 'Approve' %>
             </button>
         <% } %>
-        <button type="button" class="btn btn-danger m-1" onclick="showDeleteModal('<%=game._id%>', '<%=game.gameInfo.name%>', '<%= game.gameInfo.description%>')">Delete</button>
+        <button type="button" class="btn btn-danger m-1" onclick="showDeleteModal('<%=game._id%>', '<%=game.gameInfo.name%>')">Delete</button>
         <button class="btn btn-primary" id="<%= game.gameInfo.name %>RevisionsCollapseButton" data-toggle="collapse" data-target="#<%= game.gameInfo.name %>RevisionsCollapsePanel">
             Revisions
         </button>

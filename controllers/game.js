@@ -460,16 +460,16 @@ exports.report = (req, res, next) => {
                                 transporter
                                     .sendMail(message)
                                     .then(() => {
-                                        req.flash('uploadMsg', 'Report has been submitted. Thank you')
+                                        req.flash('uploadMsg', 'Report has been submitted. Thank you for helping keep our game collection safe!')
                                         return res.redirect('/game/details/' + req.body.gameId)
                                     })
                                     .catch((error) => {
                                         console.error(error)
-                                        req.flash('uploadMsg', 'Report has been submitted. Thank you')
+                                        req.flash('uploadMsg', 'Report has been submitted. Thank you for helping keep our game collection safe!')
                                         return res.redirect('/game/details/' + req.body.gameId)
                                     });
                             } else {
-                                req.flash('uploadMsg', 'Report has been submitted. Thank you')
+                                req.flash('uploadMsg', 'Report has been submitted. Thank you for helping keep our game collection safe!')
                                 return res.redirect('/game/details/' + req.body.gameId)
                             }
                         })

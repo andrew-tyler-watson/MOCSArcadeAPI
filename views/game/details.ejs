@@ -17,20 +17,17 @@
             <h1 class="text-center"><%= game.gameInfo.name %></h1>
         </div>
 
-        <div class="row">
-            <% if(successMessage) {%>
-              <div class="text-success">
-                <p><%= successMessage%></p>
-              </div>
-            <% } %>
-        </div>
-        <div class="row">
-            <% if(message) {%>
-              <div class="text-danger">
-                <p><%= message%></p>
-              </div>
-            <% } %>
-        </div>
+        <% if(successMessage) {%>
+            <div class="text-success text-center">
+            <p><%= successMessage%></p>
+            </div>
+        <% } %>
+        <% if(message) {%>
+            <div class="text-danger text-center">
+            <p><%= message%></p>
+            </div>
+        <% } %>
+
         <!-- TODO: Fix using middleware solution: https://github.com/EthanRBrown/web-development-with-node-and-express/issues/53 -->
         <form action="/game/upload?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data">
             <div class="form-row">

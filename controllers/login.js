@@ -97,7 +97,7 @@ exports.postRegister = (req, res, next) => {
     }
 
     if(req.body.password != req.body.password2){
-        req.flash('error', 'Password mismatch')
+        req.flash('error', 'Passwords do not match!')
         return res.redirect('/login/register')
     }
 

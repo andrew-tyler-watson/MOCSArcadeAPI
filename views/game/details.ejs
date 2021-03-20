@@ -18,6 +18,13 @@
         </div>
 
         <div class="row">
+            <% if(successMessage) {%>
+              <div class="text-success">
+                <p><%= successMessage%></p>
+              </div>
+            <% } %>
+        </div>
+        <div class="row">
             <% if(message) {%>
               <div class="text-danger">
                 <p><%= message%></p>

@@ -50,17 +50,16 @@ exports.details = (req, res, next) => {
                 .populate('userId')
                 .then(game => {
                     let message = req.flash('uploadError');
-                    if(message.length > 0){
-                        message = message[0]
-                    }
-                    else{
-                        message = null;
-                    }
+                    message = (message.length > 0) ? message[0] : null;
+
+                    let successMessage = req.flash('uploadMsg');
+                    successMessage = (successMessage.length > 0) ? successMessage[0] : null;
                     
                     res.render('game/details', { user: user,
                                                  game: game,
                                                  pageTitle: game.gameInfo.name,
                                                  message: message,
+                                                 successMessage: successMessage,
                                                  isEdit: req.isEdit})
                 })
                 .catch(err => {
@@ -461,29 +460,29 @@ exports.report = (req, res, next) => {
                                 transporter
                                     .sendMail(message)
                                     .then(() => {
-                                        req.flash('error', 'Report has been submitted. Thank you')
+                                        req.flash('uploadMsg', 'Report has been submitted. Thank you')
                                         return res.redirect('/game/details/' + req.body.gameId)
                                     })
                                     .catch((error) => {
                                         console.error(error)
-                                        req.flash('error', 'Report has been submitted. Thank you')
+                                        req.flash('uploadMsg', 'Report has been submitted. Thank you')
                                         return res.redirect('/game/details/' + req.body.gameId)
                                     });
                             } else {
-                                req.flash('error', 'Report has been submitted. Thank you')
+                                req.flash('uploadMsg', 'Report has been submitted. Thank you')
                                 return res.redirect('/game/details/' + req.body.gameId)
                             }
                         })
                 })
                 .catch(err => {
                     console.log(err)
-                    req.flash('error', 'There was a problem reaching the server. Please try again later')
+                    req.flash('uploadError', 'There was a problem reaching the server. Please try again later')
                     return res.redirect('/game/details/' + req.body.gameId)
                 });
         })
         .catch(err => {
             console.log(err)
-            req.flash('error', 'There was a problem reaching the server. Please try again later')
+            req.flash('uploadError', 'There was a problem reaching the server. Please try again later')
             return res.redirect('/game/details/' + req.body.gameId)
         });
 }

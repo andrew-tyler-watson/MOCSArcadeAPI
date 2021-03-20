@@ -1,6 +1,7 @@
 <%- include('../includes/header.ejs') %>
 <% canEdit = !isEdit && ((game.userId && game.userId._id == user._id.toString()) || user.isAdmin) %>
 <%- include('../includes/nav.ejs', {active: "Games", editGameID: (canEdit ? game._id : undefined)}) %>
+<%- include('../components/gameReportModal.ejs') %>
 
     <div class="container">
         <% if(game.userId) { %>
@@ -18,7 +19,9 @@
 
         <div class="row">
             <% if(message) {%>
-                <p class="text-danger">Game name taken. Please pick a different name.</p>
+              <div class="text-danger">
+                <p><%= message%></p>
+              </div>
             <% } %>
         </div>
         <!-- TODO: Fix using middleware solution: https://github.com/EthanRBrown/web-development-with-node-and-express/issues/53 -->
@@ -69,8 +72,15 @@
                                                 </div>
                                             <% } %>
 
-                                            <!-- Download button: Cannot be a form within another form, so use javascript to dynamically download -->
+                                            <!-- Buttons: Cannot be a form within another form, so use javascript to dynamically download -->
                                             <div class="col-auto">
+                                                <% if(!game.userId || game.userId._id != user._id.toString()) { %>
+                                                    <!-- Report button button -->
+                                                    <button type="button" class="btn btn-warning btn-report" onclick="showReportModal('<%=game._id%>', '<%=game.gameInfo.name%>', '<%= version.version %>')">
+                                                        Report
+                                                    </button>
+                                                <% } %>
+                                                <!-- Download button -->
                                                 <button type="button" class="btn btn-primary btn-download" data-name="<%= game.gameInfo.name %>" data-version="<%= version.version %>" <%= isEdit ? 'disabled' : '' %>>
                                                     <i class="fa fa-download"></i>
                                                 </button>

@@ -11,9 +11,15 @@ const gameController = require('../controllers/game')
  router.get('/keybinds/:gameName', gameController.keybinds);
 
  /********************\\\\\\\\\
-  * Get keybinds for game by name
+  * Download game by name and version
   /*******************/////////
  
   router.get('/download/:gameName/:versionName?', gameController.download);
+
+  /********************\\\\\\\\\
+   * Report game
+   /*******************/////////
+  
+   router.post('/report', gameController.report);
   
 module.exports = router;

@@ -1,5 +1,6 @@
 const User = require('../models/user')
 const Game = require('../models/game')
+const Report = require('../models/report')
 
 exports.getAdminEditGames = (req, res, next) =>{
     User.findOne({username: req.session.username})
@@ -42,6 +43,30 @@ exports.getAdminEditUsers = (req, res, next) =>{
         .catch(err =>{
             console.log(err)
         })
+}
+
+exports.getAdminReportViewer = (req, res, next) =>{
+    User.findOne({username: req.session.username})
+    .select("username firstName lastName isAdmin")
+    .then(user =>{
+        if(!user.isAdmin){
+            res.redirect('/user')
+        }
+        Report.find()
+        .where('isActive').equals(true)
+        .populate('gameId')
+        .then(reports =>{
+            res.render('admin/reports', {
+                user: user,
+                reports: reports,
+                pageTitle: 'Administration - View Reports'})
+        })
+        
+    })
+    .catch(err =>{
+        console.log(err)
+    })
+
 }
 
 exports.postPromote = (req, res, next) =>{
@@ -94,6 +119,7 @@ exports.postApprove = (req, res, next) =>{
         return game.save()
     })
     .then(result =>{
+        console.log(req.body.redirectTo)
         res.redirect(req.body.redirectTo)
     })
     .catch(err => {
@@ -110,6 +136,19 @@ exports.postRevoke = (req, res, next) =>{
     })
     .then(result =>{
         res.redirect(req.body.redirectTo)
+    })
+    .catch(err => {
+        console.log(err)
+    })
+}
+exports.postCloseReport = (req, res, next) =>{
+    Report.findOne({_id: req.body.reportID})
+    .then(report => {
+        report.isActive = false;
+        return report.save()
+    })
+    .then(result =>{
+        res.redirect('/admin/viewReports')
     })
     .catch(err => {
         console.log(err)

@@ -1,0 +1,30 @@
+<div id="<%= report.gameId.gameInfo.name%>" class="py-2">
+    <h3 class="mb-0">
+        <a href='/user/details/<%= report.gameId._id %>'>
+            <%= report.gameId.gameInfo.name %>
+        </a>
+    </h3>
+    <p class="text-secondary">
+        Version <%= report.version %>
+    </p>
+    <p class="description">
+        <%= report.description%>
+    </p>
+    
+    <% if(adminView){ %>
+        <form class="d-inline" id="<%= report.gameId.gameInfo.name%>IdApproveForm" <%= report.gameId.isApproved ? 'action=/admin/revoke' : 'action=/admin/approve' %> method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="gameID" value="<%= report.gameId._id %>">
+            <input type="hidden" class="redirectTo" name="redirectTo" value="">
+        </form>
+        <button onclick="approveGame('<%=report.gameId.gameInfo.name%>')" type="button"
+            class="btn m-1 <%= report.gameId.isApproved ? 'btn-primary' : 'btn-success'%>">
+            <%= report.gameId.isApproved ? 'Revoke' : 'Re-Approve' %>
+        </button>
+        <form class="d-inline" method="POST" action='/admin/closeReport'>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="reportID" value="<%= report._id %>">
+            <button type="submit" class="btn btn-danger">Close Report</button>
+        </form>
+    <% } %>
+</div>

@@ -1,0 +1,17 @@
+<%- include('../includes/header.ejs') %>
+<%- include('../includes/nav.ejs', {active: "Admin"}) %>
+
+
+<div class="container">
+    <div class="py-5">
+        <h1 class="text-center">Arcade Admin - Reports</h1>
+    </div>
+    <%if (reports.length > 0){%>
+        <%- include('../components/viewReportControl.ejs', {user: user, reports: reports, adminView: true})%>
+    <% } else { %>
+        <h4 class="text-success text-center">You have no reports requiring review! :)</h4>
+    <% } %>
+
+</div>
+
+<%- include('../includes/footer.ejs') %>

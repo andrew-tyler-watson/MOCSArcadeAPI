@@ -1,0 +1,29 @@
+<div class="mb-4 w-100">
+    <% if(reports != null){ %>
+        <table id="reportsTable" class="table">
+            <thead>
+                <tr>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let report of reports){ %>
+                    <tr>
+                        <td>
+                            <%- include('./reportCard.ejs',  {user: user, report: report, adminView: adminView}) %>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    <% } %>
+
+    <script>
+        var table = $('#reportsTable').DataTable({
+            "info": false,
+            "drawCallback": function( settings ) {
+                $("#reportsTable thead").remove();
+            }       
+        });
+    </script>
+</div>

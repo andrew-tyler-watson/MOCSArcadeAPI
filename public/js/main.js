@@ -8,8 +8,19 @@ function fillDeleteModal(gameId, gameName, gameDescription){
     $("#gameNameDisplay").html(gameName)
 }
 
+function showReportModal(gameId, gameName, versionNumber){
+    fillReportModal(gameId, gameName, versionNumber)
+    $('#gameReportModal').modal('show');
+}
+function fillReportModal(gameId, gameName, versionNumber){
+    $('#ReportModalGameId').val(gameId);
+    $('#ReportModalVersionNumber').val(versionNumber);
+    $('#versionNumberDisplay').html(versionNumber);
+    $("#gameNameDisplay").html(gameName)
+}
+
 function approveGame(gameName){
-    $('#redirectTo').val(window.location.pathname)
+    $('.redirectTo').val(window.location.pathname)
     document.getElementById(gameName + 'IdApproveForm').submit()
 }
 

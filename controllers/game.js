@@ -1,4 +1,5 @@
 const Game = require('../models/game')
+const Report = require('../models/report')
 const mongoose = require('mongoose')
 
 var axios = require('axios')
@@ -45,6 +46,43 @@ exports.download = (req, res, next) => {
         })
         .catch(err => {
             console.log(err)
+        });
+}
+
+exports.report = (req, res, next) => {
+    //load the game's versions
+    Game.findOne({ '_id': req.body.gameId })
+        .then(game => {
+            if(game == null || !game.isActive) {
+                res.status(410).send('That game is not available or does not exist');
+                return res.redirect('/user/details/' + req.body.gameId)
+            }
+            /**
+             * saving the game
+             */
+            const report = new Report({
+                gameId: req.body.gameId,
+                version: req.body.versionNumber,
+                reportType: req.body.reportType,
+                description: req.body.reportInfo,
+            })
+
+            report
+                .save()
+                .then(result => {
+                    req.flash('error', 'Report has been submitted. Thank you')
+                    return res.redirect('/user/details/' + req.body.gameId)
+                })
+                .catch(err => {
+                    console.log(err)
+                    req.flash('error', 'There was a problem reaching the server. Please try again later')
+                    return res.redirect('/user/details/' + req.body.gameId)
+                });
+        })
+        .catch(err => {
+            console.log(err)
+            req.flash('error', 'There was a problem reaching the server. Please try again later')
+            return res.redirect('/user/details/' + req.body.gameId)
         });
 }
 

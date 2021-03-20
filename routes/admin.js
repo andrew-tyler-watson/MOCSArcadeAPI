@@ -8,6 +8,8 @@ router.get("/editGames", isAuth.isLoggedIn, isAuth.isAdmin, adminController.getA
 
 router.get("/editUsers", isAuth.isLoggedIn, isAuth.isAdmin, adminController.getAdminEditUsers)
 
+router.get("/viewReports", isAuth.isLoggedIn, isAuth.isAdmin, adminController.getAdminReportViewer)
+
 router.post("/demote", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postDemote)
 
 router.post("/promote", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postPromote)
@@ -17,5 +19,7 @@ router.post("/delete", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postDe
 router.post("/approve", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postApprove)
 
 router.post("/revoke", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postRevoke)
+
+router.post("/closeReport", isAuth.isLoggedIn, isAuth.isAdmin, adminController.postCloseReport)
 
 module.exports = router;

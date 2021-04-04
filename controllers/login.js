@@ -91,6 +91,7 @@ exports.postRegister = (req, res, next) => {
     req.body.lastName == "" || req.body.lastName == null ||
     req.body.password == "" || req.body.password == null ||
     req.body.username == "" || req.body.username == null ||
+    req.body.email == "" || req.body.email == null ||
     req.body.password2 == "" || req.body.password2 == null){
         req.flash('error', 'Please fill out all fields')
         return res.redirect('/login/register')
@@ -102,12 +103,12 @@ exports.postRegister = (req, res, next) => {
     }
 
     const username = req.body.username;
-    const email = username;
+    const email = req.body.email;
     const password = req.body.password;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
 
-    User.findOne({email: email})
+    User.findOne({username: username})
         .then( userDoc =>{
             if(userDoc){
                 req.flash('error', 'Someone with that username already exists')

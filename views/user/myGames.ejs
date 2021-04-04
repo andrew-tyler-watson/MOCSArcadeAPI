@@ -10,7 +10,9 @@
             <h1 class="text-center">Welcome <%= user.firstName + " " + user.lastName%></h1>
             <% if(user.isAuthenticated) { %>
                 <button type="button" class="btn btn-success content-center my-3" data-toggle="modal" data-target="#gameAddModal">Add New Game</button>
-            <% } %>
+            <% } else { %>
+                <p class="text-danger">You cannot currently upload your own games. Please check your email to authenticate your account</p>
+            <% }%>
         </div>
 
         <%- include('../components/editGameControl.ejs', {user: user, games: games, adminView: user.isAdmin}) %>

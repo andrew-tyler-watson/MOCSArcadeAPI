@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const Game = require('../models/game')
 const Report = require('../models/report')
+const Rating = require('../models/rating')
 const mongoose = require('mongoose')
 
 var axios = require('axios')
@@ -35,6 +36,54 @@ function saveImage(game, req){
      });
  }
 
+exports.rate = (req, res, next) => {
+    //load the game's versions
+    Game.findOne({ '_id': req.body.gameId })
+        .then(game => {
+            if(game == null || !game.isActive) {
+                res.status(410).json({status:'That game is not available or does not exist'});
+                return;
+            }
+            // Check if user has existing rating
+            Rating.findOne({ userId: req.body.userId, gameId: req.body.gameId })
+                .then(oldRating => {
+                    // Delete old rating (if it exists)
+                    if(oldRating != null) {
+                        oldRating.remove()
+                    }
+
+                    // Create new rating
+                    const rating = new Rating({
+                        gameId: req.body.gameId,
+                        rating: req.body.rating,
+                        userId: req.body.userId
+                    })
+        
+                    rating
+                        .save()
+                        .then(result => {
+                            res.status(200).json({status:"OK"});
+                            return;
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            res.status(500).json({status:'The rating could not be saved. Please try again'});
+                            return;
+                        });
+                })
+                .catch(err => {
+                    console.log(err)
+                    res.status(500).json({status:'The rating could not be saved. Please try again'});
+                    return;
+                });
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({status:'The rating could not be saved. Please try again'});
+            return;
+        });
+}
+
 exports.edit = (req, res, next) => {
     req.isEdit = true;
     exports.details(req, res, next);
@@ -49,18 +98,25 @@ exports.details = (req, res, next) => {
             Game.findOne({ _id: req.params.gameid })
                 .populate('userId')
                 .then(game => {
-                    let message = req.flash('uploadError');
-                    message = (message.length > 0) ? message[0] : null;
+                    Rating.findOne({ userId: user._id, gameId: game._id })
+                        .then(stars => {
+                            let message = req.flash('uploadError');
+                            message = (message.length > 0) ? message[0] : null;
 
-                    let successMessage = req.flash('uploadMsg');
-                    successMessage = (successMessage.length > 0) ? successMessage[0] : null;
-                    
-                    res.render('game/details', { user: user,
-                                                 game: game,
-                                                 pageTitle: game.gameInfo.name,
-                                                 message: message,
-                                                 successMessage: successMessage,
-                                                 isEdit: req.isEdit})
+                            let successMessage = req.flash('uploadMsg');
+                            successMessage = (successMessage.length > 0) ? successMessage[0] : null;
+                            
+                            res.render('game/details', { user: user,
+                                                        game: game,
+                                                        pageTitle: game.gameInfo.name,
+                                                        message: message,
+                                                        successMessage: successMessage,
+                                                        isEdit: req.isEdit,
+                                                        rating: stars ? stars.rating : null})
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        });
                 })
                 .catch(err => {
                     console.log(err)
@@ -410,7 +466,7 @@ exports.report = (req, res, next) => {
     Game.findOne({ '_id': req.body.gameId })
         .then(game => {
             if(game == null || !game.isActive) {
-                res.status(410).send('That game is not available or does not exist');
+                req.flash('uploadError', 'That game is not available or does not exist')
                 return res.redirect('/game/details/' + req.body.gameId)
             }
             /**

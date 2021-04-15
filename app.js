@@ -111,6 +111,7 @@ app.set('views', 'views');
 
 
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 /**
  * Now that we have a session and a store, we configure this

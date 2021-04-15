@@ -13,8 +13,16 @@
             </div>
         <% } %>
 
-        <div class="py-5">
+        <div class="pt-5 pb-2">
             <h1 class="text-center"><%= game.gameInfo.name %></h1>
+        </div>
+        <div class="rating mb-5 text-center">
+            <!-- Rating values go backwards because stars are rendered and highlighted backwards -->
+            <a class="star" href="#" data-rating="5" <%= rating && rating >= 5 ? 'starred=true' : '' %>><span><i class="fa fa-star"></i></span></a>
+            <a class="star" href="#" data-rating="4" <%= rating && rating >= 4 ? 'starred=true' : '' %>><span><i class="fa fa-star"></i></span></a>
+            <a class="star" href="#" data-rating="3" <%= rating && rating >= 3 ? 'starred=true' : '' %>><span><i class="fa fa-star"></i></span></a>
+            <a class="star" href="#" data-rating="2" <%= rating && rating >= 2 ? 'starred=true' : '' %>><span><i class="fa fa-star"></i></span></a>
+            <a class="star" href="#" data-rating="1" <%= rating && rating >= 1 ? 'starred=true' : '' %>><span><i class="fa fa-star"></i></span></a>
         </div>
 
         <% if(successMessage) {%>
@@ -320,6 +328,37 @@
 
         $(".btn-download").on("click", function (e) {
             window.location.href = "/game/download/" + $(this).data('name') + "/" + $(this).data('version')
+        })
+
+        $(".star").on("click", function (e) {
+            var rating = $(this).data('rating');
+            var data = {
+                gameId: "<%= game._id %>",
+                userId: "<%= user._id %>",
+                rating: rating
+            }
+            console.log(JSON.stringify(data))
+            $.ajax({
+                url:"/game/rate",
+                type:"POST",
+                dataType: "json",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                beforeSend: function(request) {
+                    request.setRequestHeader('Csrf-Token', "<%= csrfToken %>");
+                },
+                success: function(result) {
+                    // Update stars' default look
+                    $(".star").attr('starred', false)
+                    $(".star").each(function(index, elem) {
+                        if($(elem).data('rating') <= rating)
+                            $(elem).attr('starred', true)
+                    })
+                },
+                error: function(result) {
+                    alert(result.responseJSON.status)
+                }
+            });
         })
     </script>
     

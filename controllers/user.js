@@ -1,6 +1,7 @@
 const User = require('../models/user');
-const Game = require('../models/game')
-const mongoose = require('mongoose')
+const Game = require('../models/game');
+const Rating = require('../models/rating');
+const reversePopulate = require('mongoose-reverse-populate-v2');
 
 exports.allGames = (req, res, next) => {
     //load the current user
@@ -11,18 +12,29 @@ exports.allGames = (req, res, next) => {
                 .where('isApproved').equals(true)
                 .populate('userId')
                 .then(games => {
-                    let message = req.flash('uploadError');
-                    if(message.length > 0){
-                        message = message[0]
-                    }
-                    else{
-                        message = null;
-                    }
-                    
-                    res.render('user/allGames', { user: user,
-                                                  games: games,
-                                                  pageTitle: 'Games',
-                                                  message: message})
+                    const options = {
+                        modelArray: games,
+                        storeWhere: "ratings",
+                        arrayPop: true,
+                        mongooseModel: Rating,
+                        idField: "gameId"
+                    };
+                    // Ratings will be populated under .ratings property
+                    reversePopulate(options, function(err, ratedGames) {
+
+                        let message = req.flash('uploadError');
+                        if(message.length > 0){
+                            message = message[0]
+                        }
+                        else{
+                            message = null;
+                        }
+                        
+                        res.render('user/allGames', { user: user,
+                                                    games: ratedGames,
+                                                    pageTitle: 'Games',
+                                                    message: message})
+                    })
                 })
                 .catch(err => {
                     console.log(err)
@@ -46,24 +58,34 @@ exports.games = (req, res, next) => {
                 .where('isApproved').equals(true)
                 .populate('userId')
                 .then(games => {
-                    let message = req.flash('uploadError');
-                    if(message.length > 0){
-                        message = message[0]
-                    }
-                    else{
-                        message = null;
-                    }
-                    
-                    res.render('user/myGames', { user: user,
-                                                 games: games,
-                                                 pageTitle: 'My Games',
-                                                 message: message})
+                    const options = {
+                        modelArray: games,
+                        storeWhere: "ratings",
+                        arrayPop: true,
+                        mongooseModel: Rating,
+                        idField: "gameId"
+                    };
+                    // Ratings will be populated under .ratings property
+                    reversePopulate(options, function(err, ratedGames) {
+
+                        let message = req.flash('uploadError');
+                        if(message.length > 0){
+                            message = message[0]
+                        }
+                        else{
+                            message = null;
+                        }
+                        
+                        res.render('user/myGames', { user: user,
+                                                    games: ratedGames,
+                                                    pageTitle: 'My Games',
+                                                    message: message})
+                    });
                 })
                 .catch(err => {
                     console.log(err)
                 });
-        }
-    )
+        })
         .catch(err => {
             console.log(err)
         });

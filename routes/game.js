@@ -67,6 +67,12 @@ router.post('/report', gameController.report);
 router.post('/rate', gameController.rate);
 
 /********************\\\\\\\\\
+ * Comment on game
+ /*******************/////////
+
+router.post('/comment', gameController.comment);
+
+/********************\\\\\\\\\
  * Delete a game by deleting
  * the record in the database
  /*******************/////////

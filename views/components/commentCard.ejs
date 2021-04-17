@@ -1,0 +1,11 @@
+<div class="py-2">
+    <p class="text-secondary mb-0">
+        <%= comment.userId.username %> - <%= new Date(comment.creationDate).getMonth() + 1 + "/" + 
+                                        new Date(comment.creationDate).getDate() + "/" + 
+                                        new Date(comment.creationDate).getFullYear()%>
+    </p>
+    <p>
+        <%= comment.comment %>
+    </p>
+    
+</div>

@@ -168,6 +168,35 @@
                             <a class="btn btn-primary" href="/game/details/<%= game._id %>">Cancel</a>
                         </div>
                     <% } %>
+                    <!-- Comment Section -->
+                    <table id="commentsTable" class="table mt-1">
+                        <thead>
+                            <tr>
+                                <th><%= comments.length %> Comments</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <textarea class="form-control" name="comment" id="comment" placeholder="Enter comment here..." rows="2"></textarea>
+                                    <a class="btn btn-primary text-white my-1 btn-comment">Comment</a>
+                                </td>
+                                <td><%= new Date(9999, 0, 0, 0, 0, 0) %></td>
+                            </tr>
+                            <% if(comments) {
+                                for(let comment of comments){ %>
+                                <tr>
+                                    <td>
+                                        <%- include('../components/commentCard.ejs',  {comment: comment}) %>
+                                    </td>
+                                    <td>
+                                        <%= comment.creationDate %>
+                                    </td>
+                                </tr>
+                            <% }} %>
+                        </tbody>
+                    </table>
                 </div>
                 <div class="col-6">
                     <% if(typeof game.gameInfo.gameplayPreview.data != "undefined") { %>
@@ -317,6 +346,25 @@
     </div>
 
     <script>
+        var table = $('#commentsTable').DataTable({
+            "columnDefs": [
+            {
+                    "targets": [ 1 ],
+                    type: 'date',
+                    "visible": false
+                },
+                {
+                    "targets": [ 0 ],
+                    "orderable": false
+                }
+            ],
+            "order": [[1, 'desc']],
+            "pageLength": 5,
+            "searching": false,
+            // "ordering": false,
+            "lengthChange": false,
+        });
+
         $("#image").on("change", function (e) {
             if(this.files[0].size > 50000){
                 this.value = "";
@@ -337,7 +385,6 @@
                 userId: "<%= user._id %>",
                 rating: rating
             }
-            console.log(JSON.stringify(data))
             $.ajax({
                 url:"/game/rate",
                 type:"POST",
@@ -354,6 +401,39 @@
                         if($(elem).data('rating') <= rating)
                             $(elem).attr('starred', true)
                     })
+                },
+                error: function(result) {
+                    alert(result.responseJSON.status)
+                }
+            });
+        })
+
+        $(".btn-comment").on("click", function (e) {
+            var comment = $('#comment').val();
+            console.log(comment)
+            var data = {
+                gameId: "<%= game._id %>",
+                userId: "<%= user._id %>",
+                comment: comment
+            }
+            $.ajax({
+                url:"/game/comment",
+                type:"POST",
+                dataType: "json",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                beforeSend: function(request) {
+                    request.setRequestHeader('Csrf-Token', "<%= csrfToken %>");
+                },
+                success: function(result) {
+                    // Update stars' default look
+                    console.log("Success!")
+                    $('#comment').val("");
+                    table.row.add( [
+                        "<p class='text-secondary mb-0'>New Comment</p>" + "<p>" + comment + "</p>",
+                        new Date()
+                    ]).draw()
+                    table.refresh();
                 },
                 error: function(result) {
                     alert(result.responseJSON.status)

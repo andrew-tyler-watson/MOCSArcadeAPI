@@ -2,6 +2,7 @@ const User = require('../models/user');
 const Game = require('../models/game')
 const Report = require('../models/report')
 const Rating = require('../models/rating')
+const Comment = require('../models/comment')
 const mongoose = require('mongoose')
 
 var axios = require('axios')
@@ -34,6 +35,43 @@ function saveImage(game, req){
          expires: Number.parseInt(process.env.TOKEN_EXPIRE, 10),
      },
      });
+ }
+
+ exports.comment = (req, res, next) => {
+     //load the game's versions
+     Game.findOne({ '_id': req.body.gameId })
+         .then(game => {
+            if(game == null || !game.isActive) {
+                res.status(410).json({status:'That game is not available or does not exist'});
+                return;
+            }
+
+            // Create new rating
+            const today = new Date();
+            const comment = new Comment({
+                gameId: req.body.gameId,
+                comment: req.body.comment,
+                userId: req.body.userId,
+                creationDate: today
+            })
+
+            comment
+                .save()
+                .then(result => {
+                    res.status(200).json({status:"OK"});
+                    return;
+                })
+                .catch(err => {
+                    console.log(err)
+                    res.status(500).json({status:'The comment could not be saved. Please try again'});
+                    return;
+                });
+         })
+         .catch(err => {
+             console.log(err)
+             res.status(500).json({status:'The comment could not be saved. Please try again'});
+             return;
+         });
  }
 
 exports.rate = (req, res, next) => {
@@ -100,19 +138,27 @@ exports.details = (req, res, next) => {
                 .then(game => {
                     Rating.findOne({ userId: user._id, gameId: game._id })
                         .then(stars => {
-                            let message = req.flash('uploadError');
-                            message = (message.length > 0) ? message[0] : null;
+                            Comment.find({ gameId: game._id })
+                                .populate('userId')
+                                .then(comments => {
+                                    let message = req.flash('uploadError');
+                                    message = (message.length > 0) ? message[0] : null;
 
-                            let successMessage = req.flash('uploadMsg');
-                            successMessage = (successMessage.length > 0) ? successMessage[0] : null;
-                            
-                            res.render('game/details', { user: user,
-                                                        game: game,
-                                                        pageTitle: game.gameInfo.name,
-                                                        message: message,
-                                                        successMessage: successMessage,
-                                                        isEdit: req.isEdit,
-                                                        rating: stars ? stars.rating : null})
+                                    let successMessage = req.flash('uploadMsg');
+                                    successMessage = (successMessage.length > 0) ? successMessage[0] : null;
+                                    
+                                    res.render('game/details', { user: user,
+                                                                game: game,
+                                                                pageTitle: game.gameInfo.name,
+                                                                message: message,
+                                                                successMessage: successMessage,
+                                                                isEdit: req.isEdit,
+                                                                rating: stars ? stars.rating : null,
+                                                                comments: comments})
+                                })
+                                .catch(err => {
+                                    console.log(err)
+                                });
                         })
                         .catch(err => {
                             console.log(err)

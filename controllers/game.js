@@ -74,6 +74,43 @@ function saveImage(game, req){
          });
  }
 
+ exports.deleteComment = (req, res, next) => {
+     //load the game's versions
+    Comment.findOne({ '_id': req.body.commentID })
+        .populate('gameId')
+        .then(comment => {
+            if(comment == null) {
+                req.flash('uploadError', 'That game is not available or does not exist');
+                return res.redirect('/game/edit/' + comment.gameId._id)
+            }
+
+            // Check if user has permissions to delete comment
+            User.findOne({ username: req.session.username }).then(
+                user => {
+                    if(!user.isAdmin && comment.gameId.userId != user._id) {
+                        req.flash('uploadError', 'You do not have proper permissions to delete that comment');
+                        return res.redirect('/game/edit/' + comment.gameId._id)
+                    }
+
+                    // Delete old comment (if it exists)
+                    if(comment != null) {
+                        comment.remove()
+                    }
+                    return res.redirect('/game/edit/' + comment.gameId._id)
+                })
+                .catch(err => {
+                    console.log(err)
+                    req.flash('uploadError', 'The comment could not be deleted. Please try again');
+                    return res.redirect('/game/edit/' + comment.gameId._id)
+                });
+         })
+         .catch(err => {
+             console.log(err)
+             req.flash('uploadError', 'The comment could not be deleted. Please try again');
+             return res.redirect('/game/edit/' + comment.gameId._id)
+            });
+ }
+
 exports.rate = (req, res, next) => {
     //load the game's versions
     Game.findOne({ '_id': req.body.gameId })
@@ -632,14 +669,24 @@ function downloadGame(game, res, versionIndex, recurse=true){
 }
 
 exports.delete = (req, res, next) => {
-    //load the current user
-
     Game.findOne({_id: req.body.gameID})
         .then(game => {
-            game.isActive = false;
+            // Check if user has permissions to delete comment
+            User.findOne({ username: req.session.username }).then(
+                user => {
+                    if(!user.isAdmin && game.userId != user._id) {
+                        req.flash('uploadError', 'You do not have proper permissions to delete that game');
+                        return;
+                    }
 
-            return game.save();
-
+                    game.isActive = false;
+                    return game.save();
+                })
+                .catch(err => {
+                    console.log(err)
+                    req.flash('uploadError', 'The game could not be deleted. Please try again');
+                    return;
+                });
         })
         .then(result =>{
             res.redirect('/user');

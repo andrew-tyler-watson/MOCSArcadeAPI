@@ -2,6 +2,7 @@
 <% canEdit = !isEdit && ((game.userId && game.userId._id == user._id.toString()) || user.isAdmin) %>
 <%- include('../includes/nav.ejs', {active: "Games", editGameID: (canEdit ? game._id : undefined)}) %>
 <%- include('../components/gameReportModal.ejs') %>
+<%- include('../components/commentDeleteModal.ejs') %>
 
     <div class="container">
         <% if(game.userId) { %>
@@ -199,7 +200,7 @@
                                                 for(let comment of comments){ %>
                                                 <tr>
                                                     <td>
-                                                        <%- include('../components/commentCard.ejs',  {comment: comment}) %>
+                                                        <%- include('../components/commentCard.ejs',  { comment: comment, isEdit: isEdit }) %>
                                                     </td>
                                                     <td>
                                                         <%= comment.creationDate %>

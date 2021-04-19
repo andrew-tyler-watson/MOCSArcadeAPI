@@ -73,6 +73,12 @@ router.post('/rate', gameController.rate);
 router.post('/comment', gameController.comment);
 
 /********************\\\\\\\\\
+ * Delete comment on game
+ /*******************/////////
+
+router.post('/deleteComment', isAuth.isLoggedIn, gameController.deleteComment);
+
+/********************\\\\\\\\\
  * Delete a game by deleting
  * the record in the database
  /*******************/////////

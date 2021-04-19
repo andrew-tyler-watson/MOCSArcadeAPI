@@ -7,6 +7,15 @@ function fillDeleteModal(gameId, gameName){
     $("#gameNameDisplay").html(gameName)
 }
 
+function showDeleteCommentModal(gameId, commentText){
+    fillDeleteCommentModal(gameId, commentText)
+    $('#commentDeleteModal').modal('show');
+}
+function fillDeleteCommentModal(gameId, commentText){
+    $('#deleteModalCommentID').val(gameId);
+    $("#commentDisplay").html(commentText)
+}
+
 function showReportModal(gameId, gameName, versionNumber){
     fillReportModal(gameId, gameName, versionNumber)
     $('#gameReportModal').modal('show');

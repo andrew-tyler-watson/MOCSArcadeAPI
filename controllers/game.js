@@ -674,25 +674,29 @@ exports.delete = (req, res, next) => {
             // Check if user has permissions to delete comment
             User.findOne({ username: req.session.username }).then(
                 user => {
-                    if(!user.isAdmin && game.userId != user._id) {
+                    if(!user.isAdmin && game.userId.toString() != user._id.toString()) {
                         req.flash('uploadError', 'You do not have proper permissions to delete that game');
+                        res.redirect('/user');
                         return;
                     }
 
                     game.isActive = false;
-                    return game.save();
+                    game.save();
+                    res.redirect('/user');
+                    return;
                 })
                 .catch(err => {
                     console.log(err)
                     req.flash('uploadError', 'The game could not be deleted. Please try again');
+                    res.redirect('/user');
                     return;
                 });
         })
-        .then(result =>{
-            res.redirect('/user');
-        })
         .catch((err) => {
             console.log(err)
+            req.flash('uploadError', 'The game could not be deleted. Please try again');
+            res.redirect('/user');
+            return;
         })
 
 }

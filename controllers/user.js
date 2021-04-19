@@ -55,7 +55,6 @@ exports.games = (req, res, next) => {
             Game.find()
                 .where('userId').equals(user._id)
                 .where('isActive').equals(true)
-                .where('isApproved').equals(true)
                 .populate('userId')
                 .then(games => {
                     const options = {

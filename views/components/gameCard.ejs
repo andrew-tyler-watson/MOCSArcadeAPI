@@ -1,9 +1,13 @@
 <div id="<%= game.gameInfo.name%>" class="py-2">
-    <h3 class="mb-0">
-        <a href='/game/details/<%= game._id %>'>
-            <%= game.gameInfo.name %>
-        </a>
-    </h3>
+    <div class="d-flex">
+        <h3 class="mb-0">
+            <a href='/game/details/<%= game._id %>'><%= game.gameInfo.name %></a>
+        </h3>
+        <% if(!game.isApproved) { %>
+            <i class="text-secondary align-self-end">: unapproved</i>
+        <% } %>
+    </div>
+
     <p class="text-secondary mb-0">
         Created <%= new Date(game.creationDate).getMonth() + 1 + "/" + 
                     new Date(game.creationDate).getDate() + "/" + 

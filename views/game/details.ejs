@@ -169,34 +169,50 @@
                         </div>
                     <% } %>
                     <!-- Comment Section -->
-                    <table id="commentsTable" class="table mt-1">
-                        <thead>
-                            <tr>
-                                <th><%= comments.length %> Comments</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <textarea class="form-control" name="comment" id="comment" placeholder="Enter comment here..." rows="2"></textarea>
-                                    <a class="btn btn-primary text-white my-1 btn-comment">Comment</a>
-                                </td>
-                                <td><%= new Date(9999, 0, 0, 0, 0, 0) %></td>
-                            </tr>
-                            <% if(comments) {
-                                for(let comment of comments){ %>
-                                <tr>
-                                    <td>
-                                        <%- include('../components/commentCard.ejs',  {comment: comment}) %>
-                                    </td>
-                                    <td>
-                                        <%= comment.creationDate %>
-                                    </td>
-                                </tr>
-                            <% }} %>
-                        </tbody>
-                    </table>
+                    <div id="commentAccordion" class="py-1">
+                        <div class="card">
+                            <div class="card-header" id="commentCardHeader">
+                                <button type="button" class="btn bg-transparent" data-toggle="collapse"
+                                        data-target="#collapseComment" aria-expanded="true"
+                                        aria-controls="collapseComment">
+                                        <b>Comments</b>
+                                </button>
+                            </div>
+                            <div id="collapseComment" class="collapse" aria-labelledby="commentCardHeader" data-parent="#commentAccordion">
+                                <div class="card-body">
+                                    <table id="commentsTable" class="table m-0 w-100">
+                                        <thead>
+                                            <tr>
+                                                <th><%= comments.length %> Comments</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <textarea class="form-control" name="comment" id="comment" placeholder="Enter comment here..." rows="2"></textarea>
+                                                    <a class="btn btn-primary text-white my-1 btn-comment">Comment</a>
+                                                </td>
+                                                <td><%= new Date(9999, 0, 0, 0, 0, 0) %></td>
+                                            </tr>
+                                            <% if(comments) {
+                                                for(let comment of comments){ %>
+                                                <tr>
+                                                    <td>
+                                                        <%- include('../components/commentCard.ejs',  {comment: comment}) %>
+                                                    </td>
+                                                    <td>
+                                                        <%= comment.creationDate %>
+                                                    </td>
+                                                </tr>
+                                            <% }} %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="col-6">
                     <% if(typeof game.gameInfo.gameplayPreview.data != "undefined") { %>
@@ -360,6 +376,7 @@
             ],
             "order": [[1, 'desc']],
             "pageLength": 5,
+            "info": false,
             "searching": false,
             // "ordering": false,
             "lengthChange": false,

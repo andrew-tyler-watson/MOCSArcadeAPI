@@ -61,6 +61,24 @@ router.get('/download/:gameName/:versionName?', gameController.download);
 router.post('/report', gameController.report);
 
 /********************\\\\\\\\\
+ * Rate game
+ /*******************/////////
+
+router.post('/rate', gameController.rate);
+
+/********************\\\\\\\\\
+ * Comment on game
+ /*******************/////////
+
+router.post('/comment', gameController.comment);
+
+/********************\\\\\\\\\
+ * Delete comment on game
+ /*******************/////////
+
+router.post('/deleteComment', isAuth.isLoggedIn, gameController.deleteComment);
+
+/********************\\\\\\\\\
  * Delete a game by deleting
  * the record in the database
  /*******************/////////

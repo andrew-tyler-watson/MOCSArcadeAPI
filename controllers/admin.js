@@ -1,6 +1,8 @@
 const User = require('../models/user')
 const Game = require('../models/game')
 const Report = require('../models/report')
+const Rating = require('../models/rating');
+const reversePopulate = require('mongoose-reverse-populate-v2');
 
 exports.getAdminEditGames = (req, res, next) =>{
     User.findOne({username: req.session.username})
@@ -13,17 +15,26 @@ exports.getAdminEditGames = (req, res, next) =>{
         .where('isActive').equals(true)
         .populate('userId')
         .then(games =>{
-            res.render('admin/admin', { user: user,
-                                        games: games,
-                                        editGames: true,
-                                        pageTitle: 'Administration - Edit Games'})
+            const options = {
+                modelArray: games,
+                storeWhere: "ratings",
+                arrayPop: true,
+                mongooseModel: Rating,
+                idField: "gameId"
+            };
+            // Ratings will be populated under .ratings property
+            reversePopulate(options, function(err, ratedGames) {
+                res.render('admin/admin', { user: user,
+                                            games: ratedGames,
+                                            editGames: true,
+                                            pageTitle: 'Administration - Edit Games'})
+            })
         })
         
     })
     .catch(err =>{
         console.log(err)
     })
-
 }
 exports.getAdminEditUsers = (req, res, next) =>{
     User.findOne({username: req.session.username})

@@ -111,6 +111,7 @@ app.set('views', 'views');
 
 
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 /**
  * Now that we have a session and a store, we configure this
@@ -120,7 +121,7 @@ app.use(bodyParser.urlencoded({extended: false}));
  * the csrfProtection middleware being added. For more info, see above
  * import statement. 
  */
-app.use(session({secret: 'alkjasdlfk;lasdasdfiahusdfkljasdfbalksdhfjalkjsdnfljkasdnf',
+app.use(session({secret: process.env.SESSION_SECRET,
                     resave: false, saveUninitialized: false, store: store}))
 
 /**

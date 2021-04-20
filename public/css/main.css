@@ -47,3 +47,21 @@ img {
     width: 75%;
     height: auto;
 }
+
+.rating {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+  }
+  .rating > .star {
+    /* display: inline-block;
+    position: relative;
+    width: 1.1em; */
+    color:gray;
+  }
+.rating > .star:hover,
+.rating > .star:hover ~ .star {
+   color: gold;
+}
+.star[starred=true] {
+    color: darkgoldenrod;
+}

@@ -2,6 +2,7 @@
 <% canEdit = !isEdit && ((game.userId && game.userId._id == user._id.toString()) || user.isAdmin) %>
 <%- include('../includes/nav.ejs', {active: "Games", editGameID: (canEdit ? game._id : undefined)}) %>
 <%- include('../components/gameReportModal.ejs') %>
+<%- include('../components/commentDeleteModal.ejs') %>
 
     <div class="container">
         <% if(game.userId) { %>
@@ -13,8 +14,16 @@
             </div>
         <% } %>
 
-        <div class="py-5">
+        <div class="pt-5 pb-2">
             <h1 class="text-center"><%= game.gameInfo.name %></h1>
+        </div>
+        <div class="rating mb-5 text-center">
+            <!-- Rating values go backwards because stars are rendered and highlighted backwards -->
+            <a class="star" href="#" data-rating="5" <%= rating && rating >= 5 ? 'starred=true' : '' %>><span><i class="fa fa-star"></i></span></a>
+            <a class="star" href="#" data-rating="4" <%= rating && rating >= 4 ? 'starred=true' : '' %>><span><i class="fa fa-star"></i></span></a>
+            <a class="star" href="#" data-rating="3" <%= rating && rating >= 3 ? 'starred=true' : '' %>><span><i class="fa fa-star"></i></span></a>
+            <a class="star" href="#" data-rating="2" <%= rating && rating >= 2 ? 'starred=true' : '' %>><span><i class="fa fa-star"></i></span></a>
+            <a class="star" href="#" data-rating="1" <%= rating && rating >= 1 ? 'starred=true' : '' %>><span><i class="fa fa-star"></i></span></a>
         </div>
 
         <% if(successMessage) {%>
@@ -160,6 +169,51 @@
                             <a class="btn btn-primary" href="/game/details/<%= game._id %>">Cancel</a>
                         </div>
                     <% } %>
+                    <!-- Comment Section -->
+                    <div id="commentAccordion" class="py-1">
+                        <div class="card">
+                            <div class="card-header" id="commentCardHeader">
+                                <button type="button" class="btn bg-transparent" data-toggle="collapse"
+                                        data-target="#collapseComment" aria-expanded="true"
+                                        aria-controls="collapseComment">
+                                        <b>Comments</b>
+                                </button>
+                            </div>
+                            <div id="collapseComment" class="collapse" aria-labelledby="commentCardHeader" data-parent="#commentAccordion">
+                                <div class="card-body">
+                                    <table id="commentsTable" class="table m-0 w-100">
+                                        <thead>
+                                            <tr>
+                                                <th><%= comments.length %> Comments</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <textarea class="form-control" name="comment" id="comment" placeholder="Enter comment here..." rows="2"></textarea>
+                                                    <a class="btn btn-primary text-white my-1 btn-comment">Comment</a>
+                                                </td>
+                                                <td><%= new Date(9999, 0, 0, 0, 0, 0) %></td>
+                                            </tr>
+                                            <% if(comments) {
+                                                for(let comment of comments){ %>
+                                                <tr>
+                                                    <td>
+                                                        <%- include('../components/commentCard.ejs',  { comment: comment, isEdit: isEdit }) %>
+                                                    </td>
+                                                    <td>
+                                                        <%= comment.creationDate %>
+                                                    </td>
+                                                </tr>
+                                            <% }} %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="col-6">
                     <% if(typeof game.gameInfo.gameplayPreview.data != "undefined") { %>
@@ -309,6 +363,26 @@
     </div>
 
     <script>
+        var table = $('#commentsTable').DataTable({
+            "columnDefs": [
+            {
+                    "targets": [ 1 ],
+                    type: 'date',
+                    "visible": false
+                },
+                {
+                    "targets": [ 0 ],
+                    "orderable": false
+                }
+            ],
+            "order": [[1, 'desc']],
+            "pageLength": 5,
+            "info": false,
+            "searching": false,
+            // "ordering": false,
+            "lengthChange": false,
+        });
+
         $("#image").on("change", function (e) {
             if(this.files[0].size > 50000){
                 this.value = "";
@@ -320,6 +394,69 @@
 
         $(".btn-download").on("click", function (e) {
             window.location.href = "/game/download/" + $(this).data('name') + "/" + $(this).data('version')
+        })
+
+        $(".star").on("click", function (e) {
+            var rating = $(this).data('rating');
+            var data = {
+                gameId: "<%= game._id %>",
+                userId: "<%= user._id %>",
+                rating: rating
+            }
+            $.ajax({
+                url:"/game/rate",
+                type:"POST",
+                dataType: "json",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                beforeSend: function(request) {
+                    request.setRequestHeader('Csrf-Token', "<%= csrfToken %>");
+                },
+                success: function(result) {
+                    // Update stars' default look
+                    $(".star").attr('starred', false)
+                    $(".star").each(function(index, elem) {
+                        if($(elem).data('rating') <= rating)
+                            $(elem).attr('starred', true)
+                    })
+                },
+                error: function(result) {
+                    alert(result.responseJSON.status)
+                }
+            });
+        })
+
+        $(".btn-comment").on("click", function (e) {
+            var comment = $('#comment').val();
+            console.log(comment)
+            var data = {
+                gameId: "<%= game._id %>",
+                userId: "<%= user._id %>",
+                comment: comment
+            }
+            $.ajax({
+                url:"/game/comment",
+                type:"POST",
+                dataType: "json",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                beforeSend: function(request) {
+                    request.setRequestHeader('Csrf-Token', "<%= csrfToken %>");
+                },
+                success: function(result) {
+                    // Update stars' default look
+                    console.log("Success!")
+                    $('#comment').val("");
+                    table.row.add( [
+                        "<p class='text-secondary mb-0'>New Comment</p>" + "<p>" + comment + "</p>",
+                        new Date()
+                    ]).draw()
+                    table.refresh();
+                },
+                error: function(result) {
+                    alert(result.responseJSON.status)
+                }
+            });
         })
     </script>
     

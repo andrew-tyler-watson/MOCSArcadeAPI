@@ -10,6 +10,12 @@
             </div>
         </div>
 
+        <% if(message) {%>
+            <div class="text-danger text-center">
+            <p><%= message%></p>
+            </div>
+        <% } %>
+
         <%- include('../components/editGameControl.ejs', {user: user, games: games, adminView: user.isAdmin}) %>
         
     </div>

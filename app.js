@@ -121,7 +121,7 @@ app.use(bodyParser.json());
  * the csrfProtection middleware being added. For more info, see above
  * import statement. 
  */
-app.use(session({secret: 'alkjasdlfk;lasdasdfiahusdfkljasdfbalksdhfjalkjsdnfljkasdnf',
+app.use(session({secret: process.env.SESSION_SECRET,
                     resave: false, saveUninitialized: false, store: store}))
 
 /**

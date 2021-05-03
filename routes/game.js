@@ -38,7 +38,15 @@ var storage = multer.diskStorage({
     limits: { fileSize: 50000 }
 }); 
   
-var upload = multer({ storage: storage }); 
+var upload = multer({
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        if (!file.mimetype.startsWith('image/')) {
+            return cb(new Error('Wrong file type'));
+        }
+        cb(null, true)
+    }
+}); 
 
 router.post('/Upload', isAuth.isLoggedIn, upload.single('image'), gameController.upload);
 

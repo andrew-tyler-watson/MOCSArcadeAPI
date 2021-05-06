@@ -225,7 +225,7 @@
                     <% } %>
                     
                     <% if(isEdit) { %>
-                        <input type="file" id="image" name="image" value=""> 
+                        <input type="file" id="image" name="image" accept="image/*" multiple>
                         <p id="fileError" class="text-danger"></p>
                     <% } %>
 
@@ -383,14 +383,7 @@
             "lengthChange": false,
         });
 
-        $("#image").on("change", function (e) {
-            if(this.files[0].size > 50000){
-                this.value = "";
-                $("#fileError").text("File is too large! Please decrease the size of your file to 50KB and try again!")
-            } else {
-                $("#fileError").text("")
-            }
-        })
+        $("#image").on("change", checkFileSize)
 
         $(".btn-download").on("click", function (e) {
             window.location.href = "/game/download/" + $(this).data('name') + "/" + $(this).data('version')

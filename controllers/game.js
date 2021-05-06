@@ -6,13 +6,15 @@ const Comment = require('../models/comment')
 const mongoose = require('mongoose')
 
 var axios = require('axios')
-var fs = require('fs'); 
+const googleDrive = require('../lib/googledrive')
 var path = require('path');
 
-function saveImage(game, req){
-    game.gameInfo.gameplayPreview = { 
-        data: fs.readFileSync(path.join(process.cwd() + '/uploads/' + req.file.filename)), 
-        contentType: 'image/png'
+function saveImage(gameId, files){
+    for(imageFile of files) {
+        googleDrive.uploadImage(
+            path.join(path.join(process.cwd() + '/uploads/' + imageFile.filename)),
+            gameId,
+            imageFile.filename.split('.').pop())
     }
 }
 
@@ -20,6 +22,7 @@ function saveImage(game, req){
  * Email system for sending email authentication emails
  */
  const nodemailer = require('nodemailer');
+const { file } = require('googleapis/build/src/apis/file');
 
  let transporter = null
  if(process.env.NODEMAILER_EMAIL){
@@ -297,14 +300,13 @@ exports.upload = (req, res, next) => {
                 isActive: true,
                 keybinds: keybinds
             })
-
-            if (typeof req.file != "undefined") {
-                saveImage(newGame, req)
-            }
-
             newGame
                 .save()
                 .then(result => {
+                    if (req.files != null) {
+                        saveImage(result._id, req.files)
+                    }
+
                     User.find()
                         .where('isAdmin').equals(true)
                         .then(users => {
@@ -341,6 +343,8 @@ exports.upload = (req, res, next) => {
                                         console.error(error)
                                         res.redirect('/game/details/' + newGame._id.toString());
                                     });
+                            } else {
+                                res.redirect('/game/details/' + newGame._id.toString());
                             }
                         })
                 })
@@ -374,9 +378,10 @@ exports.upload = (req, res, next) => {
                         game.gameInfo.name = req.body.name;
                         game.gameInfo.description = req.body.description;
                         game.gameInfo.title = req.body.title;
-                        if (typeof req.file != "undefined") {
-                           saveImage(game, req)
-                        }
+                        console.log(req.body.image)
+                        // if (req.body.image != null) {
+                        //    saveImage(game, req.body.image)
+                        // }
 
                         /**
                          * Editting version data

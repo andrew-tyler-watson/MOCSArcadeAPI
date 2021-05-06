@@ -48,7 +48,7 @@ var upload = multer({
     }
 }); 
 
-router.post('/Upload', isAuth.isLoggedIn, upload.single('image'), gameController.upload);
+router.post('/Upload', isAuth.isLoggedIn, upload.array('image'), gameController.upload);
 
 /********************\\\\\\\\\
  * Get keybinds for game by name

@@ -7,19 +7,14 @@ const gameSchema = new Schema({
     gameInfo: {
         name: String,
         description: String,
-        title: String,
-        /*icon:
-        {
-            data: Buffer, 
-            contentType: String 
-        },*/
-        gameplayPreview:
-        {
-            data: Buffer, 
-            contentType: String 
-        },
-        imageUrl: String
+        title: String
     },
+    gameplayPreviews: [
+        {
+            type: String, 
+            driveId: String 
+        }
+    ],
     revisionHistory : {
         revisions : [Schema.Types.Mixed]
     },

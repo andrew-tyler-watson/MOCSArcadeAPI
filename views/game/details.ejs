@@ -216,12 +216,8 @@
 
                 </div>
                 <div class="col-6">
-                    <% if(typeof game.gameInfo.gameplayPreview.data != "undefined") { %>
-                        <img class="w-100"
-                            src="data:image/<%=game.gameInfo.gameplayPreview.contentType%>;base64, 
-                            <%=game.gameInfo.gameplayPreview.data.toString('base64')%>"> 
-                    <% } else { %>
-                        <img class="w-100 my-2" src="<%= game.gameInfo.imageUrl %>">
+                    <% for(preview of game.gameplayPreviews) { %>
+                        <img class="w-100 my-2" src="https://drive.google.com/uc?export=view&id=<%= preview.driveId %>">
                     <% } %>
                     
                     <% if(isEdit) { %>

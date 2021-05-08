@@ -9,13 +9,19 @@ var axios = require('axios')
 const googleDrive = require('../lib/googledrive')
 var path = require('path');
 
-function saveImage(gameId, files){
-    for(imageFile of files) {
-        googleDrive.uploadImage(
-            path.join(path.join(process.cwd() + '/uploads/' + imageFile.filename)),
-            gameId,
-            imageFile.filename.split('.').pop())
+async function saveImage(gameName, files, callback){
+    var imageIDs = []
+    if(files) {
+        for(imageFile of files) {
+            var imageID = await googleDrive.uploadImage(
+                        path.join(path.join(process.cwd() + '/uploads/' + imageFile.filename)),
+                        gameName,
+                        imageFile.filename.split('.').pop())
+            if(imageID)
+                imageIDs.push(imageID)
+        }
     }
+    callback(imageIDs);
 }
 
 /**
@@ -229,7 +235,7 @@ exports.upload = (req, res, next) => {
             const today = new Date();
             const creationDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
-            const gameInfo = {
+            var gameInfo = {
                 name: req.body.gameName,
                 description: req.body.gameDescription,
                 title: req.body.title
@@ -290,67 +296,79 @@ exports.upload = (req, res, next) => {
             }
 
             /**
-             * saving the game
+             * Save image
              */
-            const newGame = new Game({
-                gameInfo: gameInfo,
-                creationDate: creationDate,
-                userId: user._id,
-                revisionHistory: revisionHistory,
-                isActive: true,
-                keybinds: keybinds
-            })
-            newGame
-                .save()
-                .then(result => {
-                    if (req.files != null) {
-                        saveImage(result._id, req.files)
-                    }
+            saveImage(gameInfo.name, req.files, function(imageIds) {
+                var gameplayPreviews = []
+                // Create preview list
+                for(driveImageId of imageIds) {
+                    gameplayPreviews.push({
+                        type: "image",
+                        driveId: driveImageId
+                    })
+                }
 
-                    User.find()
-                        .where('isAdmin').equals(true)
-                        .then(users => {
-                            var emails = [];
-                            users.forEach(function(adminUser){
-                                emails.push(adminUser.email);
-                            });
-
-                            // then send email to admin
-                            let message = {
-                                from: process.env.NODEMAILER_EMAIL,
-                                to: emails,
-                                subject: "MocsArcade: New game to review",
-                                html: `
-                                        <p>
-                                            Admin,
-                                            <br><br>
-                                            A new game has been added to the MocsArcade by ${user.username}
-                                            <br>
-                                            <b>Game name:</b> ${newGame.gameInfo.name}
-                                            <br>
-                                            <b>Description:</b> ${newGame.gameInfo.description}
-                                        </p>
-                                    `
-                            };
-                            // Attempt to send email to admin
-                            if (transporter != null) {
-                                transporter
-                                    .sendMail(message)
-                                    .then(() => {
-                                        res.redirect('/game/details/' + newGame._id.toString());
-                                    })
-                                    .catch((error) => {
-                                        console.error(error)
-                                        res.redirect('/game/details/' + newGame._id.toString());
-                                    });
-                            } else {
-                                res.redirect('/game/details/' + newGame._id.toString());
-                            }
-                        })
+                /**
+                 * saving the game
+                 */
+                const newGame = new Game({
+                    gameInfo: gameInfo,
+                    gameplayPreviews: gameplayPreviews,
+                    creationDate: creationDate,
+                    userId: user._id,
+                    revisionHistory: revisionHistory,
+                    isActive: true,
+                    keybinds: keybinds
                 })
-                .catch(err => {
-                    console.log(err)
-                });
+                newGame
+                    .save()
+                    .then(result => {
+    
+                        User.find()
+                            .where('isAdmin').equals(true)
+                            .then(users => {
+                                var emails = [];
+                                users.forEach(function(adminUser){
+                                    emails.push(adminUser.email);
+                                });
+    
+                                // then send email to admin
+                                let message = {
+                                    from: process.env.NODEMAILER_EMAIL,
+                                    to: emails,
+                                    subject: "MocsArcade: New game to review",
+                                    html: `
+                                            <p>
+                                                Admin,
+                                                <br><br>
+                                                A new game has been added to the MocsArcade by ${user.username}
+                                                <br>
+                                                <b>Game name:</b> ${newGame.gameInfo.name}
+                                                <br>
+                                                <b>Description:</b> ${newGame.gameInfo.description}
+                                            </p>
+                                        `
+                                };
+                                // Attempt to send email to admin
+                                if (transporter != null) {
+                                    transporter
+                                        .sendMail(message)
+                                        .then(() => {
+                                            res.redirect('/game/details/' + newGame._id.toString());
+                                        })
+                                        .catch((error) => {
+                                            console.error(error)
+                                            res.redirect('/game/details/' + newGame._id.toString());
+                                        });
+                                } else {
+                                    res.redirect('/game/details/' + newGame._id.toString());
+                                }
+                            })
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    });
+            })
         }
         else {
             // Edit game

@@ -301,12 +301,13 @@ exports.upload = (req, res, next) => {
             saveImage(gameInfo.name, req.files, function(imageIds) {
                 var gameplayPreviews = []
                 // Create preview list
-                for(driveImageId of imageIds) {
+                for(let driveImageId of imageIds) {
                     gameplayPreviews.push({
                         type: "image",
                         driveId: driveImageId
                     })
                 }
+                console.log("Gameplay previews: ", gameplayPreviews)
 
                 /**
                  * saving the game

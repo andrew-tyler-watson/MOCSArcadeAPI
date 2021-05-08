@@ -2,6 +2,11 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema;
 
+const previewSchema = new Schema({
+    type: String,
+    driveId: String,
+})
+
 const gameSchema = new Schema({
     // New format value
     gameInfo: {
@@ -9,12 +14,7 @@ const gameSchema = new Schema({
         description: String,
         title: String
     },
-    gameplayPreviews: [
-        {
-            type: String, 
-            driveId: String 
-        }
-    ],
+    gameplayPreviews: [previewSchema],
     revisionHistory : {
         revisions : [Schema.Types.Mixed]
     },

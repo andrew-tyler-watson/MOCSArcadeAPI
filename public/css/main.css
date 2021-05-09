@@ -65,3 +65,9 @@ img {
 .star[starred=true] {
     color: darkgoldenrod;
 }
+#gameCarousel img {
+    width: auto;
+    height: 360px;
+    max-height: 360px;
+    object-fit: cover;
+}

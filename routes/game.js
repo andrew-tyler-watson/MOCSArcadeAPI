@@ -51,12 +51,6 @@ var upload = multer({
 router.post('/Upload', isAuth.isLoggedIn, upload.array('image'), gameController.upload);
 
 /********************\\\\\\\\\
- * Get keybinds for game by name
- /*******************/////////
-
-router.get('/keybinds/:gameName', gameController.keybinds);
-
-/********************\\\\\\\\\
  * Download game by name and version
  /*******************/////////
 

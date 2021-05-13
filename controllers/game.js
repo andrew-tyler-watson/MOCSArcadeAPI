@@ -549,22 +549,6 @@ exports.upload = (req, res, next) => {
     })
 }
 
-exports.keybinds = (req, res, next) => {
-    //load the game
-    Game.find()
-        .where('gameInfo.name').equals(req.params.gameName)
-        .where('isActive').equals(true)
-        .then(games => {
-            // Create editable copy of the keybinds dictionary
-            var ret = {...games[0].keybinds};
-            ret['Title'] = games[0].gameInfo.title;
-            res.json(ret);
-        })
-        .catch(err => {
-            console.log(err)
-        });
-}
-
 exports.download = (req, res, next) => {
     //load the game's versions
     Game.findOne({ 'gameInfo.name': req.params.gameName })

@@ -29,6 +29,7 @@ async function saveImage(gameName, files, callback){
  */
  const nodemailer = require('nodemailer');
 const { file } = require('googleapis/build/src/apis/file');
+const { google } = require('googleapis');
 
  let transporter = null
  if(process.env.NODEMAILER_EMAIL){
@@ -307,7 +308,6 @@ exports.upload = (req, res, next) => {
                         driveId: driveImageId
                     })
                 }
-                console.log("Gameplay previews: ", gameplayPreviews)
 
                 /**
                  * saving the game
@@ -500,15 +500,39 @@ exports.upload = (req, res, next) => {
                             Start : req.body.KeybindStart,
                             Exit : req.body.KeybindExit
                         }
-        
+
                         /**
-                         * Saving the game
+                         * Gameplay Images
                          */
-                        game
-                            .save()
-                            .then(result => {
-                                res.redirect('/game/details/' + game._id.toString());
-                            });
+                        for (let previewDict of game.gameplayPreviews) {
+                            var driveId = previewDict.driveId;
+                            if (req.body.deleteImage && req.body.deleteImage[driveId]) {
+                                // Delete image
+                                googleDrive.deleteImage(driveId)
+                            }
+                        }
+
+                        game.gameplayPreviews = game.gameplayPreviews.filter(x => req.body.deleteImage == null || req.body.deleteImage[x.driveId] == null)
+
+                        // Add new images
+                        saveImage(game.gameInfo.name, req.files, function(imageIds) {
+                            // Create preview list
+                            for(let driveImageId of imageIds) {
+                                game.gameplayPreviews.push({
+                                    type: "image",
+                                    driveId: driveImageId
+                                })
+                            }
+            
+                            /**
+                             * Saving the game
+                             */
+                            game
+                                .save()
+                                .then(result => {
+                                    res.redirect('/game/details/' + game._id.toString());
+                                });
+                        })
                     }
                 })
                 .catch(err => {

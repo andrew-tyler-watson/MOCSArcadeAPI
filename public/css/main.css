@@ -71,3 +71,24 @@ img {
     max-height: 360px;
     object-fit: cover;
 }
+
+.editGameImage .btn {
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    bottom: 5%;
+    opacity:0; /* Completely invisible. */
+    transition:opacity 0.5s; /* A 1 second transition. */
+}
+
+.editGameImage:hover .btn {
+    opacity:1; /* Completely visible. */
+}
+
+
+.editGameImage img {
+    transition:1s; /* A 1 second transition. */
+}
+.editGameImage:hover img {
+    filter: blur(4px);
+}

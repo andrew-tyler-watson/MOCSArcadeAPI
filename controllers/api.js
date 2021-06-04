@@ -5,16 +5,11 @@ const mongoose = require('mongoose')
 var axios = require('axios')
 
 exports.games = (req, res, next) => {
-    Game.find()
-        .populate('userId')
+    Game.find({isActive: true, isApproved: true})
+        .select('gameInfo.name gameInfo.title gameInfo.description revisionHistory creationDate userId')
+        .populate('userId', 'username firstName lastName')
         .then(
             (games) => {
-                games.forEach(
-                    game => { 
-                        game = game.gameplayPreviews = []
-                    }
-                    
-                    )
                 res.send(games)
             }
         )

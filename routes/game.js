@@ -42,7 +42,7 @@ var upload = multer({
     storage: storage,
     fileFilter: function (req, file, cb) {
         if (!file.mimetype.startsWith('image/')) {
-            return cb(new Error('Wrong file type'));
+            req.file_error = "Wrong file type";
         }
         cb(null, true)
     }

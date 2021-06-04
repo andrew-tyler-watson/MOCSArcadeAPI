@@ -21,7 +21,7 @@ async function saveImage(gameName, files, callback){
                 imageIDs.push(imageID)
         }
     }
-    callback(imageIDs);
+    return imageIDs;
 }
 
 /**
@@ -223,6 +223,11 @@ exports.details = (req, res, next) => {
 }
 
 exports.upload = (req, res, next) => {
+    if (req.hasOwnProperty('file_error')) {
+        req.flash('uploadError', 'The file upload failed. Please verify that the file is an image.')
+        res.redirect('/user/games');
+        return;
+    }
     //load the current user
     User.findOne({ username: req.session.username }).then(user => {
         if (req.body.gameID == null) {
@@ -299,7 +304,7 @@ exports.upload = (req, res, next) => {
             /**
              * Save image
              */
-            saveImage(gameInfo.name, req.files, function(imageIds) {
+            saveImage(gameInfo.name, req.files).then((imageIds) => {
                 var gameplayPreviews = []
                 // Create preview list
                 for(let driveImageId of imageIds) {
@@ -368,7 +373,14 @@ exports.upload = (req, res, next) => {
                     })
                     .catch(err => {
                         console.log(err)
+                        req.flash('uploadError', 'Database could not be accessed. Please try again later')
+                        res.redirect('/user/games');
                     });
+            })
+            .catch((error) => {
+                console.log(error)
+                req.flash('uploadError', 'The file upload failed. Please verify that the file is an image.')
+                res.redirect('/user/games');
             })
         }
         else {
@@ -515,7 +527,7 @@ exports.upload = (req, res, next) => {
                         game.gameplayPreviews = game.gameplayPreviews.filter(x => req.body.deleteImage == null || req.body.deleteImage[x.driveId] == null)
 
                         // Add new images
-                        saveImage(game.gameInfo.name, req.files, function(imageIds) {
+                        saveImage(game.gameInfo.name, req.files).then((imageIds) => {
                             // Create preview list
                             for(let driveImageId of imageIds) {
                                 game.gameplayPreviews.push({
@@ -536,16 +548,22 @@ exports.upload = (req, res, next) => {
                     }
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(error)
+                    req.flash('uploadError', 'Database could not be accessed. Please try again later')
+                    res.redirect('/user/games');
                 })
             })
             .catch(err => {
                 console.log(err)
+                req.flash('uploadError', 'Database could not be accessed. Please try again later')
+                res.redirect('/user/games');
             })
         }
     })
     .catch(err => {
         console.log(err)
+        req.flash('uploadError', 'Database could not be accessed. Please try again later')
+        res.redirect('/user/games');
     })
 }
 

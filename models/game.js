@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const previewSchema = new Schema({
     type: String,
     driveId: String,
+    youtubeId: String,
 })
 
 const gameSchema = new Schema({

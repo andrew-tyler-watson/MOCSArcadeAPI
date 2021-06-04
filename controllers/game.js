@@ -313,6 +313,13 @@ exports.upload = (req, res, next) => {
                         driveId: driveImageId
                     })
                 }
+                // Add youtube link provided it exists and doesn't include URL reserved characters
+                if(req.body.youtubeLink != '' && !req.body.youtubeLink.includes('/') && !req.body.youtubeLink.includes('\\') && !req.body.youtubeLink.includes('&')) {
+                    gameplayPreviews.push({
+                        type: "youtube",
+                        youtubeId: req.body.youtubeLink
+                    })
+                }
 
                 /**
                  * saving the game
@@ -523,6 +530,19 @@ exports.upload = (req, res, next) => {
                                 googleDrive.deleteImage(driveId)
                             }
                         }
+                        // Add youtube link provided it exists and doesn't include URL reserved characters
+                        if(req.body.youtubeLink != '' && !req.body.youtubeLink.includes('/') && !req.body.youtubeLink.includes('\\') && !req.body.youtubeLink.includes('&')) {
+                            var preview = game.gameplayPreviews.find(element => element.type == 'youtube');
+                            if(preview) {
+                                preview.youtubeId = req.body.youtubeLink;
+                            }
+                            else {
+                                game.gameplayPreviews.push({
+                                    type: "youtube",
+                                    youtubeId: req.body.youtubeLink
+                                })
+                            }
+                        }
 
                         game.gameplayPreviews = game.gameplayPreviews.filter(x => req.body.deleteImage == null || req.body.deleteImage[x.driveId] == null)
 
@@ -545,10 +565,15 @@ exports.upload = (req, res, next) => {
                                     res.redirect('/game/details/' + game._id.toString());
                                 });
                         })
+                        .catch(err => {
+                            console.log(err)
+                            req.flash('uploadError', 'The file upload failed. Please verify that the file is an image.')
+                            res.redirect('/user/games');
+                        })
                     }
                 })
                 .catch(err => {
-                    console.log(error)
+                    console.log(err)
                     req.flash('uploadError', 'Database could not be accessed. Please try again later')
                     res.redirect('/user/games');
                 })

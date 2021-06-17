@@ -1,7 +1,7 @@
 {
   "name": "mocsarcadeapi",
   "version": "1.0.0",
-  "description": "A website and data API for the MOCS Arcade",
+  "description": "A website and data API for Arc",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

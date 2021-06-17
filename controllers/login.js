@@ -127,7 +127,7 @@ exports.postRegister = (req, res, next) => {
                             <p>
                             ${firstName},
                             <br><br>
-                            Thank you for joining the Mocs Arcade initiative! Click the link below to verify your email!
+                            Thank you for joining the Arc library! Click the link below to verify your email!
                             <br><br>
                             https://mocsarcade.herokuapp.com/login/authenticate/${authUID}
                             </p>

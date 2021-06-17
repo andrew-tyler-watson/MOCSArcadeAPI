@@ -79,6 +79,19 @@ let MONGODB_URI = ''
  * 
  */
 const app = express();
+
+/***********************************************\\\\\\\\\
+ *  compile scss stylesheet files 
+/***********************************************/////////
+var sassMiddleware = require('node-sass-middleware')
+
+app.use(sassMiddleware({
+  /* Options */
+  src: __dirname + '/public',
+  dest: __dirname + '/public',
+  debug: true,
+  outputStyle: 'expanded'
+}));
 //Make it so our app can find our own files
 app.use(express.static(__dirname + '/public'));
 
@@ -121,7 +134,7 @@ app.use(bodyParser.json());
  * the csrfProtection middleware being added. For more info, see above
  * import statement. 
  */
-app.use(session({secret: process.env.SESSION_SECRET,
+app.use(session({secret: process.env.SESSION_SECRET || 'abcdefghijklmnop',
                     resave: false, saveUninitialized: false, store: store}))
 
 /**

@@ -188,7 +188,7 @@ app.use("/api", apiRoutes);
  */
 
 app.use("/", (req, res, next)=>{
-    res.redirect('/login')
+    res.redirect('/')
 })
 
 /**

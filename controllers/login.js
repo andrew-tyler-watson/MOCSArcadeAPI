@@ -56,7 +56,7 @@ exports.postLogin = (req, res, next) => {
                 req.session.isAdmin = user.isAdmin
                 return req.session.save(err =>{
                     console.log(err);
-                    res.redirect('/')
+                    res.redirect('/user')
                 })
             }
             req.flash('error', 'Invalid email or password')

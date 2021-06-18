@@ -157,6 +157,7 @@ app.use(flash())
  *  import (essentially) our routing scripts
  *  and tie them to their respective url routes 
 /***********************************************/////////
+const indexRoutes = require('./routes/index')
 const adminRoutes = require('./routes/admin')
 const loginRoutes = require('./routes/login')
 const userRoutes = require('./routes/user')
@@ -169,11 +170,12 @@ const apiRoutes = require('./routes/api')
  * contain information on the session for our routes to be able to do their
  * job effectively.
  */
+app.use("/", indexRoutes);
 app.use("/admin", adminRoutes);
 app.use("/login", loginRoutes);
 app.use("/user", userRoutes);
 app.use("/game", gameRoutes);
-app.use("/api", apiRoutes)
+app.use("/api", apiRoutes);
 
 /**
  * This is a global redirect pretty much.

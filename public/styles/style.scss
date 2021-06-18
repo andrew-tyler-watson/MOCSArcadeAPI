@@ -83,6 +83,14 @@ img {
     object-fit: cover;
 }
 
+
+.contentcontainer:nth-child(even){
+    background-color: #ffeeee;
+}
+.contentcontainer:nth-child(odd){
+    background-color: #ffffff;
+}
+
 .editGameImage .btn {
     position: absolute;
     left: 20%;

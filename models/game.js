@@ -2,24 +2,20 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema;
 
+const previewSchema = new Schema({
+    type: String,
+    driveId: String,
+    youtubeId: String,
+})
+
 const gameSchema = new Schema({
     // New format value
     gameInfo: {
         name: String,
         description: String,
-        title: String,
-        /*icon:
-        {
-            data: Buffer, 
-            contentType: String 
-        },*/
-        gameplayPreview:
-        {
-            data: Buffer, 
-            contentType: String 
-        },
-        imageUrl: String
+        title: String
     },
+    gameplayPreviews: [previewSchema],
     revisionHistory : {
         revisions : [Schema.Types.Mixed]
     },

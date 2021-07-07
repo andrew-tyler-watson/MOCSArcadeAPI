@@ -1,0 +1,113 @@
+// Our Custom sass code
+// Blue = #2176AE and #57B8FF (buttons + page content)
+// Yellow = #B66D0D and #FBB136 (magnifying glass + navbar)
+
+$warning:     rgb(204, 60, 60) !default;
+$red:     #dc3545;
+
+$link-color:        $warning; //red
+$link-hover-color:  $red; //green
+
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+#login-header
+{
+    margin-top: 20px;
+}
+
+#menu
+{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#admin-menu
+{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#comp-utc-img
+{
+    height: 50px;
+    width: 50px;
+}
+
+.author-tab
+{
+    position: absolute;
+    right: 0;
+}
+
+.author-box
+{
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
+    border: 1px solid rgba(10,10,10,0.5);
+    border-radius: 3px;
+    color: black !important;
+}
+
+.btn-checkbox-toggle:not(:disabled):not(.disabled).active
+{
+    background-color: #545b62;
+    border-color: #4e555b;
+}
+
+img {
+    margin: 20px;
+    width: 75%;
+    height: auto;
+}
+
+.rating {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+  }
+  .rating > .star {
+    /* display: inline-block;
+    position: relative;
+    width: 1.1em; */
+    color:gray;
+  }
+.rating > .star:hover,
+.rating > .star:hover ~ .star {
+   color: gold;
+}
+.star[starred=true] {
+    color: darkgoldenrod;
+}
+#gameCarousel img {
+    width: auto;
+    height: 360px;
+    max-height: 360px;
+    object-fit: cover;
+}
+
+
+.contentcontainer:nth-child(even){
+    background-color: #ffeeee;
+}
+.contentcontainer:nth-child(odd){
+    background-color: #ffffff;
+}
+
+.editGameImage .btn {
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    bottom: 5%;
+    opacity:0; /* Completely invisible. */
+    transition:opacity 0.5s; /* A 1 second transition. */
+}
+
+.editGameImage:hover .btn {
+    opacity:1; /* Completely visible. */
+}
+
+
+.editGameImage img {
+    transition:1s; /* A 1 second transition. */
+}
+.editGameImage:hover img {
+    filter: blur(4px);
+}

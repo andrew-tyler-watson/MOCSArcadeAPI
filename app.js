@@ -79,6 +79,19 @@ let MONGODB_URI = ''
  * 
  */
 const app = express();
+
+/***********************************************\\\\\\\\\
+ *  compile scss stylesheet files 
+/***********************************************/////////
+var sassMiddleware = require('node-sass-middleware')
+
+app.use(sassMiddleware({
+  /* Options */
+  src: __dirname + '/public',
+  dest: __dirname + '/public',
+  debug: true,
+  outputStyle: 'expanded'
+}));
 //Make it so our app can find our own files
 app.use(express.static(__dirname + '/public'));
 
@@ -121,7 +134,7 @@ app.use(bodyParser.json());
  * the csrfProtection middleware being added. For more info, see above
  * import statement. 
  */
-app.use(session({secret: process.env.SESSION_SECRET,
+app.use(session({secret: process.env.SESSION_SECRET || 'abcdefghijklmnop',
                     resave: false, saveUninitialized: false, store: store}))
 
 /**
@@ -144,6 +157,7 @@ app.use(flash())
  *  import (essentially) our routing scripts
  *  and tie them to their respective url routes 
 /***********************************************/////////
+const indexRoutes = require('./routes/index')
 const adminRoutes = require('./routes/admin')
 const loginRoutes = require('./routes/login')
 const userRoutes = require('./routes/user')
@@ -156,11 +170,12 @@ const apiRoutes = require('./routes/api')
  * contain information on the session for our routes to be able to do their
  * job effectively.
  */
+app.use("/", indexRoutes);
 app.use("/admin", adminRoutes);
 app.use("/login", loginRoutes);
 app.use("/user", userRoutes);
 app.use("/game", gameRoutes);
-app.use("/api", apiRoutes)
+app.use("/api", apiRoutes);
 
 /**
  * This is a global redirect pretty much.
@@ -173,7 +188,7 @@ app.use("/api", apiRoutes)
  */
 
 app.use("/", (req, res, next)=>{
-    res.redirect('/login')
+    res.redirect('/')
 })
 
 /**

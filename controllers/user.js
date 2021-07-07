@@ -68,12 +68,7 @@ exports.games = (req, res, next) => {
                     reversePopulate(options, function(err, ratedGames) {
 
                         let message = req.flash('uploadError');
-                        if(message.length > 0){
-                            message = message[0]
-                        }
-                        else{
-                            message = null;
-                        }
+                        message = (message.length > 0) ? message[0] : null;
                         
                         res.render('user/myGames', { user: user,
                                                     games: ratedGames,

@@ -6,20 +6,30 @@ const Comment = require('../models/comment')
 const mongoose = require('mongoose')
 
 var axios = require('axios')
-var fs = require('fs'); 
+const googleDrive = require('../lib/googledrive')
 var path = require('path');
 
-function saveImage(game, req){
-    game.gameInfo.gameplayPreview = { 
-        data: fs.readFileSync(path.join(process.cwd() + '/uploads/' + req.file.filename)), 
-        contentType: 'image/png'
+async function saveImage(gameName, files, callback){
+    var imageIDs = []
+    if(files) {
+        for(imageFile of files) {
+            var imageID = await googleDrive.uploadImage(
+                        path.join(path.join(process.cwd() + '/uploads/' + imageFile.filename)),
+                        gameName,
+                        imageFile.filename.split('.').pop())
+            if(imageID)
+                imageIDs.push(imageID)
+        }
     }
+    return imageIDs;
 }
 
 /**
  * Email system for sending email authentication emails
  */
  const nodemailer = require('nodemailer');
+const { file } = require('googleapis/build/src/apis/file');
+const { google } = require('googleapis');
 
  let transporter = null
  if(process.env.NODEMAILER_EMAIL){
@@ -213,6 +223,11 @@ exports.details = (req, res, next) => {
 }
 
 exports.upload = (req, res, next) => {
+    if (req.hasOwnProperty('file_error')) {
+        req.flash('uploadError', 'The file upload failed. Please verify that the file is an image.')
+        res.redirect('/user/games');
+        return;
+    }
     //load the current user
     User.findOne({ username: req.session.username }).then(user => {
         if (req.body.gameID == null) {
@@ -226,7 +241,7 @@ exports.upload = (req, res, next) => {
             const today = new Date();
             const creationDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
-            const gameInfo = {
+            var gameInfo = {
                 name: req.body.gameName,
                 description: req.body.gameDescription,
                 title: req.body.title
@@ -287,66 +302,93 @@ exports.upload = (req, res, next) => {
             }
 
             /**
-             * saving the game
+             * Save image
              */
-            const newGame = new Game({
-                gameInfo: gameInfo,
-                creationDate: creationDate,
-                userId: user._id,
-                revisionHistory: revisionHistory,
-                isActive: true,
-                keybinds: keybinds
-            })
+            saveImage(gameInfo.name, req.files).then((imageIds) => {
+                var gameplayPreviews = []
+                // Create preview list
+                for(let driveImageId of imageIds) {
+                    gameplayPreviews.push({
+                        type: "image",
+                        driveId: driveImageId
+                    })
+                }
+                // Add youtube link provided it exists and doesn't include URL reserved characters
+                if(req.body.youtubeLink != '' && !req.body.youtubeLink.includes('/') && !req.body.youtubeLink.includes('\\') && !req.body.youtubeLink.includes('&')) {
+                    gameplayPreviews.push({
+                        type: "youtube",
+                        youtubeId: req.body.youtubeLink
+                    })
+                }
 
-            if (typeof req.file != "undefined") {
-                saveImage(newGame, req)
-            }
-
-            newGame
-                .save()
-                .then(result => {
-                    User.find()
-                        .where('isAdmin').equals(true)
-                        .then(users => {
-                            var emails = [];
-                            users.forEach(function(adminUser){
-                                emails.push(adminUser.email);
-                            });
-
-                            // then send email to admin
-                            let message = {
-                                from: process.env.NODEMAILER_EMAIL,
-                                to: emails,
-                                subject: "MocsArcade: New game to review",
-                                html: `
-                                        <p>
-                                            Admin,
-                                            <br><br>
-                                            A new game has been added to the MocsArcade by ${user.username}
-                                            <br>
-                                            <b>Game name:</b> ${newGame.gameInfo.name}
-                                            <br>
-                                            <b>Description:</b> ${newGame.gameInfo.description}
-                                        </p>
-                                    `
-                            };
-                            // Attempt to send email to admin
-                            if (transporter != null) {
-                                transporter
-                                    .sendMail(message)
-                                    .then(() => {
-                                        res.redirect('/game/details/' + newGame._id.toString());
-                                    })
-                                    .catch((error) => {
-                                        console.error(error)
-                                        res.redirect('/game/details/' + newGame._id.toString());
-                                    });
-                            }
-                        })
+                /**
+                 * saving the game
+                 */
+                const newGame = new Game({
+                    gameInfo: gameInfo,
+                    gameplayPreviews: gameplayPreviews,
+                    creationDate: creationDate,
+                    userId: user._id,
+                    revisionHistory: revisionHistory,
+                    isActive: true,
+                    keybinds: keybinds
                 })
-                .catch(err => {
-                    console.log(err)
-                });
+                newGame
+                    .save()
+                    .then(result => {
+    
+                        User.find()
+                            .where('isAdmin').equals(true)
+                            .then(users => {
+                                var emails = [];
+                                users.forEach(function(adminUser){
+                                    emails.push(adminUser.email);
+                                });
+    
+                                // then send email to admin
+                                let message = {
+                                    from: process.env.NODEMAILER_EMAIL,
+                                    to: emails,
+                                    subject: "MocsArcade: New game to review",
+                                    html: `
+                                            <p>
+                                                Admin,
+                                                <br><br>
+                                                A new game has been added to the MocsArcade by ${user.username}
+                                                <br>
+                                                <b>Game name:</b> ${newGame.gameInfo.name}
+                                                <br>
+                                                <b>Description:</b> ${newGame.gameInfo.description}
+                                            </p>
+                                        `
+                                };
+                                // Attempt to send email to admin
+                                if (transporter != null) {
+                                    transporter
+                                        .sendMail(message)
+                                        .then(() => {
+                                            res.redirect('/game/details/' + newGame._id.toString());
+                                        })
+                                        .catch((error) => {
+                                            console.error(error)
+                                            res.redirect('/game/details/' + newGame._id.toString());
+                                        });
+                                } else {
+                                    res.redirect('/game/details/' + newGame._id.toString());
+                                }
+                            })
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        req.flash('uploadError', 'Database could not be accessed. Please try again later')
+                        res.redirect('/user/games');
+                    });
+            })
+            .catch((error) => {
+                console.log(error)
+                req.flash('uploadError', 'The file upload failed. Please verify that the file is an image.')
+                res.redirect('/user/games');
+            })
         }
         else {
             // Edit game
@@ -374,9 +416,10 @@ exports.upload = (req, res, next) => {
                         game.gameInfo.name = req.body.name;
                         game.gameInfo.description = req.body.description;
                         game.gameInfo.title = req.body.title;
-                        if (typeof req.file != "undefined") {
-                           saveImage(game, req)
-                        }
+                        console.log(req.body.image)
+                        // if (req.body.image != null) {
+                        //    saveImage(game, req.body.image)
+                        // }
 
                         /**
                          * Editting version data
@@ -476,45 +519,77 @@ exports.upload = (req, res, next) => {
                             Start : req.body.KeybindStart,
                             Exit : req.body.KeybindExit
                         }
-        
+
                         /**
-                         * Saving the game
+                         * Gameplay Images
                          */
-                        game
-                            .save()
-                            .then(result => {
-                                res.redirect('/game/details/' + game._id.toString());
-                            });
+                        for (let previewDict of game.gameplayPreviews) {
+                            var driveId = previewDict.driveId;
+                            if (req.body.deleteImage && req.body.deleteImage[driveId]) {
+                                // Delete image
+                                googleDrive.deleteImage(driveId)
+                            }
+                        }
+                        // Add youtube link provided it exists and doesn't include URL reserved characters
+                        if(req.body.youtubeLink != '' && !req.body.youtubeLink.includes('/') && !req.body.youtubeLink.includes('\\') && !req.body.youtubeLink.includes('&')) {
+                            var preview = game.gameplayPreviews.find(element => element.type == 'youtube');
+                            if(preview) {
+                                preview.youtubeId = req.body.youtubeLink;
+                            }
+                            else {
+                                game.gameplayPreviews.push({
+                                    type: "youtube",
+                                    youtubeId: req.body.youtubeLink
+                                })
+                            }
+                        }
+
+                        game.gameplayPreviews = game.gameplayPreviews.filter(x => req.body.deleteImage == null || req.body.deleteImage[x.driveId] == null)
+
+                        // Add new images
+                        saveImage(game.gameInfo.name, req.files).then((imageIds) => {
+                            // Create preview list
+                            for(let driveImageId of imageIds) {
+                                game.gameplayPreviews.push({
+                                    type: "image",
+                                    driveId: driveImageId
+                                })
+                            }
+            
+                            /**
+                             * Saving the game
+                             */
+                            game
+                                .save()
+                                .then(result => {
+                                    res.redirect('/game/details/' + game._id.toString());
+                                });
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            req.flash('uploadError', 'The file upload failed. Please verify that the file is an image.')
+                            res.redirect('/user/games');
+                        })
                     }
                 })
                 .catch(err => {
                     console.log(err)
+                    req.flash('uploadError', 'Database could not be accessed. Please try again later')
+                    res.redirect('/user/games');
                 })
             })
             .catch(err => {
                 console.log(err)
+                req.flash('uploadError', 'Database could not be accessed. Please try again later')
+                res.redirect('/user/games');
             })
         }
     })
     .catch(err => {
         console.log(err)
+        req.flash('uploadError', 'Database could not be accessed. Please try again later')
+        res.redirect('/user/games');
     })
-}
-
-exports.keybinds = (req, res, next) => {
-    //load the game
-    Game.find()
-        .where('gameInfo.name').equals(req.params.gameName)
-        .where('isActive').equals(true)
-        .then(games => {
-            // Create editable copy of the keybinds dictionary
-            var ret = {...games[0].keybinds};
-            ret['Title'] = games[0].gameInfo.title;
-            res.json(ret);
-        })
-        .catch(err => {
-            console.log(err)
-        });
 }
 
 exports.download = (req, res, next) => {

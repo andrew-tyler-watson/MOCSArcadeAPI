@@ -13,6 +13,11 @@
             <% } else { %>
                 <p class="text-danger">You cannot currently upload your own games. Please check your email to authenticate your account</p>
             <% }%>
+            <% if(message) {%>
+                <div class="text-danger text-center">
+                <p><%= message%></p>
+                </div>
+            <% } %>
         </div>
 
         <%- include('../components/editGameControl.ejs', {user: user, games: games, adminView: user.isAdmin}) %>

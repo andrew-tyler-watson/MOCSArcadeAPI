@@ -1,5 +1,8 @@
 const User = require('../models/user')
 const Game = require('../models/game')
+const Report = require('../models/report')
+const Rating = require('../models/rating');
+const reversePopulate = require('mongoose-reverse-populate-v2');
 
 exports.getAdminEditGames = (req, res, next) =>{
     User.findOne({username: req.session.username})
@@ -10,20 +13,28 @@ exports.getAdminEditGames = (req, res, next) =>{
         }
         Game.find()
         .where('isActive').equals(true)
-        .where('isApproved').equals(false)
-        .populate('userID')
+        .populate('userId')
         .then(games =>{
-            res.render('admin/admin', { user: user,
-                                        games: games,
-                                        editGames: true,
-                                        pageTitle: 'Administration - Edit Games'})
+            const options = {
+                modelArray: games,
+                storeWhere: "ratings",
+                arrayPop: true,
+                mongooseModel: Rating,
+                idField: "gameId"
+            };
+            // Ratings will be populated under .ratings property
+            reversePopulate(options, function(err, ratedGames) {
+                res.render('admin/admin', { user: user,
+                                            games: ratedGames,
+                                            editGames: true,
+                                            pageTitle: 'Administration - Edit Games'})
+            })
         })
         
     })
     .catch(err =>{
         console.log(err)
     })
-
 }
 exports.getAdminEditUsers = (req, res, next) =>{
     User.findOne({username: req.session.username})
@@ -43,6 +54,30 @@ exports.getAdminEditUsers = (req, res, next) =>{
         .catch(err =>{
             console.log(err)
         })
+}
+
+exports.getAdminReportViewer = (req, res, next) =>{
+    User.findOne({username: req.session.username})
+    .select("username firstName lastName isAdmin")
+    .then(user =>{
+        if(!user.isAdmin){
+            res.redirect('/user')
+        }
+        Report.find()
+        .where('isActive').equals(true)
+        .populate('gameId')
+        .then(reports =>{
+            res.render('admin/reports', {
+                user: user,
+                reports: reports,
+                pageTitle: 'Administration - View Reports'})
+        })
+        
+    })
+    .catch(err =>{
+        console.log(err)
+    })
+
 }
 
 exports.postPromote = (req, res, next) =>{
@@ -72,37 +107,10 @@ exports.postDemote = (req, res, next) =>{
         console.log(err)
     })
 }
-exports.postAuthorize = (req, res, next) =>{
-    User.findOne({username: req.body.username})
-    .then(user => {
-        user.isAuthorized = true;
-        return user.save()
-    })
-    .then(result =>{
-        res.redirect('/admin/editUsers')
-    })
-    .catch(err => {
-        console.log(err)
-    })
-}
 
-exports.postDeauthorize = (req, res, next) =>{
-    User.findOne({username: req.body.username})
-    .then(user => {
-        user.isAuthorized = false;
-        return user.save()
-    })
-    .then(result =>{
-        res.redirect('/admin/editUsers')
-    })
-    .catch(err => {
-        console.log(err)
-    })
-}
 exports.postDelete = (req, res, next) =>{
     User.findOne({username: req.body.username})
     .then(user => {
-        user.isAuthorized = false;
         return user.remove()
     })
     .then(result =>{
@@ -116,12 +124,13 @@ exports.postDelete = (req, res, next) =>{
 exports.postApprove = (req, res, next) =>{
     console.log("approve received")
     Game.findOne({_id: req.body.gameID})
-    .populate('userID')
+    .populate('userId')
     .then(game => {
         game.isApproved = true;
         return game.save()
     })
     .then(result =>{
+        console.log(req.body.redirectTo)
         res.redirect(req.body.redirectTo)
     })
     .catch(err => {
@@ -131,13 +140,26 @@ exports.postApprove = (req, res, next) =>{
 exports.postRevoke = (req, res, next) =>{
     console.log("revoke received")
     Game.findOne({_id: req.body.gameID})
-    .populate('userID')
+    .populate('userId')
     .then(game => {
         game.isApproved = false;
         return game.save()
     })
     .then(result =>{
         res.redirect(req.body.redirectTo)
+    })
+    .catch(err => {
+        console.log(err)
+    })
+}
+exports.postCloseReport = (req, res, next) =>{
+    Report.findOne({_id: req.body.reportID})
+    .then(report => {
+        report.isActive = false;
+        return report.save()
+    })
+    .then(result =>{
+        res.redirect('/admin/viewReports')
     })
     .catch(err => {
         console.log(err)

@@ -28,10 +28,6 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
-    isAuthorized: {
-        type: Boolean,
-        default: false
-    },
     isAuthenticated: {
         type: Boolean,
         default: false

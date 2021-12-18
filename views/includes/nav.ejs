@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-warning">
     <a class="navbar-brand" href="/user">
-        <img width="30" height="30" class="d-inline-block align-top" id="comp-utc-img" src="https://se-infra-imageserver2.azureedge.net/clink/images/9939f7e6-b392-42e2-9ba4-50b0d0528a8b8d12ed19-f1ec-4570-8776-2454be725f35.png?preset=med-sq">
+        <img width="30" height="30" class="d-inline-block align-top m-1" id="comp-utc-img" src="images/logo.jpg">
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -15,6 +15,7 @@
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="/admin/editUsers">Users</a>
                         <a class="dropdown-item" href="/admin/editGames">Games</a>
+                        <a class="dropdown-item" href="/admin/viewReports">Reports</a>
                     </div>
                 </li>
             <% } %> 
@@ -28,23 +29,24 @@
                 <a class="nav-link <%= active=='Help' ? 'active' : '' %>" href="/user/help">Help</a>
             </li>
         </ul>
+
         <% if(typeof editGameID != "undefined") { %>
             <% if(user.isAdmin){ %> 
                 <form class="d-inline" id="<%= game.gameInfo.name%>IdApproveForm" <%= game.isApproved ? 'action=/admin/revoke' : 'action=/admin/approve' %> method="POST">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <input type="hidden" name="gameID" value="<%= game._id %>">
-                    <input type="hidden" name="redirectTo" id="redirectTo" value="">
+                    <input type="hidden" name="redirectTo" class="redirectTo" value="">
                 </form>
                 <button onclick="approveGame('<%=game.gameInfo.name%>')" type="button"
-                    class="btn <%= game.isApproved ? 'btn-primary' : 'btn-success'%> m-2">
+                    class="btn <%= game.isApproved ? 'btn-danger' : 'btn-success'%> m-2">
                     <%= game.isApproved ? 'Revoke' : 'Approve' %>
                 </button>
             <% } %> 
 
-            <a class="btn btn-primary m-2" href="/user/edit/<%= editGameID %>" role="button">Edit</a>
+            <a class="btn btn-secondary m-2" href="/game/edit/<%= editGameID %>" role="button">Edit</a>
         <% } %>
         <% if(typeof editUserID != "undefined") { %>
-            <a class="btn btn-primary m-2" href="/user/editUser/<%= editUserID %>" role="button">Edit</a>
+            <a class="btn btn-secondary m-2" href="/user/editUser/<%= editUserID %>" role="button">Edit</a>
         <% } %>
 
         <span class="navbar-text px-2">

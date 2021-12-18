@@ -56,7 +56,7 @@ exports.postLogin = (req, res, next) => {
                 req.session.isAdmin = user.isAdmin
                 return req.session.save(err =>{
                     console.log(err);
-                    res.redirect('/')
+                    res.redirect('/user')
                 })
             }
             req.flash('error', 'Invalid email or password')
@@ -91,23 +91,24 @@ exports.postRegister = (req, res, next) => {
     req.body.lastName == "" || req.body.lastName == null ||
     req.body.password == "" || req.body.password == null ||
     req.body.username == "" || req.body.username == null ||
+    req.body.email == "" || req.body.email == null ||
     req.body.password2 == "" || req.body.password2 == null){
         req.flash('error', 'Please fill out all fields')
         return res.redirect('/login/register')
     }
 
     if(req.body.password != req.body.password2){
-        req.flash('error', 'Password mismatch')
+        req.flash('error', 'Passwords do not match!')
         return res.redirect('/login/register')
     }
 
     const username = req.body.username;
-    const email = username;
+    const email = req.body.email;
     const password = req.body.password;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
 
-    User.findOne({email: email})
+    User.findOne({username: username})
         .then( userDoc =>{
             if(userDoc){
                 req.flash('error', 'Someone with that username already exists')
@@ -123,9 +124,13 @@ exports.postRegister = (req, res, next) => {
                     to: email,
                     subject: "MocsArcade: Verify your email",
                     html: `
-                            Thank you for joining the Mocs Arcade initiative! Click the link below to verify your email!
-                            
+                            <p>
+                            ${firstName},
+                            <br><br>
+                            Thank you for joining the Arc library! Click the link below to verify your email!
+                            <br><br>
                             https://mocsarcade.herokuapp.com/login/authenticate/${authUID}
+                            </p>
                         `
                 };
 
@@ -136,7 +141,6 @@ exports.postRegister = (req, res, next) => {
                     lastName: lastName,
                     email: email,
                     isAdmin: false,
-                    isAuthorized: false,
                     authenticationCode: authUID
                 })
                 // Attempt to send verification email

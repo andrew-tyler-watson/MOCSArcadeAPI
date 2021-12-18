@@ -1,4 +1,4 @@
-<form id="addGameForm" method="POST" action="/user/upload?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
+<form id="addGameForm" method="POST" action="/game/upload?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
     <h6>Game Information</h6>
     <div class="form-group">
         <label for="gameName">Name</label>
@@ -8,24 +8,22 @@
     <div class="form-group">
         <label for="gameDescription">Description</label>
         <textarea type="text" class="form-control" id="gameDescription" name="gameDescription" rows="4" required></textarea>
-        <small>Game names must be unique</small>
     </div>
     
     <div class="form-group">
-        <label>Gameplay Preview</label>
+        <label>Gameplay Previews</label>
         <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="inputGroupFileAddon"> Upload</span>
-            </div>
-
-            <div class="custom-file">
-                <input type="file" id="image" name="image" value="" onchange="changeImageFileLabel()"
-                        aria-describedby="inputGroupFileAddon"  class="custom-file-input">
-                <label class="custom-file-label" for="gameplayPreview" id="imageFileLabel">Choose file</label>
-            </div>
+            <input type="file" id="image" name="image" accept="image/*" multiple>
         </div> 
         <p id="fileError" class="text-danger"></p>
-       
+    </div>
+
+    <div class="form-group">
+        <label class="mb-0">Gameplay video (optional)</label>
+        <p><small>Open your video on youtube and copy the <b>case-sensitive, eleven-character</b> ID for the "v" variable (e.g., https://www.youtube.com/watch?v=YOUTUBE_ID)</small></p>
+        <div class="input-group">
+            <input type="text" id="youtubeLink" name="youtubeLink">
+        </div>
     </div>
 
     <h6>Download and Version Information</h6>
@@ -58,9 +56,18 @@
         <label for="gameUrlOrFileId">Http Url or Google Drive File ID:</label>
         <input type="text" class="form-control" id="gameUrlOrFileId" name="gameUrlOrFileId" required>
     </div>
+
+    <div class="form-group">
+        <label for="gameTitle">Game Window Title:</label>
+        <input type="text" class="form-control" name="title" id="gameTitle">
+        <small>The window title is metadata for the Arc application. The window's title is needed so the opened game's window can be found when opened. Without this, the application won't be able to focus the window, apply keybinds or reopen the game-select menu when this game has closed</small>
+    </div>
+
     <button type="submit" class="btn btn-success" >Submit</button>
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
 
 </form>
 
-
+<script>
+    $("#image").on("change", checkFileSize)
+</script>

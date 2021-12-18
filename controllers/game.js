@@ -1,24 +1,595 @@
+const User = require('../models/user');
 const Game = require('../models/game')
+const Report = require('../models/report')
+const Rating = require('../models/rating')
+const Comment = require('../models/comment')
 const mongoose = require('mongoose')
 
 var axios = require('axios')
-var fs = require('fs'); 
-var path = require('path'); 
+const googleDrive = require('../lib/googledrive')
+var path = require('path');
 
-exports.keybinds = (req, res, next) => {
-    //load the game
-    Game.find()
-        .where('gameInfo.name').equals(req.params.gameName)
-        .where('isActive').equals(true)
-        .then(games => {
-            // Create editable copy of the keybinds dictionary
-            var ret = {...games[0].keybinds};
-            ret['Title'] = games[0].gameInfo.title;
-            res.json(ret);
+async function saveImage(gameName, files, callback){
+    var imageIDs = []
+    if(files) {
+        for(imageFile of files) {
+            var imageID = await googleDrive.uploadImage(
+                        path.join(path.join(process.cwd() + '/uploads/' + imageFile.filename)),
+                        gameName,
+                        imageFile.filename.split('.').pop())
+            if(imageID)
+                imageIDs.push(imageID)
+        }
+    }
+    return imageIDs;
+}
+
+/**
+ * Email system for sending email authentication emails
+ */
+ const nodemailer = require('nodemailer');
+const { file } = require('googleapis/build/src/apis/file');
+const { google } = require('googleapis');
+
+ let transporter = null
+ if(process.env.NODEMAILER_EMAIL){
+     transporter = nodemailer.createTransport({
+     service: "gmail",
+     auth: {
+         type: 'OAuth2',
+         user: process.env.NODEMAILER_EMAIL,
+         clientId: process.env.CLIENT_ID,
+         clientSecret: process.env.CLIENT_SECRET,
+         refreshToken: process.env.REFRESH_TOKEN,
+         accessToken: process.env.ACCESS_TOKEN,
+         expires: Number.parseInt(process.env.TOKEN_EXPIRE, 10),
+     },
+     });
+ }
+
+ exports.comment = (req, res, next) => {
+     //load the game's versions
+     Game.findOne({ '_id': req.body.gameId })
+         .then(game => {
+            if(game == null || !game.isActive) {
+                res.status(410).json({status:'That game is not available or does not exist'});
+                return;
+            }
+
+            // Create new rating
+            const today = new Date();
+            const comment = new Comment({
+                gameId: req.body.gameId,
+                comment: req.body.comment,
+                userId: req.body.userId,
+                creationDate: today
+            })
+
+            comment
+                .save()
+                .then(result => {
+                    res.status(200).json({status:"OK"});
+                    return;
+                })
+                .catch(err => {
+                    console.log(err)
+                    res.status(500).json({status:'The comment could not be saved. Please try again'});
+                    return;
+                });
+         })
+         .catch(err => {
+             console.log(err)
+             res.status(500).json({status:'The comment could not be saved. Please try again'});
+             return;
+         });
+ }
+
+ exports.deleteComment = (req, res, next) => {
+     //load the game's versions
+    Comment.findOne({ '_id': req.body.commentID })
+        .populate('gameId')
+        .then(comment => {
+            if(comment == null) {
+                req.flash('uploadError', 'That game is not available or does not exist');
+                return res.redirect('/game/edit/' + comment.gameId._id)
+            }
+
+            // Check if user has permissions to delete comment
+            User.findOne({ username: req.session.username }).then(
+                user => {
+                    if(!user.isAdmin && comment.gameId.userId != user._id) {
+                        req.flash('uploadError', 'You do not have proper permissions to delete that comment');
+                        return res.redirect('/game/edit/' + comment.gameId._id)
+                    }
+
+                    // Delete old comment (if it exists)
+                    if(comment != null) {
+                        comment.remove()
+                    }
+                    return res.redirect('/game/edit/' + comment.gameId._id)
+                })
+                .catch(err => {
+                    console.log(err)
+                    req.flash('uploadError', 'The comment could not be deleted. Please try again');
+                    return res.redirect('/game/edit/' + comment.gameId._id)
+                });
+         })
+         .catch(err => {
+             console.log(err)
+             req.flash('uploadError', 'The comment could not be deleted. Please try again');
+             return res.redirect('/game/edit/' + comment.gameId._id)
+            });
+ }
+
+exports.rate = (req, res, next) => {
+    //load the game's versions
+    Game.findOne({ '_id': req.body.gameId })
+        .then(game => {
+            if(game == null || !game.isActive) {
+                res.status(410).json({status:'That game is not available or does not exist'});
+                return;
+            }
+            // Check if user has existing rating
+            Rating.findOne({ userId: req.body.userId, gameId: req.body.gameId })
+                .then(oldRating => {
+                    // Delete old rating (if it exists)
+                    if(oldRating != null) {
+                        oldRating.remove()
+                    }
+
+                    // Create new rating
+                    const rating = new Rating({
+                        gameId: req.body.gameId,
+                        rating: req.body.rating,
+                        userId: req.body.userId
+                    })
+        
+                    rating
+                        .save()
+                        .then(result => {
+                            res.status(200).json({status:"OK"});
+                            return;
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            res.status(500).json({status:'The rating could not be saved. Please try again'});
+                            return;
+                        });
+                })
+                .catch(err => {
+                    console.log(err)
+                    res.status(500).json({status:'The rating could not be saved. Please try again'});
+                    return;
+                });
         })
         .catch(err => {
             console.log(err)
+            res.status(500).json({status:'The rating could not be saved. Please try again'});
+            return;
         });
+}
+
+exports.edit = (req, res, next) => {
+    req.isEdit = true;
+    exports.details(req, res, next);
+}
+exports.details = (req, res, next) => {
+    if(!req.isEdit) {
+        req.isEdit = false
+    }
+    //load the current user
+    User.findOne({ username: req.session.username }).then(
+        user => {
+            Game.findOne({ _id: req.params.gameid })
+                .populate('userId')
+                .then(game => {
+                    Rating.findOne({ userId: user._id, gameId: game._id })
+                        .then(stars => {
+                            Comment.find({ gameId: game._id })
+                                .populate('userId')
+                                .then(comments => {
+                                    let message = req.flash('uploadError');
+                                    message = (message.length > 0) ? message[0] : null;
+
+                                    let successMessage = req.flash('uploadMsg');
+                                    successMessage = (successMessage.length > 0) ? successMessage[0] : null;
+                                    
+                                    res.render('game/details', { user: user,
+                                                                game: game,
+                                                                pageTitle: game.gameInfo.name,
+                                                                message: message,
+                                                                successMessage: successMessage,
+                                                                isEdit: req.isEdit,
+                                                                rating: stars ? stars.rating : null,
+                                                                comments: comments})
+                                })
+                                .catch(err => {
+                                    console.log(err)
+                                });
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        });
+                })
+                .catch(err => {
+                    console.log(err)
+                });
+        }
+    )
+    .catch(err => {
+        console.log(err)
+    });
+
+}
+
+exports.upload = (req, res, next) => {
+    if (req.hasOwnProperty('file_error')) {
+        req.flash('uploadError', 'The file upload failed. Please verify that the file is an image.')
+        res.redirect('/user/games');
+        return;
+    }
+    //load the current user
+    User.findOne({ username: req.session.username }).then(user => {
+        if (req.body.gameID == null) {
+            console.log("Creating game")
+            // Upload new game
+
+            /**
+             * making the game info and creationDate
+             */
+
+            const today = new Date();
+            const creationDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+
+            var gameInfo = {
+                name: req.body.gameName,
+                description: req.body.gameDescription,
+                title: req.body.title
+            }
+
+            /**
+             * Adding the revision History here
+             */
+
+            const version = req.body.gameAddVersion
+
+            const firstRevision = {
+                releaseNotes: req.body.gameReleaseNotes,
+                isActive: true,
+                version: version
+            }
+
+            if(req.body.gameHost.toLowerCase() === "google drive"){
+                firstRevision.isGoogleDriveDownload = true
+                firstRevision.fileId = req.body.gameUrlOrFileId
+            }
+            else{
+                firstRevision.isHttpDownload = true
+                firstRevision.url = req.body.gameUrlOrFileId
+            }
+
+            const revisionHistory = {
+                revisions : [firstRevision]
+            }
+
+            /**
+             * Keybinds
+             */
+
+            const keybinds = {
+                P1up : req.body.P1up,
+                P1left : req.body.P1left,
+                P1right : req.body.P1right,
+                P1down : req.body.P1down,
+                P1A : req.body.P1A,
+                P1B : req.body.P1B,
+                P1X : req.body.P1X,
+                P1Y : req.body.P1Y,
+                P1Z : req.body.P1Z,
+
+                P2up : req.body.P2up,
+                P2left : req.body.P2left,
+                P2right : req.body.P2right,
+                P2down : req.body.P2down,
+                P2A : req.body.P2A,
+                P2B : req.body.P2B,
+                P2X : req.body.P2X,
+                P2Y : req.body.P2Y,
+                P2Z : req.body.P2Z,
+
+                Start : req.body.KeybindStart,
+                Exit : req.body.KeybindExit
+            }
+
+            /**
+             * Save image
+             */
+            saveImage(gameInfo.name, req.files).then((imageIds) => {
+                var gameplayPreviews = []
+                // Create preview list
+                for(let driveImageId of imageIds) {
+                    gameplayPreviews.push({
+                        type: "image",
+                        driveId: driveImageId
+                    })
+                }
+                // Add youtube link provided it exists and doesn't include URL reserved characters
+                if(req.body.youtubeLink != '' && !req.body.youtubeLink.includes('/') && !req.body.youtubeLink.includes('\\') && !req.body.youtubeLink.includes('&')) {
+                    gameplayPreviews.push({
+                        type: "youtube",
+                        youtubeId: req.body.youtubeLink
+                    })
+                }
+
+                /**
+                 * saving the game
+                 */
+                const newGame = new Game({
+                    gameInfo: gameInfo,
+                    gameplayPreviews: gameplayPreviews,
+                    creationDate: creationDate,
+                    userId: user._id,
+                    revisionHistory: revisionHistory,
+                    isActive: true,
+                    keybinds: keybinds
+                })
+                newGame
+                    .save()
+                    .then(result => {
+    
+                        User.find()
+                            .where('isAdmin').equals(true)
+                            .then(users => {
+                                var emails = [];
+                                users.forEach(function(adminUser){
+                                    emails.push(adminUser.email);
+                                });
+    
+                                // then send email to admin
+                                let message = {
+                                    from: process.env.NODEMAILER_EMAIL,
+                                    to: emails,
+                                    subject: "MocsArcade: New game to review",
+                                    html: `
+                                            <p>
+                                                Admin,
+                                                <br><br>
+                                                A new game has been added to the MocsArcade by ${user.username}
+                                                <br>
+                                                <b>Game name:</b> ${newGame.gameInfo.name}
+                                                <br>
+                                                <b>Description:</b> ${newGame.gameInfo.description}
+                                            </p>
+                                        `
+                                };
+                                // Attempt to send email to admin
+                                if (transporter != null) {
+                                    transporter
+                                        .sendMail(message)
+                                        .then(() => {
+                                            res.redirect('/game/details/' + newGame._id.toString());
+                                        })
+                                        .catch((error) => {
+                                            console.error(error)
+                                            res.redirect('/game/details/' + newGame._id.toString());
+                                        });
+                                } else {
+                                    res.redirect('/game/details/' + newGame._id.toString());
+                                }
+                            })
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        req.flash('uploadError', 'Database could not be accessed. Please try again later')
+                        res.redirect('/user/games');
+                    });
+            })
+            .catch((error) => {
+                console.log(error)
+                req.flash('uploadError', 'The file upload failed. Please verify that the file is an image.')
+                res.redirect('/user/games');
+            })
+        }
+        else {
+            // Edit game
+            Game.findOne({ 'gameInfo.name': req.body.name }).then(existingGame => {
+                Game.findOne({ _id: req.body.gameID }).then(game => {
+                    // Test for user priveleges and name uniqueness 
+                    if (existingGame != null && existingGame._id.toString() != game._id.toString()) {
+                        /**
+                         * Error for attempting to edit/create a game of the same name
+                         */
+                        req.flash('uploadError', 'This game name is taken, please choose another')
+                        res.redirect('/game/details/' + game._id.toString());
+                    }
+                    else if (game.userId.toString() != user._id.toString() && !user.isAdmin) {
+                        /**
+                         * Error for attempting to edit/create a game you don't own
+                         */
+                        req.flash('uploadError', 'You don\'t have proper permissions to update this game')
+                        res.redirect('/game/details/' + game._id.toString());
+                    }
+                    else {
+                        /**
+                         * Editting game data
+                         */
+                        game.gameInfo.name = req.body.name;
+                        game.gameInfo.description = req.body.description;
+                        game.gameInfo.title = req.body.title;
+                        console.log(req.body.image)
+                        // if (req.body.image != null) {
+                        //    saveImage(game, req.body.image)
+                        // }
+
+                        /**
+                         * Editting version data
+                         */
+                        for (i = 0; i < game.revisionHistory.revisions.length; i++) {
+                            var versionNum = game.revisionHistory.revisions[i].version;
+                            if (game.revisionHistory.revisions[i].releaseNotes != req.body.releaseNotes[versionNum]) {
+                                game.revisionHistory.revisions[i].releaseNotes = req.body.releaseNotes[versionNum];
+                                game.markModified('revisionHistory.revisions');
+                            }
+                            if (req.body.fileId) {
+                                if (req.body.fileId[versionNum]) {
+                                    if (game.revisionHistory.revisions[i].fileId != req.body.fileId[versionNum]) {
+                                        game.revisionHistory.revisions[i].fileId = req.body.fileId[versionNum];
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                }
+                            }
+                            if (req.body.url) {
+                                if (req.body.url[versionNum]) {
+                                    if (game.revisionHistory.revisions[i].url != req.body.url[versionNum]) {
+                                        game.revisionHistory.revisions[i].url = req.body.url[versionNum];
+                                        game.markModified('revisionHistory.revisions');
+                                    }
+                                }
+                            }
+                            if (req.body.deactivate && req.body.deactivate[versionNum]) {
+                                if (game.revisionHistory.revisions[i].isActive == true && req.body.deactivate[versionNum] == "true") {
+                                    game.revisionHistory.revisions[i].isActive = false;
+                                    game.markModified('revisionHistory.revisions');
+                                }
+                            } else {
+                                if (!game.revisionHistory.revisions[i].isActive) {
+                                    game.revisionHistory.revisions[i].isActive = true;
+                                    game.markModified('revisionHistory.revisions');
+                                }
+                            }
+                            if (req.body.destabilize && req.body.destabilize[versionNum]) {
+                                if (game.revisionHistory.revisions[i].isStable && req.body.destabilize[versionNum] == "true") {
+                                    game.revisionHistory.revisions[i].isStable = false;
+                                    game.markModified('revisionHistory.revisions');
+                                }
+                            } else {
+                                if (!game.revisionHistory.revisions[i].isStable) {
+                                    game.revisionHistory.revisions[i].isStable = true;
+                                    game.markModified('revisionHistory.revisions');
+                                }
+                            }
+                        }
+
+                        /**
+                         * Adding new version
+                         */
+                        if (req.body.newVersionName) {
+                            var newRevision = {
+                                releaseNotes: req.body.newVersionNotes,
+                                isActive: true,
+                                version:  req.body.newVersionName
+                            }
+                            if(req.body.newVersionHost.toLowerCase() === "google drive download"){
+                                newRevision.isGoogleDriveDownload = true
+                                newRevision.fileId = req.body.newVersionURL
+                            }
+                            else{
+                                newRevision.isHttpDownload = true
+                                newRevision.url = req.body.newVersionURL
+                            }
+                            game.revisionHistory.revisions.push(newRevision)
+                            game.markModified('revisionHistory.revisions');
+                        }
+
+                        /**
+                         * Keybinds
+                         */
+            
+                        game.keybinds = {
+                            P1up : req.body.P1up,
+                            P1left : req.body.P1left,
+                            P1right : req.body.P1right,
+                            P1down : req.body.P1down,
+                            P1A : req.body.P1A,
+                            P1B : req.body.P1B,
+                            P1X : req.body.P1X,
+                            P1Y : req.body.P1Y,
+                            P1Z : req.body.P1Z,
+            
+                            P2up : req.body.P2up,
+                            P2left : req.body.P2left,
+                            P2right : req.body.P2right,
+                            P2down : req.body.P2down,
+                            P2A : req.body.P2A,
+                            P2B : req.body.P2B,
+                            P2X : req.body.P2X,
+                            P2Y : req.body.P2Y,
+                            P2Z : req.body.P2Z,
+
+                            Start : req.body.KeybindStart,
+                            Exit : req.body.KeybindExit
+                        }
+
+                        /**
+                         * Gameplay Images
+                         */
+                        for (let previewDict of game.gameplayPreviews) {
+                            var driveId = previewDict.driveId;
+                            if (req.body.deleteImage && req.body.deleteImage[driveId]) {
+                                // Delete image
+                                googleDrive.deleteImage(driveId)
+                            }
+                        }
+                        // Add youtube link provided it exists and doesn't include URL reserved characters
+                        if(req.body.youtubeLink != '' && !req.body.youtubeLink.includes('/') && !req.body.youtubeLink.includes('\\') && !req.body.youtubeLink.includes('&')) {
+                            var preview = game.gameplayPreviews.find(element => element.type == 'youtube');
+                            if(preview) {
+                                preview.youtubeId = req.body.youtubeLink;
+                            }
+                            else {
+                                game.gameplayPreviews.push({
+                                    type: "youtube",
+                                    youtubeId: req.body.youtubeLink
+                                })
+                            }
+                        }
+
+                        game.gameplayPreviews = game.gameplayPreviews.filter(x => req.body.deleteImage == null || req.body.deleteImage[x.driveId] == null)
+
+                        // Add new images
+                        saveImage(game.gameInfo.name, req.files).then((imageIds) => {
+                            // Create preview list
+                            for(let driveImageId of imageIds) {
+                                game.gameplayPreviews.push({
+                                    type: "image",
+                                    driveId: driveImageId
+                                })
+                            }
+            
+                            /**
+                             * Saving the game
+                             */
+                            game
+                                .save()
+                                .then(result => {
+                                    res.redirect('/game/details/' + game._id.toString());
+                                });
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            req.flash('uploadError', 'The file upload failed. Please verify that the file is an image.')
+                            res.redirect('/user/games');
+                        })
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                    req.flash('uploadError', 'Database could not be accessed. Please try again later')
+                    res.redirect('/user/games');
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                req.flash('uploadError', 'Database could not be accessed. Please try again later')
+                res.redirect('/user/games');
+            })
+        }
+    })
+    .catch(err => {
+        console.log(err)
+        req.flash('uploadError', 'Database could not be accessed. Please try again later')
+        res.redirect('/user/games');
+    })
 }
 
 exports.download = (req, res, next) => {
@@ -45,6 +616,88 @@ exports.download = (req, res, next) => {
         })
         .catch(err => {
             console.log(err)
+        });
+}
+
+exports.report = (req, res, next) => {
+    //load the game's versions
+    Game.findOne({ '_id': req.body.gameId })
+        .then(game => {
+            if(game == null || !game.isActive) {
+                req.flash('uploadError', 'That game is not available or does not exist')
+                return res.redirect('/game/details/' + req.body.gameId)
+            }
+            /**
+             * saving the game
+             */
+            const report = new Report({
+                gameId: req.body.gameId,
+                version: req.body.versionNumber,
+                reportType: req.body.reportType,
+                description: req.body.reportInfo,
+            })
+
+            report
+                .save()
+                .then(result => {
+                    User.find()
+                        .where('isAdmin').equals(true)
+                        .then(users => {
+                            var emails = [];
+                            users.forEach(function(adminUser){
+                                emails.push(adminUser.email);
+                            });
+
+                            // then send email to admin
+                            let message = {
+                                from: process.env.NODEMAILER_EMAIL,
+                                to: emails,
+                                subject: "MocsArcade: New game problem report",
+                                html: `
+                                        <p>
+                                            Admin,
+                                            <br><br>
+                                            A new report has been flagged on the MocsArcade for ${game.gameInfo.name}
+                                            <br><br>
+                                            <b>Game name:</b> ${game.gameInfo.name}
+                                            <br>
+                                            <b>Report type:</b> ${req.body.reportType}
+                                            <br>
+                                            <b>Version:</b> ${req.body.versionNumber}
+                                            <br>
+                                            <b>Description:</b> ${req.body.reportInfo}
+                                        </p>
+                                    `
+                            };
+                            // Attempt to send email to admin
+                            if (transporter != null) {
+                                transporter
+                                    .sendMail(message)
+                                    .then(() => {
+                                        req.flash('uploadMsg', 'Report has been submitted. Thank you for helping keep our game collection safe!')
+                                        return res.redirect('/game/details/' + req.body.gameId)
+                                    })
+                                    .catch((error) => {
+                                        console.error(error)
+                                        req.flash('uploadMsg', 'Report has been submitted. Thank you for helping keep our game collection safe!')
+                                        return res.redirect('/game/details/' + req.body.gameId)
+                                    });
+                            } else {
+                                req.flash('uploadMsg', 'Report has been submitted. Thank you for helping keep our game collection safe!')
+                                return res.redirect('/game/details/' + req.body.gameId)
+                            }
+                        })
+                })
+                .catch(err => {
+                    console.log(err)
+                    req.flash('uploadError', 'There was a problem reaching the server. Please try again later')
+                    return res.redirect('/game/details/' + req.body.gameId)
+                });
+        })
+        .catch(err => {
+            console.log(err)
+            req.flash('uploadError', 'There was a problem reaching the server. Please try again later')
+            return res.redirect('/game/details/' + req.body.gameId)
         });
 }
 
@@ -88,4 +741,37 @@ function downloadGame(game, res, versionIndex, recurse=true){
         else
             res.status(500).send('Requested version is inactive')
     }
+}
+
+exports.delete = (req, res, next) => {
+    Game.findOne({_id: req.body.gameID})
+        .then(game => {
+            // Check if user has permissions to delete comment
+            User.findOne({ username: req.session.username }).then(
+                user => {
+                    if(!user.isAdmin && game.userId.toString() != user._id.toString()) {
+                        req.flash('uploadError', 'You do not have proper permissions to delete that game');
+                        res.redirect('/user');
+                        return;
+                    }
+
+                    game.isActive = false;
+                    game.save();
+                    res.redirect('/user');
+                    return;
+                })
+                .catch(err => {
+                    console.log(err)
+                    req.flash('uploadError', 'The game could not be deleted. Please try again');
+                    res.redirect('/user');
+                    return;
+                });
+        })
+        .catch((err) => {
+            console.log(err)
+            req.flash('uploadError', 'The game could not be deleted. Please try again');
+            res.redirect('/user');
+            return;
+        })
+
 }

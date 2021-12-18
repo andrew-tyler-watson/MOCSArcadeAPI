@@ -1,0 +1,33 @@
+<div id="gameReportModal" class="modal" role="dialog" on>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Report <b id="gameNameDisplay">this Game</b> - <b id="versionNumberDisplay"></b>:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="/game/report" method="POST" id="ReportForm">
+        <div class="modal-body">
+          <p>
+            What are you reporting about?
+          </p>
+          <select class="form-control" id="reportType" name="reportType">
+            <option>Stolen content</option>
+            <option>Malware or harmfully unoptimized software</option>
+            <option>Careless use of sensitive or inflammatory topics</option>
+            <option>Spam</option>
+          </select>
+          <textarea class="form-control" id="reportInfo" name="reportInfo" rows="4" placeholder="Please enter a reason for reporting here" required></textarea>
+        </div>
+        <div class="modal-footer">
+            <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+            <input id="ReportModalGameId" type="hidden" name="gameId">
+            <input id="ReportModalVersionNumber" type="hidden" name="versionNumber">
+            <button type="submit" class="btn btn-danger">Submit</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

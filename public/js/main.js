@@ -1,24 +1,34 @@
-function showDeleteModal(gameName, gameDescription){
-    fillDeleteModal(gameName, gameDescription)
-    $('#gameDeleteModal').modal({onApprove: function(event) {
-        $('#gameDeleteModal').modal({
-            transition: 'fade',
-            duration: 10000
-        }).modal('hide');
-        deleteGame(gameName);
-    }}).modal('show');
+function showDeleteModal(gameId, gameName){
+    fillDeleteModal(gameId, gameName)
+    $('#gameDeleteModal').modal('show');
 }
-function deleteGame(gameName)
-{
-    document.getElementById(gameName+'DeleteForm').submit()
+function fillDeleteModal(gameId, gameName){
+    $('#deleteModalGameID').val(gameId);
+    $("#gameNameDisplay").html(gameName)
 }
-function fillDeleteModal(gameName, gameDescription){
-    document.getElementById('deleteModalGameName').textContent = gameName;
-    document.getElementById("deleteModalGameDescription").textContent = gameDescription;
+
+function showDeleteCommentModal(gameId, commentText){
+    fillDeleteCommentModal(gameId, commentText)
+    $('#commentDeleteModal').modal('show');
+}
+function fillDeleteCommentModal(gameId, commentText){
+    $('#deleteModalCommentID').val(gameId);
+    $("#commentDisplay").html(commentText)
+}
+
+function showReportModal(gameId, gameName, versionNumber){
+    fillReportModal(gameId, gameName, versionNumber)
+    $('#gameReportModal').modal('show');
+}
+function fillReportModal(gameId, gameName, versionNumber){
+    $('#ReportModalGameId').val(gameId);
+    $('#ReportModalVersionNumber').val(versionNumber);
+    $('#versionNumberDisplay').html(versionNumber);
+    $("#gameNameDisplay").html(gameName)
 }
 
 function approveGame(gameName){
-    $('#redirectTo').val(window.location.pathname)
+    $('.redirectTo').val(window.location.pathname)
     document.getElementById(gameName + 'IdApproveForm').submit()
 }
 
@@ -26,13 +36,14 @@ function submitGameAddForm(){
     $("#addGameForm").submit()
 }
 
-function changeImageFileLabel(){
-    //document.getElementById('imageFileLabel').textContent = document.getElementById('image').value
-    // console.log(document.getElementById('imageFileLabel').textContent)
-    // document.getElementById('fileError').innerHTML = "does it change"
-    // console.log(document.getElementById('imageFileLabel').textContent)
-    var filename = $("#gameAddModal").find("#image")[0].value
-    console.log(filename)
-    $("#gameAddModal").find("#imageFileLabel").text(filename)
-    
+function checkFileSize (e) {
+    for(file of this.files) {
+        console.log(file)
+        if(file.size > 50000) {
+            $(this).val("")
+            $("#fileError").text("File is too large! Please decrease the size of your file to 50KB and try again!")
+        } else {
+            $("#fileError").text("")
+        }
+    }
 }

@@ -1,56 +1,56 @@
 <%- include('../includes/header.ejs')%>
-
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col">
-        <div class="py-5 text-center">
-          <h3 class="mb-0">
-            Welcome to the MOCS Arcade
-          </h3>
-          <p class="text-secondary">
-            A place to distribute your games
-          </p>
-        </div>
-      </div>
+  <div class="jumbotron jumbotron-fluid text-center bg-warning">
+    <div class="container">
+      <h1 class="display-4 text-light" style="text-shadow: 0px 2px #000000;">Welcome to the ARC</h1>
+      <h3 class="text-light" style="text-shadow: 0px 2px #000000;">A place to distribute games on the digital ocean</h3>
     </div>
+  </div>
+  <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-8 col-12">
         <% if(message) {%>
-          <div class="ui warning message">
-            <p><%= message%></p>
+          <div class="text-danger">
+            <p><%= message %></p>
           </div>
         <% } %> 
         <form action="/login/register" method="POST">
+          <p class="mb-1 mt-3">Username</p>
+          <div class="row">
+            <div class="col pr-0">
+              <input class="form-control" type="text" id="username" name="username" placeholder="Username" required>
+            </div>
+          </div>
+
           <p class="mb-1 mt-3">Email</p>
           <div class="row">
             <div class="col pr-0">
-              <input class="form-control" type="text" id="username" name="username" placeholder="Email">
+              <input class="form-control" type="email" id="email" name="email" placeholder="Email" required>
             </div>
           </div>
       
           <p class="mb-1 mt-3">Name</p>
           <div class="row">
             <div class="col pr-0">
-              <input class="form-control" type="text" name="firstName" placeholder="First Name">
+              <input class="form-control" type="text" name="firstName" placeholder="First Name" required>
             </div>
             <div class="col pl-0">
-              <input class="form-control" type="text" name="lastName" placeholder="Last Name">
+              <input class="form-control" type="text" name="lastName" placeholder="Last Name" required>
             </div>
           </div>
     
           <p class="mb-1 mt-3">Password</p>
           <div class="row mx-1">
-            <input class="form-control" type="password" name="password" placeholder="Enter Password">
+            <input class="form-control" type="password" name="password" placeholder="Enter Password" required>
           </div>
           <div class="row mx-1">
-            <input class="form-control" type="password" name="password2" placeholder="Confirm Password">
+            <input class="form-control" type="password" name="password2" placeholder="Confirm Password" required>
           </div>
     
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     
-          <button class="btn btn-primary my-4" type="submit">
-            Register
-          </button>
+          <div class="my-4">
+            <button type="submit" class="form-control btn btn-warning">Register</button>
+          </div>
         </form>
       </div>
     </div>

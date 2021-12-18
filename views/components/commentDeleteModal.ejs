@@ -1,19 +1,20 @@
-<div id="gameDeleteModal" class="modal" role="dialog" on>
+<div id="commentDeleteModal" class="modal" role="dialog" on>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Delete <b id="gameNameDisplay">this Game</b>?:</h5>
+        <h5 class="modal-title">Delete this Comment?:</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="/game/delete" method="POST" id="DeleteForm">
+      <form action="/game/deleteComment" method="POST" id="DeleteCommentForm">
         <div class="modal-body">
+          <p class="text-secondary">"<span id="commentDisplay"></span>"</p>
           Are you sure?
         </div>
         <div class="modal-footer">
             <input type="hidden" name="_csrf" value="<%= csrfToken%>">
-            <input id="deleteModalGameID" type="hidden" name="gameID">
+            <input id="deleteModalCommentID" type="hidden" name="commentID">
             <button type="submit" class="btn btn-danger">Yes</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
         </div>

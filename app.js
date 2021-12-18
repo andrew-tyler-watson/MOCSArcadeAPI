@@ -77,7 +77,21 @@ if (process.env.DATABASE_URL) {
  * tack our middlewares onto.
  *
  */
-const app = express();
+const app = express(); ////////
+
+/***********************************************\\\\\\\\\
+ *  compile scss stylesheet files 
+/***********************************************/ var sassMiddleware = require('node-sass-middleware');
+
+app.use(
+  sassMiddleware({
+    /* Options */
+    src: __dirname + '/public',
+    dest: __dirname + '/public',
+    debug: true,
+    outputStyle: 'expanded',
+  })
+);
 //Make it so our app can find our own files
 app.use(express.static(__dirname + '/public'));
 
@@ -111,6 +125,7 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 /**
  * Now that we have a session and a store, we configure this
@@ -122,7 +137,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
  */
 app.use(
   session({
-    secret: 'alkjasdlfk;lasdasdfiahusdfkljasdfbalksdhfjalkjsdnfljkasdnf',
+    secret: process.env.SESSION_SECRET || 'abcdefghijklmnop',
     resave: false,
     saveUninitialized: false,
     store: store,
@@ -143,12 +158,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(flash()); ////////
+app.use(flash()); //////// ////////
 
 /***********************************************\\\\\\\\\
  *  import (essentially) our routing scripts
  *  and tie them to their respective url routes 
-/***********************************************/ const adminRoutes = require('./routes/admin');
+/***********************************************/ const indexRoutes = require('./routes/index');
+const adminRoutes = require('./routes/admin');
 const loginRoutes = require('./routes/login');
 const userRoutes = require('./routes/user');
 const gameRoutes = require('./routes/game');
@@ -160,6 +176,7 @@ const apiRoutes = require('./routes/api');
  * contain information on the session for our routes to be able to do their
  * job effectively.
  */
+app.use('/', indexRoutes);
 app.use('/admin', adminRoutes);
 app.use('/login', loginRoutes);
 app.use('/user', userRoutes);
@@ -177,7 +194,7 @@ app.use('/api', apiRoutes);
  */
 
 app.use('/', (req, res, next) => {
-  res.redirect('/login');
+  res.redirect('/');
 });
 
 /**

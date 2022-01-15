@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 var axios = require('axios')
 
 exports.games = (req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*")
     Game.find({isActive: true, isApproved: true})
         .select('gameInfo.name gameInfo.title gameInfo.description revisionHistory creationDate userId')
         .populate('userId', 'username firstName lastName')
@@ -20,6 +21,7 @@ exports.games = (req, res, next) => {
 }
 
 exports.keybinds = (req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*")
     //load the game
     Game.find()
         .where('gameInfo.name').equals(req.params.gameName)
@@ -36,6 +38,7 @@ exports.keybinds = (req, res, next) => {
 }
 
 exports.numPreviews = (req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*")
     Game.findOne({ 'gameInfo.name': new RegExp('^' + req.params.gameName + '$', 'i'), 'isActive': true })
         .then(game => {
                 if(game != null) {
@@ -54,6 +57,7 @@ exports.numPreviews = (req, res, next) => {
 }
 
 exports.downloadPreview = (req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*")
     Game.findOne({ 'gameInfo.name': new RegExp('^' + req.params.gameName + '$', 'i'), 'isActive': true })
         .then(game => {
             if(game != null) {
